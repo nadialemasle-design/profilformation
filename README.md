@@ -1,37 +1,41 @@
 # Profil formation — aide à l'entretien prospect
 
-Outil pour les conseillères formation : on choisit le profil qui ressemble le plus au prospect, et l'application affiche côte à côte tous les parcours possibles, avec pour chacun :
+Outil pour les conseillères formation. On choisit un domaine, puis le profil qui ressemble le plus au prospect. L'application affiche côte à côte toutes les formations ou tous les parcours possibles, avec pour chacun :
 
-- pourquoi proposer ce parcours ;
-- l'argument de chaque module, adapté au profil ;
-- le financement et la certification du domaine.
+- pourquoi le proposer ;
+- l'argument de chaque module, adapté au profil, avec un lien vers la fiche CCI ;
+- la durée, le financement et la certification ;
+- des formations complémentaires venant d'autres domaines.
 
-Domaines actuels : **Intelligence artificielle** (certification RS7232) et **Réseaux sociaux** (certification RS7643).
+Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, Communication digitale (Canva), Site internet & référencement, CAO-DAO, Bureautique (Excel), Outils collaboratifs, Gestion de projet, Conception de formation.
 
 ## Les fichiers
 
 | Fichier | Rôle |
 |---|---|
 | `index.html` | L'application (mise en page, couleurs, fonctionnement). Pas besoin d'y toucher. |
-| `contenu.js` | **Tout le contenu** : domaines, parcours, profils, arguments. C'est le seul fichier à modifier. |
+| `contenu.js` | **Tout le contenu** : domaines, formations, profils. C'est le seul fichier à modifier. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 
 1. Sur GitHub, ouvrir le dépôt, puis **Settings** › **Pages**.
-2. Dans **Source**, choisir **Deploy from a branch**.
-3. Choisir la branche **main** et le dossier **/ (root)**, puis **Save**.
-4. Après une à deux minutes, l'adresse du site s'affiche en haut de la page : `https://nadialemasle-design.github.io/profilformation/`
+2. **Source** : **Deploy from a branch**, branche **main**, dossier **/ (root)**, puis **Save**.
+3. Une à deux minutes plus tard : `https://nadialemasle-design.github.io/profilformation/`
 
 ## Modifier le contenu
 
-Ouvrir `contenu.js` sur GitHub, cliquer sur le crayon (**Edit this file**), modifier, puis **Commit changes**. Le site se met à jour en une à deux minutes.
+La version Claude de l'application a un onglet **Gestion** avec des formulaires : c'est le plus simple. Il suffit ensuite de demander à Claude de recopier le contenu ici.
 
-### Ajouter un profil
+Pour modifier directement sur GitHub : ouvrir `contenu.js`, cliquer sur le crayon (**Edit this file**), modifier, puis **Commit changes**.
 
-Copier un profil existant du même domaine (de `{` à `}` avec sa virgule), le coller juste après, puis changer les textes entre guillemets :
+`contenu.js` contient trois listes : `domaines`, `formations` et `profils`. Chaque élément a un `id` unique, utilisé pour les relier entre eux.
+
+### Exemple de profil
 
 ```js
 {
+  "id": "rs-030",
+  "domaine": "rs",
   "categorie": "Commerce, artisanat, tourisme",
   "nom": "Fleuriste",
   "besoin": "Montrer ses compositions et attirer la clientèle locale.",
@@ -39,35 +43,44 @@ Copier un profil existant du même domaine (de `{` à `}` avec sa virgule), le c
     "M1 Base": "Page pro avec ses créations et ses horaires.",
     "M2.1": "Publications autour des fêtes et des saisons."
   },
-  "parcours": {
-    "rs-local": {
-      "pourquoi": "Ses clients sont dans le quartier.",
-      "reponses": { "M2.3": "Fiche Google, avis et horaires à jour." }
-    },
-    "rs-video": {
-      "pourquoi": "Pour montrer la création des bouquets.",
-      "reponses": { "M3": "Vidéos de compositions au smartphone." }
-    }
-  }
+  "parcours": [
+    { "formation": "rs-local", "pourquoi": "Ses clients sont dans le quartier.",
+      "reponses": { "M2.3": "Fiche Google, avis et horaires à jour." } },
+    { "formation": "rs-video", "pourquoi": "Pour montrer la création des bouquets.",
+      "reponses": { "M3": "Vidéos de compositions au smartphone." } }
+  ],
+  "complements": [
+    { "formation": "com-canva1", "pourquoi": "Créer ses visuels soi-même." }
+  ],
+  "ordre": 30
 },
 ```
 
-- `categorie` : reprendre exactement une catégorie existante, ou en écrire une nouvelle.
-- `reponses` : les arguments communs à tous ses parcours.
-- `parcours` : du plus adapté au moins adapté ; pour chacun, le « pourquoi » et l'argument des modules propres à ce parcours.
-- Codes des parcours : `ia-admin`, `ia-form`, `ia-rh`, `rs-simple`, `rs-marque`, `rs-linkedin`, `rs-local`, `rs-video`.
+- `domaine` : l'`id` du domaine (`ia`, `rs`, `pao`, `paoia`, `video`, `com`, `web`, `cao`, `bur`, `col`, `prj`, `ped`).
+- `reponses` : les arguments communs à tous ses parcours, par code de module.
+- `parcours` : du plus adapté au moins adapté ; `formation` est l'`id` d'une formation du même domaine.
+- `complements` : formations d'autres domaines à suggérer en plus.
 
-### Supprimer un profil
+### Exemple de formation
 
-Supprimer tout son bloc, de `{` jusqu'à `},` inclus.
-
-### Ajouter un parcours
-
-Dans `formations` du domaine, ajouter un bloc avec un nouveau code `id`, puis relier ce code dans `parcours` des profils concernés. Un nouveau code de module se place aussi dans `ordreModules`.
+```js
+{
+  "id": "pao-lightroom",
+  "domaine": "pao",
+  "nom": "Lightroom initiation",
+  "intitule": "Lightroom initiation : organisez et sublimez vos photos professionnelles",
+  "duree": "1 jour",
+  "certification": "",
+  "modules": [
+    { "code": "Formation", "titre": "Lightroom initiation : …", "lien": "https://www.cci-formation-bretagne.fr/…" }
+  ],
+  "ordre": 2
+},
+```
 
 ### Les pièges à éviter
 
 - Une virgule entre deux blocs, pas de virgule après le dernier.
 - Pas de guillemets doubles `"` dans un texte : utiliser « » ou l'apostrophe.
-- Les codes doivent être identiques partout, au caractère près.
+- Les `id` doivent être identiques partout, au caractère près.
 - Si la page devient blanche : touche F12 dans le navigateur, onglet **Console**, qui indique la ligne en erreur.

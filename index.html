@@ -60,7 +60,7 @@ h1{font-size:22px;line-height:1.2;margin:0;font-weight:700;text-wrap:balance}
 button:focus-visible,.search:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .none{color:var(--muted);font-size:14px}
 
-.result{display:flex;flex-direction:column;gap:10px;min-width:0}
+.result{display:flex;flex-direction:column;gap:7px;min-width:0}
 .head{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:var(--r);padding:8px 16px;display:flex;flex-wrap:wrap;gap:8px 28px;align-items:flex-start}
 .head .who{flex:1 1 300px;min-width:0}
 .head .lab{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-ink);font-weight:700}
@@ -99,6 +99,7 @@ table.cmp{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixe
 .cmp td.spec .mt{color:var(--green)}
 .cmp td.abs{background:var(--absent);color:var(--muted);font-size:12px;padding-block:4px;vertical-align:middle}
 .cmp td.all{text-align:center}
+.cmp .mt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cmp td.all .mt{display:block}
 .cmp tr.whyrow th{background:var(--green-soft);color:var(--green)}
 .ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;vertical-align:-5px;margin-right:6px}
@@ -143,6 +144,77 @@ details.group .profiles{padding:6px 0 4px 6px}
 .cmp tbody td:not(.abs):not(.why){background:var(--green-soft);box-shadow:inset 3px 0 0 var(--green-mid)}
 .cmp tbody td:not(.abs):not(.why) .mt{color:var(--green)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* ---------- Vues et back office ---------- */
+.profgroups{display:flex;flex-direction:column;gap:12px}
+.adm-item,.adm-cat,.adm-list>.btn{flex-shrink:0}
+.domsel{font-weight:600;color:var(--blue-ink);border-color:var(--blue)}
+.mlink{color:inherit;text-decoration:underline;text-decoration-color:var(--green-mid);text-underline-offset:2px}
+.mlink:hover{color:var(--blue-ink)}
+.mlink .ic{width:13px;height:13px;margin:0 0 0 3px;vertical-align:-2px;color:var(--orange)}
+.compl{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:4px 10px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center}
+@media (max-width:640px){.compl{grid-template-columns:minmax(0,1fr)}}
+.compl h3{margin:0;font-size:11.5px;line-height:1.25;letter-spacing:.06em;text-transform:uppercase;color:var(--orange);display:flex;align-items:center}
+.ccards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px}
+.ccard{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line);border-left:3px solid var(--orange);border-radius:7px;padding:4px 9px;font-size:13px;min-width:0;line-height:1.35}
+.ccard .cl1{display:flex;flex-wrap:wrap;gap:0 8px;align-items:baseline}
+.ccard .cdom{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue-ink)}
+.ccard .cmeta{font-size:12px;color:var(--muted)}
+.ccard .cmeta .ic{width:13px;height:13px;vertical-align:-2px;margin-right:3px}
+.ccard .cwhy{color:var(--fg)}
+.cprow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) auto;gap:8px;align-items:center}
+@media (max-width:640px){.cprow{grid-template-columns:minmax(0,1fr)}}
+.modline{grid-template-columns:110px minmax(0,1fr) auto !important}
+.modline .mlien{grid-column:1/-1}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-weight:600;font-size:14px;z-index:20}
+.views{display:flex;gap:4px;background:var(--sunk);border-radius:999px;padding:3px}
+.vbtn{font:inherit;font-weight:600;font-size:13.5px;border:none;background:transparent;color:var(--blue-ink);padding:6px 14px;border-radius:999px;cursor:pointer;min-height:34px}
+.vbtn[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.topright{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.state{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:24px;color:var(--muted);text-align:center}
+.adm-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:12px}
+.adm-bar label{font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
+select,.inp,textarea.inp{font:inherit;font-size:14px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:7px 9px}
+.inp{width:100%}
+textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
+.inp:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.subtabs{display:flex;gap:6px}
+.stab{font:inherit;font-size:13.5px;font-weight:600;border:1px solid var(--blue);background:var(--surface);color:var(--blue-ink);border-radius:7px;padding:6px 12px;cursor:pointer;min-height:36px}
+.stab[aria-pressed="true"]{background:var(--blue);color:var(--on-blue)}
+.adm-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.adm-grid{grid-template-columns:minmax(0,1fr)}}
+.adm-list{display:flex;flex-direction:column;gap:4px;max-height:calc(100vh - 170px);overflow:auto;padding-right:4px}
+.adm-item{font:inherit;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:7px;padding:7px 10px;cursor:pointer;display:flex;flex-direction:column;gap:1px;min-height:40px}
+.adm-item small{color:var(--muted);font-size:12px}
+.adm-item[aria-pressed="true"]{border-color:var(--blue);background:var(--blue-soft)}
+.adm-cat{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--blue-ink);margin:8px 0 2px}
+.btn{font:inherit;font-weight:600;font-size:13.5px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:7px 12px;border-radius:7px;cursor:pointer;min-height:36px}
+.btn:hover{border-color:var(--blue)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+.btn.add{border-color:var(--green-mid);background:var(--green-soft);color:var(--green)}
+.btn.danger{color:#B42318;border-color:#E9B1AA}
+.btn.small{min-height:30px;padding:3px 9px;font-size:12.5px}
+.form{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.form h2{margin:0;font-size:18px}
+.fgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 14px}
+@media (max-width:640px){.fgrid{grid-template-columns:minmax(0,1fr)}}
+.field{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.field.full{grid-column:1/-1}
+.fsec{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.fsec h3{margin:0;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--orange)}
+.fhint{font-size:12.5px;color:var(--muted);margin:-4px 0 0}
+.pcrow{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.pchead{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pchead .rank{font-family:var(--font-mono);font-size:12px;background:var(--blue);color:var(--on-blue);border-radius:5px;padding:2px 7px}
+.pchead select{flex:1 1 240px;min-width:0}
+.modrow{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px;align-items:start}
+.modrow .code{justify-self:start;margin-top:8px}
+.modline{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:8px;align-items:center}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:12px}
+.msg{font-size:13px;font-weight:600}
+.msg.err{color:#B42318}.msg.ok{color:var(--green)}
+.confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#FDECEA;color:#7A1A12;border-radius:7px;padding:8px 10px;font-size:13.5px}
+.ro-note{font-size:12.5px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -154,25 +226,54 @@ details.group .profiles{padding:6px 0 4px 6px}
       <div class="eyebrow">Aide à l'entretien prospect</div>
       <h1>Quel profil, quelles formations ?</h1>
     </div>
-    <nav class="domains" id="domains" aria-label="Domaines de formation"></nav>
-  </header>
-  <div class="grid">
-    <div class="side">
-      <label class="searchlab" for="q">Rechercher un métier ou un besoin
-        <input class="search" id="q" type="search" placeholder="ex. auto-entrepreneur, restaurateur, recrutement">
-      </label>
-      <div id="groups" class="side" style="position:static;max-height:none;overflow:visible;padding:0"></div>
+    <div class="topright">
+      <div class="views" id="views" hidden>
+        <button type="button" class="vbtn" data-view="consult" aria-pressed="true">Consulter</button>
+        <button type="button" class="vbtn" data-view="admin" aria-pressed="false">Gestion</button>
+      </div>
     </div>
-    <section class="result" id="detail" aria-live="polite"></section>
+  </header>
+
+  <div id="consult">
+    <div class="grid">
+      <div class="side">
+        <label class="searchlab" for="domSel">Domaine de formation
+          <select class="search domsel" id="domSel"></select>
+        </label>
+        <label class="searchlab" for="q">Rechercher un métier ou un besoin
+          <input class="search" id="q" type="search" placeholder="ex. auto-entrepreneur, restaurateur, recrutement">
+        </label>
+        <div id="groups" class="profgroups"></div>
+      </div>
+      <section class="result" id="detail" aria-live="polite"><div class="state">Chargement des profils…</div></section>
+    </div>
   </div>
+
+  <section id="admin" hidden>
+    <div class="adm-bar">
+      <label for="admDom">Domaine <select id="admDom"></select></label>
+      <div class="subtabs" id="admTabs">
+        <button type="button" class="stab" data-tab="profils" aria-pressed="true">Profils</button>
+        <button type="button" class="stab" data-tab="formations" aria-pressed="false">Parcours</button>
+        <button type="button" class="stab" data-tab="domaine" aria-pressed="false">Domaine</button>
+      </div>
+      <button type="button" class="btn add" id="admNewDom">+ Nouveau domaine</button>
+    </div>
+    <div class="adm-grid">
+      <div class="adm-list" id="admList"></div>
+      <div id="admForm"></div>
+    </div>
+  </section>
 </div>
+<div class="toast" id="toast" hidden></div>
 
 <script src="contenu.js"></script>
 <script>
 /* =====================================================================
-   APPLICATION
+   Les contenus (domaines, parcours, profils) sont dans la base de données
+   partagée de l'application. Ils se modifient dans l'onglet « Gestion ».
+   Collections : domaines, formations (= parcours), profils.
    ===================================================================== */
-/* Icônes au trait (SVG), couleur héritée du texte. */
 const ICONS = {
   why: '<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/>',
   besoin: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
@@ -186,54 +287,89 @@ const ICONS = {
   duree: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   modules: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
   ia: '<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>',
-  rs: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>'
+  rs: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
+  ext: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  domaine: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'
 };
-const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
+const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ICONS.domaine}</svg>`;
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-let state = { dom: "rs", p: 5, q: "" };
-try{ Object.assign(state, JSON.parse(localStorage.getItem("assistant-profils-v3") || "{}")); }catch(e){}
-const save = () => { try{ localStorage.setItem("assistant-profils-v3", JSON.stringify({dom:state.dom,p:state.p})); }catch(e){} };
+const slug = s => norm(s).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "x";
+const byOrdre = (a,b) => (a.ordre ?? 1e9) - (b.ordre ?? 1e9) || String(a.nom||"").localeCompare(String(b.nom||""), "fr");
+const $ = id => document.getElementById(id);
+
+/* ---------- Données ---------- */
+let db = null, user = null, canAdmin = false;
+const RAW = { domaines: null, formations: null, profils: null };
+let DOMAINES = [];
+
+function buildModel(){
+  DOMAINES = (RAW.domaines || []).slice().sort(byOrdre).map(d => ({
+    id: d.id, nom: d.nom || d.id, financement: d.financement || "", certification: d.certification || "",
+    ordreModules: Array.isArray(d.ordreModules) ? d.ordreModules : [],
+    formations: (RAW.formations || []).filter(f => f.domaine === d.id).sort(byOrdre).map(f => ({
+      id: f.id, nom: f.nom || f.id, intitule: f.intitule || "", duree: f.duree || "", certification: f.certification || "",
+      modules: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).map(m => [m.code, m.titre])),
+      liens: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).filter(m => m.lien).map(m => [m.code, m.lien])) })),
+    profils: (RAW.profils || []).filter(p => p.domaine === d.id).sort(byOrdre).map(p => ({
+      id: p.id, categorie: p.categorie || "Autres profils", nom: p.nom || "", besoin: p.besoin || "", reponses: p.reponses || {},
+      parcours: Object.fromEntries((Array.isArray(p.parcours) ? p.parcours : []).map(x => [x.formation, { pourquoi: x.pourquoi || "", reponses: x.reponses || {} }])),
+      complements: (Array.isArray(p.complements) ? p.complements : []).filter(c => c && c.formation) }))
+  }));
+  /* lignes de modules : ordre du domaine, puis modules non listés */
+  DOMAINES.forEach(d => d.formations.forEach(f => Object.keys(f.modules).forEach(m => { if(!d.ordreModules.includes(m)) d.ordreModules = d.ordreModules.concat(m); })));
+}
+const ready = () => RAW.domaines && RAW.formations && RAW.profils;
+
+/* ---------- Consultation ---------- */
+let state = { dom: "rs", pid: "rs-006", q: "", view: "consult" };
+try{ Object.assign(state, JSON.parse(localStorage.getItem("assistant-profils-v4") || "{}")); }catch(e){}
+state.view = "consult";
+const save = () => { try{ localStorage.setItem("assistant-profils-v4", JSON.stringify({dom:state.dom,pid:state.pid})); }catch(e){} };
 const dom = () => DOMAINES.find(d => d.id === state.dom) || DOMAINES[0];
 
 function renderDomains(){
-  document.getElementById("domains").innerHTML = DOMAINES.map(d =>
-    `<button type="button" class="dom" data-dom="${d.id}" aria-pressed="${state.dom===d.id}">${ic(d.id)}${esc(d.nom)}</button>`).join("");
+  $("domSel").innerHTML = DOMAINES.map(d => `<option value="${esc(d.id)}"${state.dom===d.id?" selected":""}>${esc(d.nom)}</option>`).join("");
 }
 
-/* Catégories dépliables : celle du profil choisi est ouverte ; pendant une recherche, toutes celles qui ont un résultat. */
 const ouvertes = new Set();
 function renderList(){
-  const d = dom(), q = norm(state.q.trim());
-  const cats = [];
-  d.profils.forEach((p,i) => {
+  const d = dom(); if(!d){ $("groups").innerHTML = ""; return; }
+  const q = norm(state.q.trim()), cats = [];
+  d.profils.forEach(p => {
     const hay = norm(p.nom + " " + p.besoin + " " + p.categorie + " " + Object.keys(p.parcours).map(id => (d.formations.find(f => f.id === id)||{}).nom).join(" "));
     if(q && !hay.includes(q)) return;
     let c = cats.find(x => x.nom === p.categorie); if(!c){ c = {nom:p.categorie, items:[]}; cats.push(c); }
-    c.items.push({p,i});
+    c.items.push(p);
   });
-  const sel = d.profils[state.p];
-  document.getElementById("groups").innerHTML = cats.length ? cats.map(c => {
+  const sel = d.profils.find(p => p.id === state.pid);
+  $("groups").innerHTML = cats.length ? cats.map(c => {
     const open = q || ouvertes.has(d.id + "|" + c.nom); /* fermées par défaut ; ouvertes pendant une recherche */
-    return `<details class="group" data-cat="${esc(c.nom)}"${open?" open":""}><summary><span class="sum">${esc(c.nom)}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="profiles">${c.items.map(({p,i}) => {
+    return `<details class="group" data-cat="${esc(c.nom)}"${open?" open":""}><summary><span class="sum">${esc(c.nom)}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="profiles">${c.items.map(p => {
       const n = Object.keys(p.parcours).length;
-      return `<button type="button" class="prof" data-p="${i}" aria-pressed="${state.p===i}"><span>${esc(p.nom)}</span><span class="count" title="${n} parcours possible${n>1?"s":""}">${n}</span></button>`;
+      return `<button type="button" class="prof" data-pid="${esc(p.id)}" aria-pressed="${state.pid===p.id}"><span>${esc(p.nom)}</span><span class="count" title="${n} parcours possible${n>1?"s":""}">${n}</span></button>`;
     }).join("")}</div></details>`;
-  }).join("")
-    : `<p class="none">Aucun profil ne correspond à « ${esc(state.q)} ».</p>`;
+  }).join("") : `<p class="none">${d.profils.length ? `Aucun profil ne correspond à « ${esc(state.q)} ».` : "Aucun profil dans ce domaine pour l'instant."}</p>`;
 }
 
 function renderDetail(){
-  const d = dom(), p = d.profils[state.p], el = document.getElementById("detail");
-  if(!p){ el.innerHTML = `<div class="head"><p class="none">Choisissez un profil dans la liste.</p></div>`; return; }
-  const cols = Object.keys(p.parcours).map(id => d.formations.find(f => f.id === id)).filter(Boolean); /* ordre du profil : le plus adapté en premier */
+  const el = $("detail");
+  if(!db){ el.innerHTML = `<div class="state">Les données ne sont pas disponibles dans cet affichage. Ouvrez l'application depuis son lien Claude, en étant connecté(e).</div>`; return; }
+  if(!ready()){ el.innerHTML = `<div class="state">Chargement des profils…</div>`; return; }
+  const d = dom();
+  if(!d){ el.innerHTML = `<div class="state">Aucun domaine pour l'instant.${canAdmin?" Créez-en un dans l'onglet Gestion.":""}</div>`; return; }
+  const p = d.profils.find(x => x.id === state.pid);
+  if(!p){ el.innerHTML = `<div class="state">Choisissez un profil dans la liste.</div>`; return; }
+  const cols = Object.keys(p.parcours).map(id => d.formations.find(f => f.id === id)).filter(Boolean);
+  if(!cols.length){ el.innerHTML = `<div class="state">Ce profil n'est relié à aucun parcours.</div>`; return; }
   const rows = d.ordreModules.filter(m => cols.some(f => f.modules[m]));
   const commun = m => cols.every(f => f.modules[m]);
+  const txtOf = (f, m) => ((p.parcours[f.id].reponses||{})[m]) || (p.reponses||{})[m] || "";
+  const titre = (f, m, pre) => { const t = (pre||"") + esc(f.modules[m]); const u = safeUrl((f.liens||{})[m]); return u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener" title="${esc(f.modules[m])} (ouvrir la fiche)">${t}${ic("ext")}</a>` : `<span title="${esc(f.modules[m])}">${t}</span>`; };
   const cell = (f, m) => {
     if(!f.modules[m]) return `<td class="abs">${ic("moins")}Non inclus</td>`;
-    const pc = p.parcours[f.id], txt = (pc.reponses && pc.reponses[m]) || (p.reponses && p.reponses[m]) || "";
     const spec = cols.length > 1 && !commun(m);
-    return `<td${spec?' class="spec"':""}><span class="mt">${spec?ic("plus"):""}${esc(f.modules[m])}</span>${esc(txt)}</td>`;
+    return `<td${spec?' class="spec"':""}><span class="mt">${titre(f, m, spec?ic("plus"):"")}</span>${esc(txtOf(f, m))}</td>`;
   };
   el.innerHTML = `
     <div class="head">
@@ -243,47 +379,331 @@ function renderDetail(){
         ${d.certification?`<div><dt>${ic("certif")}Certification</dt><dd>${esc(d.certification)}</dd></div>`:""}
       </dl>
     </div>
-    
     <div class="tablebox">
       <table class="cmp" style="min-width:${92 + cols.length*200}px">
         <colgroup><col class="rowh">${cols.map(() => `<col>`).join("")}</colgroup>
-        <thead><tr><th scope="col" class="cnt"><span class="num">${cols.length}</span><span class="cl">parcours possible${cols.length>1?"s":""}</span></th>${cols.map((f,i) =>
-          `<th scope="col" title="${esc(f.intitule)}"><span class="pname">${esc(f.nom)}</span>${cols.length<4?`<span class="pint">${esc(f.intitule)}</span>`:""}<span class="tags">${i===0 && cols.length>1?`<span class="pill best">${ic("star")}Le plus adapté</span>`:""}<span class="pill">${ic("duree")}${esc(f.duree)}</span><span class="pill">${ic("modules")}${Object.keys(f.modules).length} modules</span></span></th>`).join("")}</tr></thead>
+        <thead><tr><th scope="col" class="cnt"><span class="num">${cols.length}</span><span class="cl">${cols.every(f => Object.keys(f.modules).length < 2) ? "formation" : "parcours"} possible${cols.length>1?"s":""}</span></th>${cols.map((f,i) =>
+          `<th scope="col" title="${esc(f.intitule)}"><span class="pname">${esc(f.nom)}</span>${cols.length<4?`<span class="pint">${esc(f.intitule)}</span>`:""}<span class="tags">${i===0 && cols.length>1?`<span class="pill best">${ic("star")}Le plus adapté</span>`:""}${f.duree?`<span class="pill">${ic("duree")}${esc(f.duree)}</span>`:""}${Object.keys(f.modules).length>1?`<span class="pill">${ic("modules")}${Object.keys(f.modules).length} modules</span>`:""}${f.certification?`<span class="pill">${ic("certif")}${esc(f.certification)}</span>`:""}</span></th>`).join("")}</tr></thead>
         <tbody>
           <tr class="whyrow"><th scope="row"><span class="rh">${ic("why")}Pourquoi</span></th>${cols.map(f => `<td class="why">${esc(p.parcours[f.id].pourquoi)}</td>`).join("")}</tr>
           ${rows.map(m => {
-            /* Module commun avec le même argument partout : une seule cellule sur toute la largeur. */
-            const txts = cols.map(f => f.modules[m] ? ((p.parcours[f.id].reponses||{})[m] || (p.reponses||{})[m] || "") : null);
+            const txts = cols.map(f => f.modules[m] ? txtOf(f, m) : null);
             const same = cols.length > 1 && commun(m) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]);
             return `<tr><th scope="row"><span class="code">${esc(m)}</span></th>${same
-              ? `<td class="all" colspan="${cols.length}"><span class="mt">${ic("commun")}${esc(cols[0].modules[m])} · commun à tous les parcours</span>${esc(txts[0])}</td>`
+              ? `<td class="all" colspan="${cols.length}"><span class="mt">${titre(cols[0], m, ic("commun"))} · commun à tous les parcours</span>${esc(txts[0])}</td>`
               : cols.map(f => cell(f, m)).join("")}</tr>`;
           }).join("")}
         </tbody>
       </table>
-    </div>`;
+    </div>${complementsHtml(p, d)}`;
 }
-function renderAll(){ renderDomains(); renderList(); renderDetail(); }
+function complementsHtml(p, d){
+  const items = (p.complements || []).map(c => ({ c, f: (RAW.formations || []).find(f => f.id === c.formation) })).filter(x => x.f);
+  if(!items.length) return "";
+  return `<section class="compl" aria-label="Formations complémentaires"><h3>${ic("plus")}<span>Formations<br>complémentaires</span></h3><div class="ccards">${items.map(({c, f}) => {
+    const dom = (RAW.domaines || []).find(x => x.id === f.domaine), m = (Array.isArray(f.modules) ? f.modules : [])[0] || {}, u = safeUrl(m.lien);
+    const nom = u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener">${esc(f.nom)}${ic("ext")}</a>` : esc(f.nom);
+    return `<div class="ccard"><span class="cl1"><b>${nom}</b><span class="cmeta">${f.duree?`${ic("duree")}${esc(f.duree)}`:""}${f.certification?` · ${esc(f.certification)}`:""} · ${esc(dom ? dom.nom : "")}</span></span><span class="cwhy">${esc(c.pourquoi || "")}</span></div>`;
+  }).join("")}</div></section>`;
+}
+function safeUrl(u){ try{ const x = new URL(String(u || "")); return /^https?:$/.test(x.protocol) ? x.href : ""; }catch(e){ return ""; } }
 
-document.getElementById("domains").addEventListener("click", e => {
-  const b = e.target.closest("[data-dom]"); if(!b) return;
-  state.dom = b.dataset.dom; state.p = 0; save(); renderAll();
+function fixSelection(){
+  if(!DOMAINES.length) return;
+  if(!DOMAINES.some(d => d.id === state.dom)) state.dom = DOMAINES[0].id;
+  const d = dom();
+  if(!d.profils.some(p => p.id === state.pid)) state.pid = d.profils[0] ? d.profils[0].id : "";
+}
+function renderConsult(){ fixSelection(); renderDomains(); renderList(); renderDetail(); }
+
+$("domSel").addEventListener("change", e => {
+  state.dom = e.target.value; state.pid = ""; fixSelection(); save(); renderConsult();
 });
-document.getElementById("groups").addEventListener("click", e => {
+$("groups").addEventListener("click", e => {
   const b = e.target.closest(".prof"); if(!b) return;
-  state.p = Number(b.dataset.p); save(); renderList(); renderDetail();
-  document.querySelector(`.prof[data-p="${state.p}"]`)?.focus();
-  if(window.matchMedia("(max-width:900px)").matches) document.getElementById("detail").scrollIntoView({behavior:"smooth", block:"start"});
+  state.pid = b.dataset.pid; save(); renderList(); renderDetail();
+  document.querySelector(`.prof[data-pid="${CSS.escape(state.pid)}"]`)?.focus();
+  if(window.matchMedia("(max-width:900px)").matches) $("detail").scrollIntoView({behavior:"smooth", block:"start"});
 });
-document.getElementById("groups").addEventListener("toggle", e => {
+$("groups").addEventListener("toggle", e => {
   const el = e.target; if(!el.matches || !el.matches("details.group") || state.q.trim()) return;
-  const k = dom().id + "|" + el.dataset.cat; el.open ? ouvertes.add(k) : ouvertes.delete(k);
+  const k = state.dom + "|" + el.dataset.cat; el.open ? ouvertes.add(k) : ouvertes.delete(k);
 }, true);
-document.getElementById("q").addEventListener("input", e => { state.q = e.target.value; renderList(); });
+$("q").addEventListener("input", e => { state.q = e.target.value; renderList(); });
 
-if(!DOMAINES.some(d => d.id === state.dom)) state.dom = DOMAINES[0].id;
-if(!dom().profils[state.p]) state.p = 0;
-renderAll();
+/* ---------- Vues ---------- */
+$("views").addEventListener("click", e => {
+  const b = e.target.closest("[data-view]"); if(!b) return;
+  state.view = b.dataset.view;
+  document.querySelectorAll(".vbtn").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  $("consult").hidden = state.view !== "consult"; $("admin").hidden = state.view !== "admin";
+  if(state.view === "admin"){ if(!adm.dom) adm.dom = state.dom; renderAdmin(true); } else renderConsult();
+  renderDomains();
+});
+
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2400); }
+
+/* =====================================================================
+   GESTION (back office) — réservé aux personnes qui peuvent modifier l'application
+   ===================================================================== */
+const adm = { dom: "", tab: "profils", sel: null, q: "" };
+const admDom = () => DOMAINES.find(d => d.id === adm.dom);
+const rawP = id => (RAW.profils || []).find(x => x.id === id);
+const rawF = id => (RAW.formations || []).find(x => x.id === id);
+const rawD = id => (RAW.domaines || []).find(x => x.id === id);
+
+function renderAdmin(resetForm){
+  if(!DOMAINES.some(d => d.id === adm.dom)) adm.dom = DOMAINES[0] ? DOMAINES[0].id : "";
+  $("admDom").innerHTML = DOMAINES.map(d => `<option value="${esc(d.id)}"${d.id===adm.dom?" selected":""}>${esc(d.nom)}</option>`).join("");
+  document.querySelectorAll(".stab").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.tab === adm.tab)));
+  renderAdmList();
+  if(resetForm) renderAdmForm();
+}
+
+function renderAdmList(){
+  const d = admDom(), el = $("admList");
+  if(!d){ el.innerHTML = `<p class="none">Aucun domaine. Créez-en un avec « + Nouveau domaine ».</p>`; return; }
+  if(adm.tab === "domaine"){ el.innerHTML = `<button type="button" class="adm-item" aria-pressed="true"><b>${esc(d.nom)}</b><small>${d.formations.length} parcours · ${d.profils.length} profils</small></button>`; return; }
+  if(adm.tab === "formations"){
+    el.innerHTML = `<button type="button" class="btn add" data-new="1">+ Nouveau parcours</button>` + d.formations.map(f => {
+      const n = d.profils.filter(p => p.parcours[f.id]).length;
+      return `<button type="button" class="adm-item" data-sel="${esc(f.id)}" aria-pressed="${adm.sel===f.id}"><b>${esc(f.nom)}</b><small>${esc(f.duree)} · ${Object.keys(f.modules).length} modules · ${n} profils</small></button>`;
+    }).join("");
+    return;
+  }
+  let html = `<button type="button" class="btn add" data-new="1">+ Nouveau profil</button>`, last = null;
+  d.profils.forEach(p => {
+    if(p.categorie !== last){ html += `<div class="adm-cat">${esc(p.categorie)}</div>`; last = p.categorie; }
+    html += `<button type="button" class="adm-item" data-sel="${esc(p.id)}" aria-pressed="${adm.sel===p.id}"><b>${esc(p.nom)}</b><small>${Object.keys(p.parcours).length} parcours</small></button>`;
+  });
+  el.innerHTML = html;
+}
+
+$("admDom").addEventListener("change", e => { adm.dom = e.target.value; adm.sel = null; renderAdmin(true); });
+$("admTabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if(!b) return; adm.tab = b.dataset.tab; adm.sel = adm.tab === "domaine" ? adm.dom : null; renderAdmin(true); });
+$("admNewDom").addEventListener("click", () => { adm.tab = "domaine"; adm.sel = "new"; renderAdmin(false); renderAdmForm(); });
+$("admList").addEventListener("click", e => {
+  const n = e.target.closest("[data-new]"); if(n){ adm.sel = "new"; renderAdmList(); renderAdmForm(); return; }
+  const b = e.target.closest("[data-sel]"); if(!b) return; adm.sel = b.dataset.sel; renderAdmList(); renderAdmForm();
+});
+
+const field = (label, html, full) => `<label class="field${full?" full":""}">${label}${html}</label>`;
+const inp = (id, val, ph) => `<input class="inp" id="${id}" value="${esc(val)}"${ph?` placeholder="${esc(ph)}"`:""}>`;
+const ta = (id, val, ph, cls) => `<textarea class="inp${cls?" "+cls:""}" id="${id}"${ph?` placeholder="${esc(ph)}"`:""}>${esc(val)}</textarea>`;
+const formActions = (canDelete) => `<div class="actions"><button type="button" class="btn primary" data-act="save">Enregistrer</button><button type="button" class="btn" data-act="cancel">Annuler</button>${canDelete?`<button type="button" class="btn danger" data-act="del">Supprimer</button>`:""}<span class="msg" id="fmsg" role="status"></span></div><div id="fconfirm"></div>`;
+const setMsg = (t, ok) => { const m = $("fmsg"); if(m){ m.textContent = t; m.className = "msg " + (ok ? "ok" : "err"); } };
+
+function renderAdmForm(){
+  const el = $("admForm"), d = admDom();
+  if(adm.tab === "domaine" || adm.sel === "new" && adm.tab === "domaine"){ return formDomaine(el); }
+  if(!d){ el.innerHTML = ""; return; }
+  if(!adm.sel){ el.innerHTML = `<div class="state">Choisissez un élément dans la liste, ou créez-en un nouveau.</div>`; return; }
+  if(adm.tab === "formations") return formFormation(el, d);
+  return formProfil(el, d);
+}
+
+/* ----- Formulaire domaine ----- */
+function formDomaine(el){
+  const isNew = adm.sel === "new", r = isNew ? {} : (rawD(adm.dom) || {});
+  el.innerHTML = `<div class="form"><h2>${isNew ? "Nouveau domaine" : "Domaine : " + esc(r.nom || adm.dom)}</h2>
+    <div class="fgrid">
+      ${field("Nom du domaine *", inp("fNom", r.nom || "", "ex. Bureautique"))}
+      ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? "", "1, 2, 3…"))}
+      ${field("Financement", ta("fFin", r.financement || "", "ex. Financement possible à partir de 2 jours de formation."), true)}
+      ${field("Certification", ta("fCert", r.certification || "", "ex. RS7643 : épreuve de 90 min à distance."), true)}
+      ${field("Ordre des lignes de modules (séparés par des virgules)", inp("fMods", (r.ordreModules || []).join(", "), "ex. M1, M2, M3"), true)}
+    </div>
+    ${formActions(!isNew)}</div>`;
+  el.querySelector(".actions").addEventListener("click", async e => {
+    const a = e.target.closest("[data-act]")?.dataset.act; if(!a) return;
+    if(a === "cancel"){ if(isNew){ adm.tab = "profils"; adm.sel = null; } renderAdmin(true); return; }
+    if(a === "del"){
+      const d = admDom();
+      if(d && (d.formations.length || d.profils.length)){ setMsg("Supprimez d'abord les parcours et les profils de ce domaine."); return; }
+      return askConfirm(`Supprimer le domaine « ${r.nom} » ?`, async () => { await db.doc("domaines/" + adm.dom).delete(); adm.dom = ""; adm.tab = "profils"; adm.sel = null; toast("Domaine supprimé"); });
+    }
+    const nom = $("fNom").value.trim(); if(!nom) return setMsg("Le nom du domaine est obligatoire.");
+    const id = isNew ? slug(nom) : adm.dom;
+    if(isNew && rawD(id)) return setMsg("Un domaine porte déjà ce nom.");
+    const ordre = Number($("fOrdre").value) || (isNew ? (RAW.domaines.length + 1) : (r.ordre ?? 99));
+    const data = { nom, financement: $("fFin").value.trim(), certification: $("fCert").value.trim(),
+      ordreModules: $("fMods").value.split(",").map(s => s.trim()).filter(Boolean), ordre };
+    await write(() => db.doc("domaines/" + id).set(data), "Domaine enregistré", () => { adm.dom = id; adm.sel = id; adm.tab = "domaine"; });
+  });
+}
+
+/* ----- Formulaire parcours (formation) ----- */
+function formFormation(el, d){
+  const isNew = adm.sel === "new", r = isNew ? { modules: [] } : (rawF(adm.sel) || { modules: [] });
+  const mods = Array.isArray(r.modules) && r.modules.length ? r.modules : [{code:"", titre:""}];
+  const used = isNew ? [] : d.profils.filter(p => p.parcours[adm.sel]);
+  el.innerHTML = `<div class="form"><h2>${isNew ? "Nouveau parcours" : "Parcours : " + esc(r.nom)}</h2>
+    <div class="fgrid">
+      ${field("Nom du parcours *", inp("fNom", r.nom || "", "ex. Réseaux & e-commerce"))}
+      ${field("Durée", inp("fDuree", r.duree || "", "ex. 4 jours"))}
+      ${field("Intitulé (sous-titre)", inp("fInt", r.intitule || ""), true)}
+      ${field("Certification propre à ce parcours (facultatif)", inp("fCertF", r.certification || "", "ex. Tosa"))}
+      ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
+    </div>
+    <div class="fsec"><h3>Modules</h3><p class="fhint">Code court (ex. M1, M2.3), titre du module et lien vers sa fiche (facultatif). Un nouveau code s'ajoute aux lignes du tableau.</p>
+      <div id="modLines">${mods.map(modLine).join("")}</div>
+      <div><button type="button" class="btn add small" id="addMod">+ Ajouter un module</button></div></div>
+    ${!isNew ? `<p class="ro-note">Utilisé par ${used.length} profil${used.length>1?"s":""}.</p>` : ""}
+    ${formActions(!isNew)}</div>`;
+  $("addMod").onclick = () => $("modLines").insertAdjacentHTML("beforeend", modLine({code:"", titre:""}));
+  $("modLines").addEventListener("click", e => { if(e.target.closest("[data-rm]")) e.target.closest(".modline").remove(); });
+  el.querySelector(".actions").addEventListener("click", async e => {
+    const a = e.target.closest("[data-act]")?.dataset.act; if(!a) return;
+    if(a === "cancel"){ adm.sel = null; renderAdmin(true); return; }
+    if(a === "del") return askConfirm(`Supprimer le parcours « ${r.nom} » ?${used.length ? ` Il sera retiré de ${used.length} profil${used.length>1?"s":""}.` : ""}`, async () => {
+      for(const p of used){ const rp = rawP(p.id); await db.doc("profils/" + p.id).update({ parcours: (rp.parcours || []).filter(x => x.formation !== adm.sel) }); }
+      for(const rp of (RAW.profils || []).filter(x => (x.complements || []).some(c => c.formation === adm.sel))){ await db.doc("profils/" + rp.id).update({ complements: rp.complements.filter(c => c.formation !== adm.sel) }); }
+      await db.doc("formations/" + adm.sel).delete(); adm.sel = null; toast("Parcours supprimé");
+    });
+    const nom = $("fNom").value.trim(); if(!nom) return setMsg("Le nom du parcours est obligatoire.");
+    const modules = [...document.querySelectorAll("#modLines .modline")].map(l => { const m = { code: l.querySelector(".mc").value.trim(), titre: l.querySelector(".mtit").value.trim() }; const u = l.querySelector(".mlien").value.trim(); if(u) m.lien = u; return m; }).filter(m => m.code);
+    if(!modules.length) return setMsg("Ajoutez au moins un module.");
+    if(new Set(modules.map(m => m.code)).size !== modules.length) return setMsg("Deux modules ont le même code.");
+    const id = isNew ? d.id + "-" + slug(nom) : adm.sel;
+    if(isNew && rawF(id)) return setMsg("Un parcours porte déjà ce nom.");
+    const data = { domaine: d.id, nom, intitule: $("fInt").value.trim(), duree: $("fDuree").value.trim(), certification: $("fCertF").value.trim(), modules,
+      ordre: Number($("fOrdre").value) || (isNew ? d.formations.length + 1 : (r.ordre ?? 99)) };
+    await write(async () => {
+      await db.doc("formations/" + id).set(data);
+      const rd = rawD(d.id), om = (rd && rd.ordreModules) || [], add = modules.map(m => m.code).filter(c => !om.includes(c));
+      if(add.length) await db.doc("domaines/" + d.id).update({ ordreModules: om.concat(add) });
+    }, "Parcours enregistré", () => { adm.sel = id; });
+  });
+}
+const modLine = m => `<div class="modline"><input class="inp mc" value="${esc(m.code)}" placeholder="Code" aria-label="Code du module"><input class="inp mtit" value="${esc(m.titre)}" placeholder="Titre du module" aria-label="Titre du module"><button type="button" class="btn small danger" data-rm="1">Retirer</button><input class="inp mlien" value="${esc(m.lien || "")}" placeholder="Lien vers la fiche (https://…)" aria-label="Lien vers la fiche du module"></div>`;
+
+/* ----- Formulaire profil ----- */
+function formProfil(el, d){
+  const isNew = adm.sel === "new";
+  const r = isNew ? { categorie: "", nom: "", besoin: "", reponses: {}, parcours: [] } : (rawP(adm.sel) || {});
+  const cats = [...new Set(d.profils.map(p => p.categorie))];
+  const pc = Array.isArray(r.parcours) ? r.parcours : [];
+  el.innerHTML = `<div class="form"><h2>${isNew ? "Nouveau profil" : "Profil : " + esc(r.nom)}</h2>
+    <div class="fgrid">
+      ${field("Nom du profil *", inp("fNom", r.nom || "", "ex. Fleuriste"))}
+      ${field("Catégorie *", inp("fCat", r.categorie || "", "Choisir ou saisir une catégorie").replace("<input", '<input list="catList"') + `<datalist id="catList">${cats.map(c => `<option value="${esc(c)}">`).join("")}</datalist>`)}
+      ${field("Besoin", ta("fBesoin", r.besoin || ""), true)}
+      ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
+    </div>
+    <div class="fsec"><h3>Arguments communs à tous ses parcours</h3>
+      <p class="fhint">Utilisés dans chaque parcours qui contient le module, sauf si un argument propre est saisi plus bas. Laissez vide si l'argument change selon le parcours.</p>
+      ${d.ordreModules.map(m => `<div class="modrow"><span class="code">${esc(m)}</span><textarea class="inp com" data-m="${esc(m)}" aria-label="Argument commun ${esc(m)}">${esc((r.reponses||{})[m] || "")}</textarea></div>`).join("")}
+    </div>
+    <div class="fsec"><h3>Parcours possibles</h3>
+      <p class="fhint">Du plus adapté au moins adapté. Pour chaque parcours : pourquoi le proposer, et l'argument des modules propres.</p>
+      <div id="pcRows">${pc.map((x,i) => pcRow(d, x, i)).join("")}</div>
+      <div><button type="button" class="btn add small" id="addPc">+ Ajouter un parcours</button></div>
+    </div>
+    <div class="fsec"><h3>Formations complémentaires</h3>
+      <p class="fhint">Formations d'autres domaines à suggérer en plus, avec une phrase pour dire pourquoi.</p>
+      <div id="cpRows">${(Array.isArray(r.complements) ? r.complements : []).map(c => cpRow(d, c)).join("")}</div>
+      <div><button type="button" class="btn add small" id="addCp">+ Ajouter une formation complémentaire</button></div>
+    </div>
+    ${formActions(!isNew)}</div>`;
+  $("addCp").onclick = () => $("cpRows").insertAdjacentHTML("beforeend", cpRow(d, { formation: "", pourquoi: "" }));
+  $("cpRows").addEventListener("click", e => { if(e.target.closest("[data-rm]")) e.target.closest(".cprow").remove(); });
+  const renum = () => [...document.querySelectorAll("#pcRows .pcrow")].forEach((row, i) => row.querySelector(".rank").textContent = "#" + (i + 1));
+  $("addPc").onclick = () => { const free = d.formations.find(f => ![...document.querySelectorAll("#pcRows select")].some(s => s.value === f.id)); $("pcRows").insertAdjacentHTML("beforeend", pcRow(d, { formation: free ? free.id : (d.formations[0]||{}).id, pourquoi: "", reponses: {} }, 0)); renum(); };
+  $("pcRows").addEventListener("click", e => {
+    const row = e.target.closest(".pcrow"); if(!row) return;
+    if(e.target.closest("[data-rm]")){ row.remove(); renum(); }
+    if(e.target.closest("[data-up]") && row.previousElementSibling){ row.parentNode.insertBefore(row, row.previousElementSibling); renum(); }
+    if(e.target.closest("[data-down]") && row.nextElementSibling){ row.parentNode.insertBefore(row.nextElementSibling, row); renum(); }
+  });
+  $("pcRows").addEventListener("change", e => {
+    if(!e.target.matches("select.pcf")) return;
+    const row = e.target.closest(".pcrow"), kept = readRow(row);
+    row.outerHTML = pcRow(d, { formation: e.target.value, pourquoi: kept.pourquoi, reponses: kept.reponses }, 0); renum();
+  });
+  el.querySelector(".actions").addEventListener("click", async e => {
+    const a = e.target.closest("[data-act]")?.dataset.act; if(!a) return;
+    if(a === "cancel"){ adm.sel = null; renderAdmin(true); return; }
+    if(a === "del") return askConfirm(`Supprimer le profil « ${r.nom} » ?`, async () => { await db.doc("profils/" + adm.sel).delete(); adm.sel = null; toast("Profil supprimé"); });
+    const nom = $("fNom").value.trim(), categorie = $("fCat").value.trim();
+    if(!nom || !categorie) return setMsg("Le nom et la catégorie sont obligatoires.");
+    const reponses = {};
+    document.querySelectorAll("textarea.com").forEach(t => { if(t.value.trim()) reponses[t.dataset.m] = t.value.trim(); });
+    const parcours = [...document.querySelectorAll("#pcRows .pcrow")].map(readRow);
+    if(!parcours.length) return setMsg("Ajoutez au moins un parcours.");
+    if(new Set(parcours.map(x => x.formation)).size !== parcours.length) return setMsg("Le même parcours apparaît deux fois.");
+    const manque = [];
+    parcours.forEach(x => { const f = d.formations.find(f => f.id === x.formation); if(!f) return;
+      if(!x.pourquoi) manque.push(`« Pourquoi » pour ${f.nom}`);
+      Object.keys(f.modules).forEach(m => { if(!x.reponses[m] && !reponses[m]) manque.push(`${m} pour ${f.nom}`); }); });
+    if(manque.length) return setMsg("À compléter : " + manque.slice(0, 4).join(" ; ") + (manque.length > 4 ? "…" : ""));
+    const complements = [...document.querySelectorAll("#cpRows .cprow")].map(row => ({ formation: row.querySelector("select").value, pourquoi: row.querySelector("input").value.trim() })).filter(c => c.formation);
+    const id = isNew ? d.id + "-" + slug(nom) : adm.sel;
+    if(isNew && rawP(id)) return setMsg("Un profil porte déjà ce nom dans ce domaine.");
+    const maxOrdre = Math.max(0, ...d.profils.map(p => (rawP(p.id) || {}).ordre || 0));
+    const data = { domaine: d.id, categorie, nom, besoin: $("fBesoin").value.trim(), reponses, parcours, complements,
+      ordre: Number($("fOrdre").value) || (isNew ? maxOrdre + 1 : (r.ordre ?? 99)) };
+    await write(() => db.doc("profils/" + id).set(data), "Profil enregistré", () => { adm.sel = id; });
+  });
+}
+function pcRow(d, x, i){
+  const f = d.formations.find(f => f.id === x.formation);
+  return `<div class="pcrow"><div class="pchead"><span class="rank">#${i+1}</span>
+      <select class="pcf" aria-label="Parcours">${d.formations.map(o => `<option value="${esc(o.id)}"${o.id===x.formation?" selected":""}>${esc(o.nom)}</option>`).join("")}</select>
+      <button type="button" class="btn small" data-up="1">Monter</button><button type="button" class="btn small" data-down="1">Descendre</button><button type="button" class="btn small danger" data-rm="1">Retirer</button></div>
+    <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Pourquoi</span><input class="inp pcw" value="${esc(x.pourquoi || "")}" placeholder="ex. Si sa clientèle est locale."></div>
+    ${f ? Object.keys(f.modules).map(m => `<div class="modrow"><span class="code">${esc(m)}</span><textarea class="inp pcm" data-m="${esc(m)}" placeholder="Laisser vide pour utiliser l'argument commun">${esc((x.reponses||{})[m] || "")}</textarea></div>`).join("") : ""}
+  </div>`;
+}
+function cpRow(d, c){
+  const autres = DOMAINES.filter(x => x.id !== d.id);
+  return `<div class="cprow"><select aria-label="Formation complémentaire"><option value="">Choisir une formation…</option>${autres.map(x => `<optgroup label="${esc(x.nom)}">${x.formations.map(f => `<option value="${esc(f.id)}"${f.id===c.formation?" selected":""}>${esc(f.nom)}</option>`).join("")}</optgroup>`).join("")}</select><input class="inp" value="${esc(c.pourquoi || "")}" placeholder="Pourquoi la proposer" aria-label="Pourquoi la proposer"><button type="button" class="btn small danger" data-rm="1">Retirer</button></div>`;
+}
+function readRow(row){
+  const reponses = {};
+  row.querySelectorAll("textarea.pcm").forEach(t => { if(t.value.trim()) reponses[t.dataset.m] = t.value.trim(); });
+  return { formation: row.querySelector("select.pcf").value, pourquoi: row.querySelector(".pcw").value.trim(), reponses };
+}
+
+function askConfirm(text, run){
+  $("fconfirm").innerHTML = `<div class="confirm"><span>${esc(text)}</span><button type="button" class="btn danger" id="cYes">Confirmer la suppression</button><button type="button" class="btn" id="cNo">Annuler</button></div>`;
+  $("cNo").onclick = () => $("fconfirm").innerHTML = "";
+  $("cYes").onclick = () => write(run, null, () => {}).then(() => renderAdmin(true));
+}
+async function write(fn, okText, after){
+  const btns = document.querySelectorAll("#admForm button"); btns.forEach(b => b.disabled = true);
+  try{ await fn(); if(after) after(); if(okText){ toast(okText); renderAdmin(true); setMsg(okText, true); } }
+  catch(err){
+    btns.forEach(b => b.disabled = false);
+    const c = err && err.code;
+    setMsg(c === "invalid_argument" ? "Enregistrement refusé : vous n'avez pas les droits de modification." :
+           c === "quota_exceeded" ? "La base est pleine : supprimez des éléments inutiles." :
+           "Enregistrement impossible pour le moment. Réessayez dans un instant.");
+  }
+}
+
+/* ---------- Démarrage ---------- */
+function onData(){
+  if(!ready()) return;
+  buildModel();
+  if(state.view === "consult") renderConsult(); else { renderAdmin(false); }
+}
+(async () => {
+  if(window.CONTENU){ /* version autonome (GitHub) : contenu lu dans contenu.js, pas de back office */
+    db = "statique"; RAW.domaines = CONTENU.domaines || []; RAW.formations = CONTENU.formations || []; RAW.profils = CONTENU.profils || []; onData(); return;
+  }
+  try{ db = (typeof claude !== "undefined" && claude.use) ? await claude.use("db") : null; }catch(e){ db = null; }
+  try{ user = (typeof claude !== "undefined" && claude.use) ? await claude.use("user") : null; }catch(e){ user = null; }
+  if(!db){ renderDetail(); return; }
+  ["domaines","formations","profils"].forEach(c => {
+    db.collection(c).limit(1000).onSnapshot(snap => {
+      RAW[c] = snap.docs.filter(x => x.exists).map(x => Object.assign({ id: x.id }, x.data()));
+      onData();
+    }, () => { if(!RAW[c]) RAW[c] = []; onData(); });
+  });
+  canAdmin = user ? await user.canEdit() : false;
+  $("views").hidden = !canAdmin;
+})();
+renderDetail();
 </script>
 
 </body>
