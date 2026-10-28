@@ -31,6 +31,7 @@
   --green:#A6DB82; --green-mid:#7CC04B; --green-soft:#1E3318; --absent:#1A242E; --orange:#F59E5B; --orange-soft:#3A2414; color-scheme:dark}
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:14px;line-height:1.45;margin:0}
 .wrap{max-width:1680px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 24px}
@@ -689,6 +690,7 @@ function onData(){
 }
 (async () => {
   if(window.CONTENU){ /* version autonome (GitHub) : contenu lu dans contenu.js, pas de back office */
+    canAdmin = false; $("views").hidden = true; $("admin").hidden = true;
     db = "statique"; RAW.domaines = CONTENU.domaines || []; RAW.formations = CONTENU.formations || []; RAW.profils = CONTENU.profils || []; onData(); return;
   }
   try{ db = (typeof claude !== "undefined" && claude.use) ? await claude.use("db") : null; }catch(e){ db = null; }
