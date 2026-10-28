@@ -214,7 +214,7 @@ function renderList(){
   });
   const sel = d.profils[state.p];
   document.getElementById("groups").innerHTML = cats.length ? cats.map(c => {
-    const open = q || ouvertes.has(d.id + "|" + c.nom) || (sel && sel.categorie === c.nom);
+    const open = q || ouvertes.has(d.id + "|" + c.nom); /* fermées par défaut ; ouvertes pendant une recherche */
     return `<details class="group" data-cat="${esc(c.nom)}"${open?" open":""}><summary><span class="sum">${esc(c.nom)}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="profiles">${c.items.map(({p,i}) => {
       const n = Object.keys(p.parcours).length;
       return `<button type="button" class="prof" data-p="${i}" aria-pressed="${state.p===i}"><span>${esc(p.nom)}</span><span class="count" title="${n} parcours possible${n>1?"s":""}">${n}</span></button>`;
