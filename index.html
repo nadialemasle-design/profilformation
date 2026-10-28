@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Assistant d'entretien IA métier</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Mise en page compacte, pensée pour tenir sur un écran : en-tête sur une ligne ; profils à gauche ; parcours en colonnes à droite.
+   Repères : bleu CCI = structure et navigation ; vert clair = ce qui différencie (pourquoi ce parcours, module propre au parcours, le plus adapté). */
+:root{
+  --bg:#F5F8FB; --surface:#FFFFFF; --sunk:#EDF2F7; --line:#D3DCE6;
+  --fg:#14212B; --muted:#516170;
+  --blue:#00519E; --blue-ink:#00427F; --blue-soft:#E4EEF8; --on-blue:#FFFFFF;
+  --green:#2E6B1E; --green-mid:#7CC04B; --green-soft:#E8F5DF;
+  --absent:#F1F3F5;
+  --orange:#C2410C; --orange-soft:#FDEBDD;
+  --font-body:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1620; --surface:#15202B; --sunk:#1B2834; --line:#2C3B4A; --fg:#E3EAF1; --muted:#9DADBD;
+  --blue:#2F7BD0; --blue-ink:#8DBDF0; --blue-soft:#17304A; --on-blue:#FFFFFF;
+  --green:#A6DB82; --green-mid:#7CC04B; --green-soft:#1E3318; --absent:#1A242E; --orange:#F59E5B; --orange-soft:#3A2414; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1620; --surface:#15202B; --sunk:#1B2834; --line:#2C3B4A; --fg:#E3EAF1; --muted:#9DADBD;
+  --blue:#2F7BD0; --blue-ink:#8DBDF0; --blue-soft:#17304A; --on-blue:#FFFFFF;
+  --green:#A6DB82; --green-mid:#7CC04B; --green-soft:#1E3318; --absent:#1A242E; --orange:#F59E5B; --orange-soft:#3A2414; color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:14px;line-height:1.45;margin:0}
+.wrap{max-width:1680px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 24px}
+header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px;padding-bottom:12px;margin-bottom:12px;border-bottom:3px solid var(--blue)}
+.brand{display:flex;flex-direction:column;min-width:0}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-ink)}
+h1{font-size:22px;line-height:1.2;margin:0;font-weight:700;text-wrap:balance}
+.domains{display:flex;flex-wrap:wrap;gap:6px}
+.dom{font:inherit;font-weight:600;font-size:14px;border:1px solid var(--blue);background:var(--surface);color:var(--blue-ink);padding:7px 14px;border-radius:999px;cursor:pointer;min-height:38px}
+.dom:hover{background:var(--blue-soft)}
+.dom[aria-pressed="true"]{background:var(--blue);color:var(--on-blue)}
+
+.grid{display:grid;grid-template-columns:250px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.side{display:flex;flex-direction:column;gap:12px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);max-height:calc(100vh - 16px);overflow:auto;padding-right:4px}
+@media (max-width:900px){.side{position:static;max-height:none;overflow:visible}}
+.searchlab{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+.search{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.group-old h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-ink);margin:0 0 5px;font-weight:700;padding-left:8px;border-left:3px solid var(--blue)}
+.profiles{display:flex;flex-direction:column;gap:4px}
+.prof{font:inherit;font-size:13.5px;text-align:left;width:100%;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:7px;padding:7px 10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:40px}
+.prof:hover{border-color:var(--blue)}
+.prof[aria-pressed="true"]{border-color:var(--blue);background:var(--blue);color:var(--on-blue)}
+.prof span{font-weight:500;line-height:1.3}
+.count{flex:none;font-family:var(--font-mono);font-size:11.5px;font-weight:500;color:var(--green);background:var(--green-soft);border-radius:999px;padding:0 7px;font-variant-numeric:tabular-nums}
+.prof[aria-pressed="true"] .count{background:var(--green-mid);color:#10260A}
+button:focus-visible,.search:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.none{color:var(--muted);font-size:14px}
+
+.result{display:flex;flex-direction:column;gap:10px;min-width:0}
+.head{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:var(--r);padding:8px 16px;display:flex;flex-wrap:wrap;gap:8px 28px;align-items:flex-start}
+.head .who{flex:1 1 300px;min-width:0}
+.head .lab{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-ink);font-weight:700}
+.head .name{font-size:18px;font-weight:700;line-height:1.25;margin:1px 0 2px;text-wrap:balance}
+.facts{flex:1 1 300px;display:flex;flex-direction:column;gap:4px;margin:0;min-width:0;font-size:13.5px}
+.facts div{display:grid;grid-template-columns:128px minmax(0,1fr);gap:8px}
+@media (max-width:480px){.facts div{grid-template-columns:minmax(0,1fr);gap:0}}
+.facts dt{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue-ink);padding-top:2px}
+.facts dd{margin:0}
+.note{font-size:12.5px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px;border:1px solid var(--line)}
+.legend .lg-why{background:var(--green-soft);border-color:var(--green-mid)}
+.legend .lg-spec{background:var(--green-soft);border-left:3px solid var(--green-mid)}
+.legend .lg-com{background:var(--surface)}
+.legend .lg-abs{background:var(--absent)}
+
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table.cmp{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed}
+.cmp col.rowh{width:92px}
+.cmp th,.cmp td{text-align:left;vertical-align:top;padding:7px 10px;border-bottom:1px solid var(--line);font-size:13.5px}
+.cmp tr:last-child th,.cmp tr:last-child td{border-bottom:none}
+.cmp td,.cmp thead th + th{border-left:1px solid var(--line)}
+.cmp thead th{background:var(--blue);color:var(--on-blue);vertical-align:top}
+.cmp thead th:first-child{background:var(--blue-ink)}
+.cmp thead .pname{font-size:14.5px;font-weight:700;line-height:1.25;display:block}
+.cmp thead .pint{font-size:11.5px;opacity:.85;font-weight:400;display:block;margin-top:2px;line-height:1.35}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.pill{font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:999px;background:rgba(255,255,255,.18);color:var(--on-blue)}
+.pill.best{background:var(--green-mid);color:#10260A}
+.cmp tbody th{font-weight:600;font-size:12px;color:var(--blue-ink);background:var(--blue-soft);position:sticky;left:0;z-index:1}
+.code{font-family:var(--font-mono);font-size:11.5px;color:var(--on-blue);background:var(--blue);border-radius:5px;padding:1px 6px;white-space:nowrap}
+.mt{display:block;font-size:11.5px;color:var(--muted);margin-bottom:2px;line-height:1.3}
+.cmp td.why{background:var(--green-soft);font-weight:600;color:var(--fg)}
+.cmp td.spec{background:var(--green-soft);box-shadow:inset 3px 0 0 var(--green-mid)}
+.cmp td.spec .mt{color:var(--green)}
+.cmp td.abs{background:var(--absent);color:var(--muted);font-size:12px;padding-block:4px;vertical-align:middle}
+.cmp td.all{text-align:center}
+.cmp td.all .mt{display:block}
+.cmp tr.whyrow th{background:var(--green-soft);color:var(--green)}
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;vertical-align:-5px;margin-right:6px}
+.dom .ic{width:22px;height:22px;vertical-align:-6px;margin-right:8px}
+.pill .ic{width:15px;height:15px;vertical-align:-3px;margin-right:4px}
+.mt .ic{width:18px;height:18px;vertical-align:-5px;margin-right:5px}
+.need{display:flex;gap:4px;align-items:flex-start}.need .ic{width:20px;height:20px;margin-top:0;color:var(--blue-ink)}
+.facts dt{white-space:nowrap}.facts dt .ic{width:18px;height:18px;vertical-align:-5px}
+.rh{display:flex;flex-direction:column;gap:2px;align-items:flex-start}.rh .ic{width:26px;height:26px}
+.cmp td.why::before{content:"";}
+.cmp td.abs .ic{width:18px;height:18px;vertical-align:-5px}
+
+.lg{display:inline-flex;align-items:center;font-size:12.5px}
+.lg.g .ic{color:var(--green)}.lg.b .ic{color:var(--blue-ink)}
+.lg .ic{width:24px;height:24px;padding:2px;border-radius:5px}
+.lg.g .ic{background:var(--green-soft)}.lg.b .ic{background:var(--blue-soft)}
+/* Repère orange : chaque icône et le titre qui l'accompagne. */
+.head .lab,.head .lab .ic,.need .ic,.nlab,.facts dt,.facts dt .ic{color:var(--orange)}
+.nlab{font-weight:700;font-size:12.5px}
+.cmp tr.whyrow th,.cmp tr.whyrow th .ic{color:var(--orange)}
+.mt .ic,.cmp td.abs .ic{color:var(--orange)}
+.lg,.lg.g .ic,.lg.b .ic,.lg .ic{color:var(--orange)}
+.lg.g .ic,.lg.b .ic,.lg .ic{background:var(--orange-soft)}
+.lg{font-weight:600}
+.cmp thead th.cnt{text-align:center;vertical-align:middle}
+.cnt .num{display:block;font-size:34px;font-weight:700;line-height:1;color:var(--green-mid);font-variant-numeric:tabular-nums}
+.cnt .cl{display:block;font-size:13px;font-weight:700;line-height:1.2;margin-top:4px}
+details.group{border-radius:8px}
+details.group summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:var(--blue-soft);color:var(--blue-ink);font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;min-height:40px;border-left:4px solid var(--blue)}
+details.group summary::-webkit-details-marker{display:none}
+details.group summary:hover{background:var(--line)}
+details.group summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+details.group .sum{flex:1;min-width:0;line-height:1.3}
+.ccount{flex:none;font-family:var(--font-mono);font-size:11.5px;letter-spacing:0;background:var(--surface);color:var(--blue-ink);border-radius:999px;padding:0 7px}
+.chev{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
+details.group[open] .chev{transform:rotate(180deg)}
+details.group .profiles{padding:6px 0 4px 6px}
+/* Modules communs : même vert que les modules propres. */
+.cmp td.all{background:var(--green-soft);box-shadow:inset 3px 0 0 var(--green-mid)}
+.cmp td.all .mt{color:var(--green)}
+/* Toute case de module présent : même vert ; seules les cases « Non inclus » restent grises. */
+.cmp tbody td:not(.abs):not(.why){background:var(--green-soft);box-shadow:inset 3px 0 0 var(--green-mid)}
+.cmp tbody td:not(.abs):not(.why) .mt{color:var(--green)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="eyebrow">Aide à l'entretien prospect</div>
+      <h1>Quel profil, quelles formations ?</h1>
+    </div>
+    <nav class="domains" id="domains" aria-label="Domaines de formation"></nav>
+  </header>
+  <div class="grid">
+    <div class="side">
+      <label class="searchlab" for="q">Rechercher un métier ou un besoin
+        <input class="search" id="q" type="search" placeholder="ex. auto-entrepreneur, restaurateur, recrutement">
+      </label>
+      <div id="groups" class="side" style="position:static;max-height:none;overflow:visible;padding:0"></div>
+    </div>
+    <section class="result" id="detail" aria-live="polite"></section>
+  </div>
+</div>
+
+<script src="contenu.js"></script>
+<script>
+/* =====================================================================
+   APPLICATION
+   ===================================================================== */
+/* Icônes au trait (SVG), couleur héritée du texte. */
+const ICONS = {
+  why: '<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/>',
+  besoin: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  profil: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  euro: '<path d="M18 7a7 7 0 1 0 0 10"/><path d="M4 10h9M4 14h9"/>',
+  certif: '<circle cx="12" cy="8" r="6"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5"/>',
+  star: '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/>',
+  commun: '<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
+  plus: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+  moins: '<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
+  duree: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  modules: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+  ia: '<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>',
+  rs: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>'
+};
+const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+let state = { dom: "rs", p: 5, q: "" };
+try{ Object.assign(state, JSON.parse(localStorage.getItem("assistant-profils-v3") || "{}")); }catch(e){}
+const save = () => { try{ localStorage.setItem("assistant-profils-v3", JSON.stringify({dom:state.dom,p:state.p})); }catch(e){} };
+const dom = () => DOMAINES.find(d => d.id === state.dom) || DOMAINES[0];
+
+function renderDomains(){
+  document.getElementById("domains").innerHTML = DOMAINES.map(d =>
+    `<button type="button" class="dom" data-dom="${d.id}" aria-pressed="${state.dom===d.id}">${ic(d.id)}${esc(d.nom)}</button>`).join("");
+}
+
+/* Catégories dépliables : celle du profil choisi est ouverte ; pendant une recherche, toutes celles qui ont un résultat. */
+const ouvertes = new Set();
+function renderList(){
+  const d = dom(), q = norm(state.q.trim());
+  const cats = [];
+  d.profils.forEach((p,i) => {
+    const hay = norm(p.nom + " " + p.besoin + " " + p.categorie + " " + Object.keys(p.parcours).map(id => (d.formations.find(f => f.id === id)||{}).nom).join(" "));
+    if(q && !hay.includes(q)) return;
+    let c = cats.find(x => x.nom === p.categorie); if(!c){ c = {nom:p.categorie, items:[]}; cats.push(c); }
+    c.items.push({p,i});
+  });
+  const sel = d.profils[state.p];
+  document.getElementById("groups").innerHTML = cats.length ? cats.map(c => {
+    const open = q || ouvertes.has(d.id + "|" + c.nom) || (sel && sel.categorie === c.nom);
+    return `<details class="group" data-cat="${esc(c.nom)}"${open?" open":""}><summary><span class="sum">${esc(c.nom)}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="profiles">${c.items.map(({p,i}) => {
+      const n = Object.keys(p.parcours).length;
+      return `<button type="button" class="prof" data-p="${i}" aria-pressed="${state.p===i}"><span>${esc(p.nom)}</span><span class="count" title="${n} parcours possible${n>1?"s":""}">${n}</span></button>`;
+    }).join("")}</div></details>`;
+  }).join("")
+    : `<p class="none">Aucun profil ne correspond à « ${esc(state.q)} ».</p>`;
+}
+
+function renderDetail(){
+  const d = dom(), p = d.profils[state.p], el = document.getElementById("detail");
+  if(!p){ el.innerHTML = `<div class="head"><p class="none">Choisissez un profil dans la liste.</p></div>`; return; }
+  const cols = Object.keys(p.parcours).map(id => d.formations.find(f => f.id === id)).filter(Boolean); /* ordre du profil : le plus adapté en premier */
+  const rows = d.ordreModules.filter(m => cols.some(f => f.modules[m]));
+  const commun = m => cols.every(f => f.modules[m]);
+  const cell = (f, m) => {
+    if(!f.modules[m]) return `<td class="abs">${ic("moins")}Non inclus</td>`;
+    const pc = p.parcours[f.id], txt = (pc.reponses && pc.reponses[m]) || (p.reponses && p.reponses[m]) || "";
+    const spec = cols.length > 1 && !commun(m);
+    return `<td${spec?' class="spec"':""}><span class="mt">${spec?ic("plus"):""}${esc(f.modules[m])}</span>${esc(txt)}</td>`;
+  };
+  el.innerHTML = `
+    <div class="head">
+      <div class="who"><div class="lab">${ic("profil")}Profil</div><div class="name">${esc(p.nom)}</div><div class="need">${ic("besoin")}<span><span class="nlab">Besoin :</span> ${esc(p.besoin)}</span></div></div>
+      <dl class="facts">
+        ${d.financement?`<div><dt>${ic("euro")}Financement</dt><dd>${esc(d.financement)}</dd></div>`:""}
+        ${d.certification?`<div><dt>${ic("certif")}Certification</dt><dd>${esc(d.certification)}</dd></div>`:""}
+      </dl>
+    </div>
+    
+    <div class="tablebox">
+      <table class="cmp" style="min-width:${92 + cols.length*200}px">
+        <colgroup><col class="rowh">${cols.map(() => `<col>`).join("")}</colgroup>
+        <thead><tr><th scope="col" class="cnt"><span class="num">${cols.length}</span><span class="cl">parcours possible${cols.length>1?"s":""}</span></th>${cols.map((f,i) =>
+          `<th scope="col" title="${esc(f.intitule)}"><span class="pname">${esc(f.nom)}</span>${cols.length<4?`<span class="pint">${esc(f.intitule)}</span>`:""}<span class="tags">${i===0 && cols.length>1?`<span class="pill best">${ic("star")}Le plus adapté</span>`:""}<span class="pill">${ic("duree")}${esc(f.duree)}</span><span class="pill">${ic("modules")}${Object.keys(f.modules).length} modules</span></span></th>`).join("")}</tr></thead>
+        <tbody>
+          <tr class="whyrow"><th scope="row"><span class="rh">${ic("why")}Pourquoi</span></th>${cols.map(f => `<td class="why">${esc(p.parcours[f.id].pourquoi)}</td>`).join("")}</tr>
+          ${rows.map(m => {
+            /* Module commun avec le même argument partout : une seule cellule sur toute la largeur. */
+            const txts = cols.map(f => f.modules[m] ? ((p.parcours[f.id].reponses||{})[m] || (p.reponses||{})[m] || "") : null);
+            const same = cols.length > 1 && commun(m) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]);
+            return `<tr><th scope="row"><span class="code">${esc(m)}</span></th>${same
+              ? `<td class="all" colspan="${cols.length}"><span class="mt">${ic("commun")}${esc(cols[0].modules[m])} · commun à tous les parcours</span>${esc(txts[0])}</td>`
+              : cols.map(f => cell(f, m)).join("")}</tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+function renderAll(){ renderDomains(); renderList(); renderDetail(); }
+
+document.getElementById("domains").addEventListener("click", e => {
+  const b = e.target.closest("[data-dom]"); if(!b) return;
+  state.dom = b.dataset.dom; state.p = 0; save(); renderAll();
+});
+document.getElementById("groups").addEventListener("click", e => {
+  const b = e.target.closest(".prof"); if(!b) return;
+  state.p = Number(b.dataset.p); save(); renderList(); renderDetail();
+  document.querySelector(`.prof[data-p="${state.p}"]`)?.focus();
+  if(window.matchMedia("(max-width:900px)").matches) document.getElementById("detail").scrollIntoView({behavior:"smooth", block:"start"});
+});
+document.getElementById("groups").addEventListener("toggle", e => {
+  const el = e.target; if(!el.matches || !el.matches("details.group") || state.q.trim()) return;
+  const k = dom().id + "|" + el.dataset.cat; el.open ? ouvertes.add(k) : ouvertes.delete(k);
+}, true);
+document.getElementById("q").addEventListener("input", e => { state.q = e.target.value; renderList(); });
+
+if(!DOMAINES.some(d => d.id === state.dom)) state.dom = DOMAINES[0].id;
+if(!dom().profils[state.p]) state.p = 0;
+renderAll();
+</script>
+
+</body>
+</html>
