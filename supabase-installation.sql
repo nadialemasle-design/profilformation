@@ -1,7 +1,7 @@
 -- =====================================================================
 -- Assistant d'entretien prospect — base Supabase
 -- À coller dans Supabase › SQL Editor › New query, puis « Run ».
--- Le script peut être relancé sans risque : il remet le contenu à jour.
+-- À lancer UNE SEULE FOIS : le relancer remplacerait vos modifications par ce contenu de départ.
 -- =====================================================================
 
 -- 1. Tables (un document JSON par ligne, comme dans la version Claude)

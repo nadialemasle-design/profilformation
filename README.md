@@ -34,9 +34,9 @@ Le contenu est lu dans une base Supabase. Sur le site, le bouton **Connexion** (
 
 ## Modifier le contenu
 
-La version Claude de l'application a un onglet **Gestion** avec des formulaires : c'est le plus simple. Il suffit ensuite de demander à Claude de recopier le contenu ici.
+Le plus simple : se connecter sur le site et utiliser l'onglet **Gestion** (formulaires). Inutile de toucher aux fichiers.
 
-Pour modifier directement sur GitHub : ouvrir `contenu.js`, cliquer sur le crayon (**Edit this file**), modifier, puis **Commit changes**.
+Le format ci-dessous sert de référence : c'est celui des documents de la base, et celui de la copie de secours `contenu.js`.
 
 `contenu.js` contient trois listes : `domaines`, `formations` et `profils`. Chaque élément a un `id` unique, utilisé pour les relier entre eux.
 
