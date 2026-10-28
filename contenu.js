@@ -159,24 +159,26 @@ const DOMAINES = [
           "ia-form": {
             "pourquoi": "Le plus adapté : conception et animation de formations.",
             "reponses": {
-              "M2": "Déroulés, supports, études de cas et quiz conçus plus vite ; la scénarisation reste la sienne. Paramétrer un agent personnalisé de conception pédagogique à son image."
+              "M2": "Panel d'outils IA pour créer supports de cours, études de cas, quiz et évaluations. Paramétrer des agents personnalisés, par exemple : un assistant de conception de séquences à son image et un générateur de quiz.",
+              "M3": "Illustrations et capsules audio pour ses supports."
             }
           }
         }
       },
       {
         "categorie": "Formation et enseignement",
-        "nom": "Formateur(trice) salarié(e) en organisme ou CFA",
+        "nom": "Formateur(trice) salarié(e) en organisme de formation",
         "besoin": "Intégrer l'IA dans ses séquences et savoir répondre aux stagiaires qui l'utilisent.",
         "reponses": {
           "M1": "Comprendre le fonctionnement de l'IA pour en parler aux apprenants ; bases pratiques ; éthique, triche et sécurité.",
-          "M3": "Ressources visuelles et audio pour varier les modalités."
+          "M3": "Illustrations et capsules audio pour ses supports."
         },
         "parcours": {
           "ia-form": {
             "pourquoi": "Pratiques pédagogiques avec l'IA.",
             "reponses": {
-              "M2": "Pratiques pédagogiques avec l'IA, accompagnement des stagiaires, vérification des contenus. Paramétrer un agent personnalisé pour préparer ses séquences."
+              "M2": "Panel d'outils IA pour concevoir supports, exercices et évaluations, et accompagner des stagiaires qui utilisent l'IA. Paramétrer des agents personnalisés, par exemple : un assistant de préparation de séances et un correcteur avec grille d'évaluation.",
+              "M3": "Illustrations et capsules audio pour ses supports."
             }
           }
         }
@@ -187,30 +189,14 @@ const DOMAINES = [
         "besoin": "Préparer cours, exercices et évaluations plus rapidement.",
         "reponses": {
           "M1": "Comment fonctionne l'IA, en termes simples ; bases pratiques ; enjeux éthiques, évaluation et protection des données des élèves.",
-          "M3": "Supports illustrés et contenus audio pour la classe."
+          "M3": "Illustrations et capsules audio pour ses supports."
         },
         "parcours": {
           "ia-form": {
             "pourquoi": "Préparation de cours et d'évaluations.",
             "reponses": {
-              "M2": "Production d'exercices, de corrigés et d'évaluations adaptés au niveau. Paramétrer un agent personnalisé qui génère exercices et corrigés à son niveau."
-            }
-          }
-        }
-      },
-      {
-        "categorie": "Formation et enseignement",
-        "nom": "Responsable pédagogique, coordinateur(trice)",
-        "besoin": "Cadrer l'usage de l'IA dans l'équipe et garantir la qualité des contenus.",
-        "reponses": {
-          "M1": "Fonctionnement de l'IA et bases pratiques communes à l'équipe ; enjeux éthiques et de sécurité pour fixer un cadre d'usage.",
-          "M3": "Harmonisation visuelle des supports de l'organisme."
-        },
-        "parcours": {
-          "ia-form": {
-            "pourquoi": "Cadre d'usage et qualité pédagogique.",
-            "reponses": {
-              "M2": "Méthode de vérification et règles d'usage à diffuser aux formateurs. Paramétrer un agent personnalisé partagé par l'équipe, aux règles de l'organisme."
+              "M2": "Panel d'outils IA pour préparer cours, exercices et évaluations adaptés au niveau. Paramétrer des agents personnalisés, par exemple : un générateur d'exercices différenciés et un assistant de correction avec barème.",
+              "M3": "Illustrations et capsules audio pour ses supports."
             }
           }
         }
@@ -221,13 +207,14 @@ const DOMAINES = [
         "besoin": "Former ses collègues ou accompagner des alternants avec des supports efficaces.",
         "reponses": {
           "M1": "Comprendre le fonctionnement de l'IA ; bases pratiques ; éthique et confidentialité des informations de l'entreprise.",
-          "M3": "Production multimédia autonome pour ses modules."
+          "M3": "Illustrations et capsules audio pour ses supports."
         },
         "parcours": {
           "ia-form": {
             "pourquoi": "Concevoir des formations internes.",
             "reponses": {
-              "M2": "Méthodes pédagogiques concrètes travaillées sur ses propres supports. Paramétrer un agent personnalisé à partir des documents de l'entreprise."
+              "M2": "Panel d'outils IA pour créer supports et évaluations à partir des documents de l'entreprise. Paramétrer des agents personnalisés, par exemple : un assistant de formation interne et un générateur de quiz de validation des acquis.",
+              "M3": "Illustrations et capsules audio pour ses supports."
             }
           }
         }
@@ -307,7 +294,8 @@ const DOMAINES = [
           "ia-form": {
             "pourquoi": "S'il conçoit et anime aussi des formations internes.",
             "reponses": {
-              "M2": "Conception de modules internes : déroulés, supports, quiz. Paramétrer un agent personnalisé de conception de modules internes."
+              "M2": "Panel d'outils IA pour concevoir modules internes, supports et évaluations. Paramétrer des agents personnalisés, par exemple : un assistant de conception de modules et un générateur de questionnaires d'évaluation.",
+              "M3": "Illustrations et capsules audio pour ses supports."
             }
           }
         }
@@ -347,7 +335,8 @@ const DOMAINES = [
           "ia-form": {
             "pourquoi": "S'il se reconvertit vers la formation.",
             "reponses": {
-              "M2": "Méthodes pédagogiques avec l'IA pour se positionner comme formateur. Paramétrer un agent personnalisé de conception pédagogique."
+              "M2": "Panel d'outils IA pour créer supports de cours et évaluations, et se positionner comme formateur. Paramétrer des agents personnalisés, par exemple : un assistant de conception pédagogique et un générateur de quiz.",
+              "M3": "Illustrations et capsules audio pour ses supports."
             }
           }
         }
@@ -478,7 +467,8 @@ const DOMAINES = [
           "ia-form": {
             "pourquoi": "En organisme de formation : qualité et pratiques pédagogiques.",
             "reponses": {
-              "M2": "Questionnaires de satisfaction, analyses de retours, procédures et règles d'usage pour les formateurs. Paramétrer un agent personnalisé qualité, nourri des procédures de l'organisme."
+              "M2": "Panel d'outils IA pour concevoir questionnaires et évaluations, et analyser les retours. Paramétrer des agents personnalisés, par exemple : un agent qualité nourri des procédures de l'organisme et un assistant d'analyse des questionnaires de satisfaction.",
+              "M3": "Illustrations et capsules audio pour ses supports."
             }
           },
           "ia-admin": {
@@ -501,7 +491,8 @@ const DOMAINES = [
           "ia-form": {
             "pourquoi": "Ateliers collectifs et accompagnement.",
             "reponses": {
-              "M2": "Supports d'atelier, exercices et synthèses d'accompagnement ; la relation reste humaine. Paramétrer un agent personnalisé pour préparer ses ateliers."
+              "M2": "Panel d'outils IA pour créer supports d'atelier et outils d'évaluation des compétences. Paramétrer des agents personnalisés, par exemple : un assistant de préparation d'ateliers et un générateur d'exercices d'auto-positionnement.",
+              "M3": "Illustrations et capsules audio pour ses supports."
             }
           },
           "ia-rh": {
