@@ -1,0 +1,16 @@
+# Consulte la base Supabase une fois par jour pour éviter sa mise en veille (offre gratuite).
+# Lancement manuel possible : onglet Actions › « Garder la base Supabase active » › Run workflow.
+name: Garder la base Supabase active
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lire une ligne de la base
+        run: |
+          curl -fsS "https://epwghwvqdeirtnigyajj.supabase.co/rest/v1/domaines?select=id&limit=1" \
+            -H "apikey: sb_publishable_uDtOb7vtKPo5DZbT7LB9GQ_Ld7v-FCZ" > /dev/null
+          echo "Base Supabase active."

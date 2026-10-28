@@ -14,13 +14,23 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | Fichier | Rôle |
 |---|---|
 | `index.html` | L'application (mise en page, couleurs, fonctionnement). Pas besoin d'y toucher. |
-| `contenu.js` | **Tout le contenu** : domaines, formations, profils. C'est le seul fichier à modifier. |
+| `contenu.js` | Copie de secours du contenu, utilisée seulement si la base Supabase ne répond pas. |
+| `supabase-installation.sql` | Script d'installation de la base Supabase. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 
 1. Sur GitHub, ouvrir le dépôt, puis **Settings** › **Pages**.
 2. **Source** : **Deploy from a branch**, branche **main**, dossier **/ (root)**, puis **Save**.
 3. Une à deux minutes plus tard : `https://nadialemasle-design.github.io/profilformation/`
+
+## Base en ligne et gestion (Supabase)
+
+Le contenu est lu dans une base Supabase. Sur le site, le bouton **Connexion** (en haut à droite) donne accès à l'onglet **Gestion** pour ajouter, modifier ou supprimer domaines, formations et profils. Les modifications sont visibles tout de suite par tout le monde.
+
+- Seules les adresses e-mail inscrites dans la table `editeurs` de Supabase peuvent modifier. Pour ajouter une collègue : créer son compte dans Supabase (**Authentication** › **Users** › **Add user**), puis ajouter son e-mail dans la table `editeurs` (**Table Editor**).
+- Le fichier `supabase-installation.sql` crée les tables, les règles d'accès et le contenu de départ. Attention : le relancer remet le contenu de départ à la place de vos modifications.
+- Si la base ne répond pas (par exemple mise en veille), le site affiche la copie de secours `contenu.js`, en lecture seule. Pour réactiver la base : tableau de bord Supabase › projet › **Resume project**.
+- La tâche `.github/workflows/garder-supabase-actif.yml` consulte la base chaque jour pour éviter la mise en veille.
 
 ## Modifier le contenu
 

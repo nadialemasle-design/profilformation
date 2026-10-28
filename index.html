@@ -149,6 +149,9 @@ details.group .profiles{padding:6px 0 4px 6px}
 /* ---------- Vues et back office ---------- */
 .profgroups{display:flex;flex-direction:column;gap:12px}
 .adm-item,.adm-cat,.adm-list>.btn{flex-shrink:0}
+.loginbox{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:var(--r);padding:10px 14px;margin-bottom:12px}
+.loginbox .field{min-width:220px}
+.notice{margin:0 0 10px;padding:8px 12px;border-radius:8px;background:var(--orange-soft);color:var(--fg);font-size:13.5px}
 .domsel{font-weight:600;color:var(--blue-ink);border-color:var(--blue)}
 .mlink{color:inherit;text-decoration:underline;text-decoration-color:var(--green-mid);text-underline-offset:2px}
 .mlink:hover{color:var(--blue-ink)}
@@ -228,6 +231,7 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
       <h1>Quel profil, quelles formations ?</h1>
     </div>
     <div class="topright">
+      <button type="button" class="btn small" id="loginBtn" hidden>Connexion</button>
       <div class="views" id="views" hidden>
         <button type="button" class="vbtn" data-view="consult" aria-pressed="true">Consulter</button>
         <button type="button" class="vbtn" data-view="admin" aria-pressed="false">Gestion</button>
@@ -235,6 +239,14 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
     </div>
   </header>
 
+  <form class="loginbox" id="loginForm" hidden>
+    <label class="field" for="lEmail">E-mail<input class="inp" id="lEmail" type="email" autocomplete="username" required></label>
+    <label class="field" for="lPass">Mot de passe<input class="inp" id="lPass" type="password" autocomplete="current-password" required></label>
+    <button type="submit" class="btn primary">Se connecter</button>
+    <button type="button" class="btn" id="lCancel">Annuler</button>
+    <span class="msg" id="lMsg" role="status"></span>
+  </form>
+  <p class="notice" id="notice" hidden></p>
   <div id="consult">
     <div class="grid">
       <div class="side">
@@ -268,6 +280,12 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
 </div>
 <div class="toast" id="toast" hidden></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script>
+/* Base en ligne Supabase : adresse du projet et clé PUBLIQUE (faite pour être visible). Ne jamais mettre ici une clé secrète. */
+window.SUPABASE_CONFIG = { url: "https://epwghwvqdeirtnigyajj.supabase.co", key: "sb_publishable_uDtOb7vtKPo5DZbT7LB9GQ_Ld7v-FCZ" };
+</script>
+<!-- Copie de secours du contenu, utilisée seulement si la base ne répond pas -->
 <script src="contenu.js"></script>
 <script>
 /* =====================================================================
@@ -688,11 +706,71 @@ function onData(){
   buildModel();
   if(state.view === "consult") renderConsult(); else { renderAdmin(false); }
 }
+function useStatic(){ /* contenu lu dans contenu.js, pas de back office */
+  canAdmin = false; $("views").hidden = true; $("admin").hidden = true;
+  db = "statique"; RAW.domaines = CONTENU.domaines || []; RAW.formations = CONTENU.formations || []; RAW.profils = CONTENU.profils || []; onData();
+}
+
+/* ---------- Supabase : lecture publique, écriture pour les éditeurs connectés ---------- */
+let SB = null;
+async function bootSupabase(cfg){
+  if(!window.supabase || !window.supabase.createClient) throw new Error("bibliothèque Supabase indisponible");
+  SB = window.supabase.createClient(cfg.url, cfg.key);
+  const load = async c => {
+    const { data, error } = await SB.from(c).select("id,data").limit(5000);
+    if(error) throw error;
+    RAW[c] = (data || []).map(r => Object.assign({ id: r.id }, r.data || {}));
+  };
+  await Promise.all(["domaines", "formations", "profils"].map(load));
+  const reload = async c => { await load(c); onData(); };
+  const fail = () => { throw { code: "invalid_argument" }; };
+  db = { doc: path => { const [c, id] = path.split("/"); return {
+    set: async d => { const { error } = await SB.from(c).upsert({ id, data: d, updated_at: new Date().toISOString() }); if(error) fail(); await reload(c); },
+    update: async d => { const cur = (RAW[c] || []).find(x => x.id === id); if(!cur) fail(); const base = Object.assign({}, cur); delete base.id;
+      const { error } = await SB.from(c).upsert({ id, data: Object.assign(base, d), updated_at: new Date().toISOString() }); if(error) fail(); await reload(c); },
+    delete: async () => { const { error } = await SB.from(c).delete().eq("id", id); if(error) fail(); await reload(c); }
+  }; } };
+  onData();
+  $("loginBtn").hidden = false;
+  await refreshAuth();
+  SB.auth.onAuthStateChange(() => { setTimeout(refreshAuth, 0); });
+}
+async function refreshAuth(){
+  const { data } = await SB.auth.getSession();
+  const session = data && data.session;
+  let ok = false;
+  if(session){ const r = await SB.from("editeurs").select("email").limit(1); ok = !r.error && r.data && r.data.length > 0; }
+  canAdmin = ok;
+  $("loginBtn").textContent = session ? "Déconnexion" : "Connexion";
+  $("views").hidden = !ok;
+  if(session && !ok){ $("notice").textContent = "Ce compte n'a pas le droit de modifier le contenu."; $("notice").hidden = false; }
+  else if($("notice").textContent.startsWith("Ce compte")) $("notice").hidden = true;
+  if(!ok && state.view === "admin") document.querySelector('.vbtn[data-view="consult"]').click();
+}
+$("loginBtn").addEventListener("click", async () => {
+  if(!SB) return;
+  const { data } = await SB.auth.getSession();
+  if(data && data.session){ await SB.auth.signOut(); toast("Déconnectée"); return; }
+  $("loginForm").hidden = false; $("lEmail").focus();
+});
+$("lCancel").addEventListener("click", () => { $("loginForm").hidden = true; $("lMsg").textContent = ""; });
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault(); if(!SB) return;
+  $("lMsg").textContent = "Connexion…"; $("lMsg").className = "msg";
+  const { error } = await SB.auth.signInWithPassword({ email: $("lEmail").value.trim(), password: $("lPass").value });
+  if(error){ $("lMsg").textContent = "E-mail ou mot de passe incorrect."; $("lMsg").className = "msg err"; return; }
+  $("lPass").value = ""; $("loginForm").hidden = true; $("lMsg").textContent = ""; toast("Connectée");
+});
+
 (async () => {
-  if(window.CONTENU){ /* version autonome (GitHub) : contenu lu dans contenu.js, pas de back office */
-    canAdmin = false; $("views").hidden = true; $("admin").hidden = true;
-    db = "statique"; RAW.domaines = CONTENU.domaines || []; RAW.formations = CONTENU.formations || []; RAW.profils = CONTENU.profils || []; onData(); return;
+  if(window.SUPABASE_CONFIG){ /* version GitHub reliée à Supabase */
+    try{ await bootSupabase(window.SUPABASE_CONFIG); return; }
+    catch(e){
+      if(window.CONTENU){ $("notice").textContent = "La base en ligne ne répond pas : affichage de la copie de secours du contenu. La gestion est indisponible pour le moment."; $("notice").hidden = false; useStatic(); return; }
+      db = null; renderDetail(); return;
+    }
   }
+  if(window.CONTENU){ useStatic(); return; }
   try{ db = (typeof claude !== "undefined" && claude.use) ? await claude.use("db") : null; }catch(e){ db = null; }
   try{ user = (typeof claude !== "undefined" && claude.use) ? await claude.use("user") : null; }catch(e){ user = null; }
   if(!db){ renderDetail(); return; }
