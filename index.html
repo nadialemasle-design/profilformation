@@ -1261,7 +1261,7 @@ function chargerDocx(){
 }
 async function propWord(){
   let D;
-  try{ D = await chargerDocx(); }catch(e){ prop.ouvert = true; renderProp(); $("propMsg").textContent = "Le document Word se génère depuis le site GitHub. Ici, utilisez « Copier le tableau »."; return; }
+  try{ D = await chargerDocx(); }catch(e){ prop.ouvert = true; renderProp(); $("propMsg").textContent = "Le module Word n'a pas pu se charger. Utilisez « Copier le tableau »."; return; }
   const r = propCalcul(), avecHors = r.hors.length > 0, avecCpf = r.cpf.length > 0;
   const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, ExternalHyperlink, AlignmentType, BorderStyle, ShadingType, PageOrientation } = D;
   const BLEU = "84CCEC", BLEU_CLAIR = "DAE9F7", VERT = "B7D3C8", TXT = "1F3864";
@@ -1316,9 +1316,15 @@ async function propWord(){
       avecCpf ? note("Depuis le 2 avril 2026 (décret n° 2026-234 du 30 mars 2026), toute personne qui mobilise son CPF doit verser une participation forfaitaire de 150 €, quel que soit le montant de ses droits. Elle est réglée directement sur la plateforme Mon Compte Formation au moment de la validation de l'inscription. Vous en êtes exonéré(e) si vous êtes demandeur d'emploi, ou si votre employeur complète votre financement par un abondement.") : note(""),
       avecCpf ? note(`Plafond : pour les formations menant à une certification du Répertoire spécifique, le CPF prend en charge au maximum ${eur(PLAFOND_CPF)} (décret n° 2026-127 du 24 février 2026). Montants en vigueur en 2026, susceptibles d'évoluer.`) : note("")
     ] }] });
-  const blob = await Packer.toBlob(doc);
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-  a.download = "Proposition-formation-" + new Date().toISOString().slice(0, 10) + ".docx";
+  const blob = await Packer.toBlob(doc), nom = "Proposition-formation-" + new Date().toISOString().slice(0, 10) + ".docx";
+  /* version Claude : enregistrement par la capacité « downloads » ; site GitHub : téléchargement classique */
+  let dl = null; try{ dl = (typeof claude !== "undefined" && claude.use) ? await claude.use("downloads") : null; }catch(e){ dl = null; }
+  if(dl){
+    try{ await dl.save({ filename: nom, data: blob }); }
+    catch(err){ prop.ouvert = true; renderProp(); $("propMsg").textContent = err && err.code === "declined" ? "Enregistrement annulé." : "Enregistrement impossible ici : utilisez « Copier le tableau »."; }
+    return;
+  }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nom;
   document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
 }
 
