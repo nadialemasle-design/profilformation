@@ -178,7 +178,8 @@ window.CONTENU = {
       ],
       "nom": "Excel Power Tools",
       "ordre": 1,
-      "reference": "Bureau-XLS POWER"
+      "reference": "Bureau-XLS POWER",
+      "tarifCertification": 89
     },
     {
       "id": "bur-vba",
@@ -209,7 +210,8 @@ window.CONTENU = {
       ],
       "nom": "Excel macro VBA",
       "ordre": 2,
-      "reference": "Bureau-XLS"
+      "reference": "Bureau-XLS",
+      "tarifCertification": 89
     },
     {
       "id": "cao-autocad",
@@ -245,7 +247,8 @@ window.CONTENU = {
       ],
       "nom": "AutoCAD LT",
       "ordre": 1,
-      "reference": "CAO 2D -AUTO"
+      "reference": "CAO 2D -AUTO",
+      "tarifCertification": 120
     },
     {
       "id": "cao-sketchup",
@@ -281,7 +284,8 @@ window.CONTENU = {
       ],
       "nom": "SketchUp Pro initiation",
       "ordre": 2,
-      "reference": "CAO 2 D - SKET"
+      "reference": "CAO 2 D - SKET",
+      "tarifCertification": 120
     },
     {
       "id": "cao-solidworks",
@@ -317,7 +321,8 @@ window.CONTENU = {
       ],
       "nom": "SolidWorks",
       "ordre": 3,
-      "reference": "CAO 3D - SOLID"
+      "reference": "CAO 3D - SOLID",
+      "tarifCertification": 120
     },
     {
       "id": "col-workspace",
@@ -349,7 +354,8 @@ window.CONTENU = {
       ],
       "nom": "Google Workspace",
       "ordre": 1,
-      "reference": "C1-Collaboratif"
+      "reference": "C1-Collaboratif",
+      "tarifCertification": 89
     },
     {
       "id": "col-notion",
@@ -375,7 +381,8 @@ window.CONTENU = {
       ],
       "nom": "Notion",
       "ordre": 2,
-      "reference": "C2-Collaboratif"
+      "reference": "C2-Collaboratif",
+      "tarifCertification": 89
     },
     {
       "id": "com-canva1",
@@ -422,7 +429,8 @@ window.CONTENU = {
       ],
       "nom": "Canva niveau 1",
       "ordre": 1,
-      "reference": "Design M1"
+      "reference": "Design M1",
+      "tarifCertification": 89
     },
     {
       "id": "com-canva-pro",
@@ -464,7 +472,8 @@ window.CONTENU = {
       ],
       "nom": "Canva Pro perfectionnement",
       "ordre": 2,
-      "reference": "Design M2"
+      "reference": "Design M2",
+      "tarifCertification": 89
     },
     {
       "id": "ia-admin",
@@ -1033,7 +1042,8 @@ window.CONTENU = {
       ],
       "nom": "Photoshop initiation",
       "ordre": 3,
-      "reference": "PAO-1.2 Photo Init"
+      "reference": "PAO-1.2 Photo Init",
+      "tarifCertification": 89
     },
     {
       "id": "pao-photoshop-perf",
@@ -1067,7 +1077,8 @@ window.CONTENU = {
       ],
       "nom": "Photoshop perfectionnement",
       "ordre": 4,
-      "reference": "PAO-3 Photoshop Perf"
+      "reference": "PAO-3 Photoshop Perf",
+      "tarifCertification": 89
     },
     {
       "id": "pao-illustrator",
@@ -1104,7 +1115,8 @@ window.CONTENU = {
       ],
       "nom": "Illustrator initiation",
       "ordre": 5,
-      "reference": "PAO 2.2 Illust"
+      "reference": "PAO 2.2 Illust",
+      "tarifCertification": 89
     },
     {
       "id": "pao-indesign",
@@ -1141,7 +1153,8 @@ window.CONTENU = {
       ],
       "nom": "InDesign",
       "ordre": 6,
-      "reference": "PAO 2 Indi"
+      "reference": "PAO 2 Indi",
+      "tarifCertification": 89
     },
     {
       "id": "pao-affinity",
@@ -1393,7 +1406,8 @@ window.CONTENU = {
         }
       ],
       "nom": "Stratégie réseaux · Parcours simple",
-      "ordre": 1
+      "ordre": 1,
+      "tarifCertification": 330
     },
     {
       "id": "rs-marque",
@@ -1485,7 +1499,8 @@ window.CONTENU = {
         }
       ],
       "nom": "Réseaux & identité de marque",
-      "ordre": 2
+      "ordre": 2,
+      "tarifCertification": 330
     },
     {
       "id": "rs-linkedin",
@@ -1574,7 +1589,8 @@ window.CONTENU = {
         }
       ],
       "nom": "Stratégie réseaux pro · LinkedIn",
-      "ordre": 3
+      "ordre": 3,
+      "tarifCertification": 330
     },
     {
       "id": "rs-local",
@@ -1661,7 +1677,8 @@ window.CONTENU = {
         }
       ],
       "nom": "Réseaux & ancrage local",
-      "ordre": 4
+      "ordre": 4,
+      "tarifCertification": 330
     },
     {
       "id": "rs-video",
@@ -1753,7 +1770,8 @@ window.CONTENU = {
         }
       ],
       "nom": "Réseaux & vidéo",
-      "ordre": 5
+      "ordre": 5,
+      "tarifCertification": 330
     },
     {
       "id": "video-premiere",
@@ -1842,7 +1860,8 @@ window.CONTENU = {
       ],
       "nom": "WordPress",
       "ordre": 1,
-      "reference": "Site WordPress"
+      "reference": "Site WordPress",
+      "tarifCertification": 89
     },
     {
       "id": "web-geo-seo",

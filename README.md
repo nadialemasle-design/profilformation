@@ -18,6 +18,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `supabase-installation.sql` | Script d'installation de la base Supabase. |
 | `supabase-mise-a-jour-2027.sql` | Mise à jour du 29/10/2026 : dates 2027, tarifs, positionnement, CPF et certifications. À lancer une fois dans Supabase ; ne remplace rien d'autre. |
 | `supabase-mise-a-jour-2027-n2.sql` | Mise à jour n°2 : parcours IA Webmaster et IA Graphiste, coût de certification (330 €). À lancer après la précédente. |
+| `supabase-mise-a-jour-2027-n3.sql` | Mise à jour n°3 : coût des certifications (parcours IA et réseaux 330 €, Tosa 89 €, ICDL 120 €). |
 
 ## Mettre l'application en ligne (GitHub Pages)
 
