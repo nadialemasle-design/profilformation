@@ -14,6 +14,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | Fichier | Rôle |
 |---|---|
 | `index.html` | L'application (mise en page, couleurs, fonctionnement). Pas besoin d'y toucher. |
+| `docx.iife.js` | Bibliothèque « docx » (licence MIT, version 9.15.0) qui fabrique le document Word de la proposition. Pas besoin d'y toucher. |
 | `contenu.js` | Copie de secours du contenu, utilisée seulement si la base Supabase ne répond pas. |
 | `supabase-installation.sql` | Script d'installation de la base Supabase. |
 | `supabase-mise-a-jour-2027.sql` | Mise à jour du 29/10/2026 : dates 2027, tarifs, positionnement, CPF et certifications. À lancer une fois dans Supabase ; ne remplace rien d'autre. |
@@ -115,3 +116,7 @@ Chaque module peut porter, en plus de `code`, `titre` et `lien` :
 - Pas de guillemets doubles `"` dans un texte : utiliser « » ou l'apostrophe.
 - Les `id` doivent être identiques partout, au caractère près.
 - Si la page devient blanche : touche F12 dans le navigateur, onglet **Console**, qui indique la ligne en erreur.
+
+## Proposition commerciale (document Word)
+
+Sur la fiche d'un sous-profil, chaque module et chaque formation complémentaire a une case « Ajouter à la proposition » et le choix de la session. La barre du bas récapitule : tarifs (préférentiels dans un parcours), certification, plafond CPF de 1 500 € et participation forfaitaire de 150 € par dossier CPF (case « exonéré(e) »), part hors CPF, reste à charge, jours et coût par jour. Chaque ligne peut passer en « CPF » ou « Hors CPF ». « Générer le document Word » télécharge le tableau, avec des champs à compléter (nom, entreprise, conseiller, date, droits CPF). Dans la version Claude, le téléchargement est bloqué : utiliser « Copier le tableau ».
