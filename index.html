@@ -283,12 +283,13 @@ details.group .profiles{padding:6px 0 4px 6px}
 .pdom{display:block;font-size:11.5px;font-weight:500;color:var(--muted);margin-top:1px}
 .catchecks{display:flex;flex-wrap:wrap;gap:4px 14px;margin:6px 0}
 .catchk{display:inline-flex;align-items:center;gap:5px;font-size:13.5px;font-weight:500}
-.catrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.catrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.catacts{grid-column:2;grid-row:1 / span 2;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;align-items:center}
+.catacts select{width:auto;max-width:190px;font-size:13px;padding:5px 8px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+@media (max-width:760px){.catrow{grid-template-columns:minmax(0,1fr)}.catacts{grid-column:1;grid-row:auto;justify-content:flex-start}}
 .catrow small{grid-column:1;color:var(--muted);font-size:12px}
 .catrow b{grid-column:1}
-.catrow > select,.catrow > .btn{grid-row:1 / span 2}
-.catrow > select,.catrow > [data-out]{grid-column:2}
-.catrow > [data-edit]{grid-column:3}
 .catrow > select{width:auto;max-width:220px}
 .catadd{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .catadd select{flex:1 1 240px;width:auto}
@@ -957,10 +958,13 @@ function formCategorie(el, d){
       ${field("Mots-clés pour la recherche <small class=\"fhint\">— valent pour tous les sous-profils de la catégorie</small>", ta("fCatMots", ((rd.motsClesCategories || {})[nomAct]) || "", "ex. TPE, PME, gérant, patron, chef d'entreprise"), true)}</div>
     ${isNew ? "" : `<div class="actions" style="border:0;padding:0"><button type="button" class="btn small" data-move="-1">Monter dans la liste</button><button type="button" class="btn small" data-move="1">Descendre dans la liste</button><span class="fhint">Position ${toutes.indexOf(nomAct) + 1} sur ${toutes.length}</span></div>
     <div class="fsec"><h3>Sous-profils de cette catégorie (${dedans.length})</h3>
-      <p class="fhint">Un sous-profil peut être dans plusieurs catégories. « Retirer » l'enlève seulement d'ici ; s'il n'est que dans cette catégorie, choisissez où le déplacer.</p>
+      <p class="fhint">Pour chaque sous-profil : « Ajouter aussi à… » le met dans une autre catégorie en plus de celle-ci ; « Déplacer vers… » le change de catégorie ; « Retirer d'ici » l'enlève de cette catégorie (possible seulement s'il est aussi ailleurs).</p>
       ${dedans.map(p => `<div class="catrow" data-pid="${esc(p.id)}"><b>${esc(p.nom)}</b><small>${p.categories.filter(c => c !== nomAct).map(esc).join(", ") || "seulement ici"}</small>
-        ${p.categories.length > 1 ? `<button type="button" class="btn small danger" data-out="1">Retirer d'ici</button>` : `<select class="inp catmv" aria-label="Déplacer vers"><option value="">Déplacer vers…</option>${toutes.filter(c => c !== nomAct).map(c => `<option>${esc(c)}</option>`).join("")}</select>`}
-        <button type="button" class="btn small" data-edit="1">Ouvrir</button></div>`).join("") || `<p class="none">Aucun sous-profil pour l'instant.</p>`}
+        <span class="catacts">
+          <select class="inp catplus" aria-label="Ajouter aussi à"><option value="">Ajouter aussi à…</option>${toutes.filter(c => !p.categories.includes(c)).map(c => `<option>${esc(c)}</option>`).join("")}</select>
+          <select class="inp catmv" aria-label="Déplacer vers"><option value="">Déplacer vers…</option>${toutes.filter(c => c !== nomAct).map(c => `<option>${esc(c)}</option>`).join("")}</select>
+          <button type="button" class="btn small danger" data-out="1"${p.categories.length > 1 ? "" : ` disabled title="Seule catégorie de ce sous-profil : déplacez-le plutôt"`}>Retirer d'ici</button>
+          <button type="button" class="btn small" data-edit="1">Ouvrir</button></span></div>`).join("") || `<p class="none">Aucun sous-profil pour l'instant.</p>`}
       <div class="catadd"><select class="inp" id="catAddSel"><option value="">Ajouter un sous-profil existant…</option>${dehors.map(p => `<option value="${esc(p.id)}">${esc(p.nom)} (${esc(p.categories.join(", "))})</option>`).join("")}</select><button type="button" class="btn small" id="catAddBtn">Ajouter</button><button type="button" class="btn add small" id="catNewProf">+ Créer un sous-profil ici</button></div>
     </div>`}
     ${formActions(!isNew)}</div>`;
@@ -977,8 +981,9 @@ function formCategorie(el, d){
     if(e.target.id === "catNewProf"){ adm.tab = "profils"; adm.sel = "new"; adm.cat = nomAct; renderAdmin(false); renderAdmForm(); return; }
   };
   el.onchange = e => {
-    const s = e.target.closest(".catmv"); if(!s || !s.value) return;
+    const s = e.target.closest(".catmv, .catplus"); if(!s || !s.value) return;
     const p = d.profils.find(x => x.id === s.closest(".catrow").dataset.pid);
+    if(s.classList.contains("catplus")) return write(() => majProfil(p, p.categories.concat(s.value)), `Ajouté aussi à « ${s.value} »`, () => {});
     write(() => majProfil(p, p.categories.map(c => c === nomAct ? s.value : c).filter((c, i, a) => a.indexOf(c) === i)), "Sous-profil déplacé", () => {});
   };
   el.querySelectorAll(".actions").forEach(a => a.addEventListener("click", async e => {
