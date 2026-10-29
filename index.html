@@ -1222,7 +1222,7 @@ function renderProp(){
     <td class="num">${eur(l.prix)}</td><td><button type="button" class="btn small danger" data-rmp="${i}" aria-label="Retirer">×</button></td></tr>`;
   const tot = (lab, v, cls) => `<tr class="${cls || ""}"><td colspan="4">${lab}</td><td class="num">${v}</td><td></td></tr>`;
   bar.innerHTML = `<div class="pb-row"><b>Proposition</b><span>${n} formation${n>1?"s":""}${r.jours ? ` · ${r.jours} jour${r.jours>1?"s":""}` : ""}</span>${r.totalCpf ? `<span>Dossier CPF ${eur(r.totalCpf)}</span>` : ""}<span class="pb-charge">À charge ${eur(r.charge)}</span>
-      <button type="button" class="btn small" id="propOpen">${prop.ouvert ? "Masquer le détail" : "Voir le détail"}</button><button type="button" class="btn primary small" id="propWord">Générer le document Word</button></div>
+      <button type="button" class="btn small" id="propOpen">${prop.ouvert ? "Masquer le détail" : "Voir le détail"}</button><button type="button" class="btn small danger" id="propReset">Réinitialiser</button><button type="button" class="btn primary small" id="propWord">Générer le document Word</button></div>
     ${prop.ouvert ? `<div id="propPanel"><table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date retenue</th><th>Financement</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
       ${r.lignes.map((l, i) => ligne(l, prop.items.indexOf(l.it))).join("")}
       ${r.certs.map(c => tot(esc(c.nom), eur(c.prix))).join("")}
@@ -1231,11 +1231,15 @@ function renderProp(){
       ${tot("<b>Total à votre charge</b>", `<b>${eur(r.charge)}</b>`, "tt")}
       ${r.jours ? tot("Nombre de jours · coût par jour à votre charge", `${r.jours} j · ${eur(r.parJour)}`) : ""}
       </tbody></table>
-      <div class="pb-acts"><button type="button" class="btn small" id="propCopy">Copier le tableau</button><button type="button" class="btn small danger" id="propClear">Vider la proposition</button><span class="msg" id="propMsg" role="status"></span></div></div>` : ""}`;
+      <div class="pb-acts"><button type="button" class="btn small" id="propCopy">Copier le tableau</button><span class="msg" id="propMsg" role="status"></span></div></div>` : ""}`;
   document.body.style.paddingBottom = (bar.offsetHeight + 16) + "px"; /* le contenu n'est jamais caché sous la barre */
 }
 document.addEventListener("click", async e => {
   if(e.target.id === "propOpen"){ prop.ouvert = !prop.ouvert; renderProp(); return; }
+  if(e.target.id === "propReset"){
+    if(e.target.dataset.ok !== "1"){ e.target.dataset.ok = "1"; e.target.textContent = "Confirmer : tout vider ?"; setTimeout(() => { if(e.target.isConnected){ e.target.dataset.ok = ""; e.target.textContent = "Réinitialiser"; } }, 4000); return; }
+    prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition réinitialisée"); return;
+  }
   if(e.target.id === "propClear"){ prop.items = []; prop.ouvert = false; propSave(); renderProp(); syncPropCtl(); return; }
   const fin = e.target.closest("[data-fin]"); if(fin){ const it = prop.items[+fin.dataset.fin]; it.type = it.type === "cpf" ? "hors" : "cpf"; propSave(); renderProp(); return; }
   const rm = e.target.closest("[data-rmp]"); if(rm){ prop.items.splice(+rm.dataset.rmp, 1); propSave(); renderProp(); syncPropCtl(); return; }
