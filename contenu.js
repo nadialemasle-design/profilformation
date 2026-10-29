@@ -204,7 +204,7 @@ window.CONTENU = {
               "fin": "2027-11-08"
             }
           ],
-          "tarif": 1260,
+          "tarif": 1290,
           "cpf": "Oui (certification Tosa)"
         }
       ],
