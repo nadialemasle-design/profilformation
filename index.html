@@ -430,8 +430,8 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
           <label class="searchlab" for="domSel">Domaine de formation
             <select class="search domsel" id="domSel"></select>
           </label>
-          <label class="searchlab" for="catSel">Catégorie de profils
-            <select class="search" id="catSel"><option value="">Toutes les catégories</option></select>
+          <label class="searchlab" for="catSel">Famille de métiers
+            <select class="search" id="catSel"><option value="">Toutes les familles</option></select>
           </label>
         </div>
         <div class="sidebox">
@@ -456,7 +456,7 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
       <label for="admDom">Domaine <select id="admDom"></select></label>
       <div class="subtabs" id="admTabs">
         <button type="button" class="stab" data-tab="profils" aria-pressed="true">Sous-profils</button>
-        <button type="button" class="stab" data-tab="categories" aria-pressed="false">Catégories de profils</button>
+        <button type="button" class="stab" data-tab="categories" aria-pressed="false">Familles de métiers</button>
         <button type="button" class="stab" data-tab="formations" aria-pressed="false">Formations &amp; parcours</button>
         <button type="button" class="stab" data-tab="domaine" aria-pressed="false">Domaine</button>
       </div>
@@ -612,10 +612,13 @@ function hayOf(p, d){
     ...fs.map(f => f.nom + " " + f.intitule + " " + Object.values(f.modules).join(" "))].join(" "));
 }
 const matchQ = (hay, q) => q.split(/[\s,;]+/).filter(Boolean).every(w => hay.includes(w));
+/* ordre commun des familles de métiers (vue « Tous les domaines ») ; une famille ajoutée en Gestion vient à la fin */
+const FAMILLES = ["Administratif et commercial", "Accueil et relation client", "Ressources humaines", "Comptabilité", "Gestion et management", "Communication et marketing", "Création et contenus", "Formation", "Santé et social", "Technique", "Dirigeants et indépendants", "Commerce, artisanat, tourisme", "Emploi et transition"];
+const rangF = c => { const i = FAMILLES.indexOf(c); return i < 0 ? 99 : i; };
 function renderCatSel(){
   const d = dom(), el = $("catSel"); if(!d || !el) return;
-  const l = state.tous ? [...new Set(DOMAINES.flatMap(domCats))] : domCats(d); if(state.cat && !l.includes(state.cat)) state.cat = "";
-  el.innerHTML = `<option value="">Toutes les catégories</option>` + l.map(c => `<option${c===state.cat?" selected":""}>${esc(c)}</option>`).join("");
+  const l = state.tous ? [...new Set(DOMAINES.flatMap(domCats))].sort((x, y) => rangF(x) - rangF(y)) : domCats(d); if(state.cat && !l.includes(state.cat)) state.cat = "";
+  el.innerHTML = `<option value="">Toutes les familles</option>` + l.map(c => `<option${c===state.cat?" selected":""}>${esc(c)}</option>`).join("");
   document.querySelectorAll(".scbtn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.scope === (state.scope || "tous"))));
 }
 function renderList(){
@@ -636,7 +639,7 @@ function renderList(){
       const n = Object.keys(p.parcours).length;
       return `<button type="button" class="prof" data-pid="${esc(p.id)}" aria-pressed="${state.pid===p.id}"><span>${esc(p.nom)}</span><span class="count" title="${n} parcours possible${n>1?"s":""}">${n}</span></button>`;
     }).join("")}</div></details>`;
-  }).join("") : `<p class="none">${!d.profils.length ? "Aucun profil dans ce domaine pour l'instant." : q ? `Rien dans ce domaine pour « ${esc(state.q)} »${state.cat ? ` (catégorie « ${esc(state.cat)} »)` : ""}.` : "Aucun sous-profil dans cette catégorie."}</p>`;
+  }).join("") : `<p class="none">${!d.profils.length ? "Aucun profil dans ce domaine pour l'instant." : q ? `Rien dans ce domaine pour « ${esc(state.q)} »${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}.` : "Aucun sous-profil dans cette famille."}</p>`;
   /* recherche dans tous les domaines : les résultats des autres domaines viennent ensuite */
   if(q && (state.scope || "tous") === "tous" && !state.cat){
     const autres = [];
@@ -667,7 +670,7 @@ function renderListTous(){
       }).join("")}</div></details>`;
     }).join("");
   }).join("");
-  $("groups").innerHTML = blocs || `<p class="none">${q ? `Rien pour « ${esc(state.q)} »${state.cat ? ` (catégorie « ${esc(state.cat)} »)` : ""}. Essayez un autre mot.` : "Aucun sous-profil dans cette catégorie."}</p>`;
+  $("groups").innerHTML = blocs || `<p class="none">${q ? `Rien pour « ${esc(state.q)} »${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}. Essayez un autre mot.` : "Aucun sous-profil dans cette famille."}</p>`;
 }
 
 function renderDetail(){
@@ -691,9 +694,9 @@ function renderDetail(){
     const quoi = qq ? `« ${esc(state.q.trim())} »` : "";
     el.innerHTML = `<div class="state">${nDom
       ? `${nDom} sous-profil${nDom>1?"s":""} trouvé${nDom>1?"s":""} dans « ${esc(d.nom)} »${quoi ? ` pour ${quoi}` : ""}. Choisissez-en un dans la liste à gauche.`
-      : `<b>Aucun résultat dans « ${esc(d.nom)} »${quoi ? ` pour ${quoi}` : ""}${state.cat ? ` (catégorie « ${esc(state.cat)} »)` : ""}.</b><br>${nAut
+      : `<b>Aucun résultat dans « ${esc(d.nom)} »${quoi ? ` pour ${quoi}` : ""}${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}.</b><br>${nAut
         ? `${nAut} résultat${nAut>1?"s":""} dans les autres domaines : voyez la liste à gauche, sous « Dans les autres domaines ».`
-        : qq ? ((state.scope || "tous") === "tous" && !state.cat ? "Rien non plus dans les autres domaines. Essayez un autre mot, ou ajoutez-le en mot-clé dans Gestion." : "Essayez « Tous les domaines », ou un autre mot.") : "Choisissez une autre catégorie."}`}</div>`;
+        : qq ? ((state.scope || "tous") === "tous" && !state.cat ? "Rien non plus dans les autres domaines. Essayez un autre mot, ou ajoutez-le en mot-clé dans Gestion." : "Essayez « Tous les domaines », ou un autre mot.") : "Choisissez une autre famille."}`}</div>`;
     return;
   }
   const cols = Object.keys(p.parcours).map(id => d.formations.find(f => f.id === id)).filter(Boolean);

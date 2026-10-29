@@ -21,20 +21,30 @@ window.CONTENU = {
         "M3"
       ],
       "categories": [
-        "Fonctions administratives et commerciales",
-        "Dirigeants et indépendants",
-        "Formation et enseignement",
+        "Administratif et commercial",
+        "Accueil et relation client",
         "Ressources humaines",
-        "Emploi et transition",
-        "Communication, web et création"
+        "Comptabilité",
+        "Communication et marketing",
+        "Création et contenus",
+        "Formation",
+        "Santé et social",
+        "Dirigeants et indépendants",
+        "Commerce, artisanat, tourisme",
+        "Emploi et transition"
       ],
       "motsClesCategories": {
-        "Fonctions administratives et commerciales": "administratif, secrétariat, assistanat, commercial, vente, relation client, accueil, gestion",
-        "Dirigeants et indépendants": "dirigeant, gérant, patron, chef d'entreprise, TPE, PME, auto-entrepreneur, indépendant, artisan, commerçant",
-        "Formation et enseignement": "formateur, enseignant, professeur, pédagogie, organisme de formation, Qualiopi, insertion, orientation",
-        "Ressources humaines": "RH, ressources humaines, recrutement, paie, formation, GPEC, administration du personnel, manager",
-        "Emploi et transition": "demandeur d'emploi, reconversion, transition professionnelle, France Travail, CPF",
-        "Communication, web et création": "communication, marketing, web, webmaster, graphiste, création, contenus, référencement"
+        "Administratif et commercial": "administratif, assistanat, secrétariat, commercial, vente, gestion administrative",
+        "Accueil et relation client": "accueil, relation client, service client, ADV, SAV, standard, clientèle",
+        "Ressources humaines": "RH, ressources humaines, recrutement, paie, administration du personnel, GPEC, formation, manager",
+        "Comptabilité": "comptabilité, comptable, finance, chiffres, contrôle de gestion, cabinet comptable",
+        "Communication et marketing": "communication, marketing, web, réseaux sociaux, image de marque, contenus",
+        "Création et contenus": "création, créatif, graphisme, photo, vidéo, contenus, artiste, indépendant",
+        "Formation": "formation, formateur, enseignant, pédagogie, organisme de formation, Qualiopi",
+        "Santé et social": "santé, social, médical, bien-être, insertion, accompagnement",
+        "Dirigeants et indépendants": "dirigeant, gérant, chef d'entreprise, TPE, PME, auto-entrepreneur, indépendant, freelance",
+        "Commerce, artisanat, tourisme": "commerce, commerçant, artisan, artisanat, boutique, tourisme, restauration, e-commerce",
+        "Emploi et transition": "demandeur d'emploi, reconversion, transition professionnelle, France Travail, CPF, étudiant"
       }
     },
     {
@@ -52,16 +62,26 @@ window.CONTENU = {
         "M3"
       ],
       "categories": [
-        "Indépendants et auto-entrepreneurs",
+        "Administratif et commercial",
+        "Ressources humaines",
+        "Gestion et management",
+        "Communication et marketing",
+        "Création et contenus",
+        "Santé et social",
+        "Dirigeants et indépendants",
         "Commerce, artisanat, tourisme",
-        "Entreprises et associations",
         "Emploi et transition"
       ],
       "motsClesCategories": {
-        "Indépendants et auto-entrepreneurs": "indépendant, auto-entrepreneur, micro-entrepreneur, freelance, créateur, consultant, se faire connaître",
-        "Commerce, artisanat, tourisme": "commerce, commerçant, artisan, boutique, restaurant, tourisme, clientèle locale, Google Business Profile",
-        "Entreprises et associations": "entreprise, PME, association, collectivité, marque employeur, communication interne et externe",
-        "Emploi et transition": "demandeur d'emploi, reconversion, étudiant, jeune diplômé, LinkedIn, recruteurs"
+        "Administratif et commercial": "administratif, assistanat, secrétariat, commercial, vente, gestion administrative",
+        "Ressources humaines": "RH, ressources humaines, recrutement, paie, administration du personnel, GPEC",
+        "Gestion et management": "gestion, management, pilotage, gestion de projet, manager, organisation",
+        "Communication et marketing": "communication, marketing, web, réseaux sociaux, image de marque, contenus",
+        "Création et contenus": "création, créatif, graphisme, photo, vidéo, contenus, artiste, indépendant",
+        "Santé et social": "santé, social, médical, bien-être, insertion, accompagnement",
+        "Dirigeants et indépendants": "dirigeant, gérant, chef d'entreprise, TPE, PME, auto-entrepreneur, indépendant, freelance",
+        "Commerce, artisanat, tourisme": "commerce, commerçant, artisan, artisanat, boutique, tourisme, restauration, e-commerce, restaurant, clientèle locale, Google Business Profile",
+        "Emploi et transition": "demandeur d'emploi, reconversion, transition professionnelle, France Travail, CPF, étudiant, jeune diplômé, LinkedIn, recruteurs"
       }
     },
     {
@@ -75,17 +95,15 @@ window.CONTENU = {
       ],
       "categories": [
         "Communication et marketing",
-        "Indépendants et créatifs",
-        "Commerce et artisanat",
-        "Emploi et transition",
-        "Entreprises et associations"
+        "Création et contenus",
+        "Commerce, artisanat, tourisme",
+        "Emploi et transition"
       ],
       "motsClesCategories": {
-        "Communication et marketing": "communication, marketing, print, plaquettes, affiches, mise en page, Adobe",
-        "Indépendants et créatifs": "photographe, vidéaste, créatif, indépendant, retouche photo",
-        "Commerce et artisanat": "commerçant, artisan, e-commerce, photos produits",
-        "Emploi et transition": "reconversion, graphisme, infographie, certification Tosa",
-        "Entreprises et associations": "association, petite structure, logiciel gratuit, sans budget"
+        "Communication et marketing": "communication, marketing, web, réseaux sociaux, image de marque, contenus, association, petite structure, logiciel gratuit, sans budget",
+        "Création et contenus": "création, créatif, graphisme, photo, vidéo, contenus, artiste, indépendant, photographe, vidéaste, retouche photo",
+        "Commerce, artisanat, tourisme": "commerce, commerçant, artisan, artisanat, boutique, tourisme, restauration, e-commerce, photos produits",
+        "Emploi et transition": "demandeur d'emploi, reconversion, transition professionnelle, France Travail, CPF, étudiant, graphisme, infographie, certification Tosa"
       }
     },
     {
@@ -99,11 +117,11 @@ window.CONTENU = {
       ],
       "categories": [
         "Communication et marketing",
-        "Indépendants et créatifs"
+        "Création et contenus"
       ],
       "motsClesCategories": {
-        "Communication et marketing": "graphisme, communication, marketing, IA générative, visuels, Adobe Firefly",
-        "Indépendants et créatifs": "créateur de contenu, auto-entrepreneur créatif, illustrations, IA"
+        "Communication et marketing": "communication, marketing, web, réseaux sociaux, image de marque, contenus",
+        "Création et contenus": "création, créatif, graphisme, photo, vidéo, contenus, artiste, indépendant, créateur de contenu, auto-entrepreneur créatif, illustrations, IA"
       }
     },
     {
@@ -116,16 +134,18 @@ window.CONTENU = {
         "Formation"
       ],
       "categories": [
+        "Administratif et commercial",
         "Communication et marketing",
+        "Création et contenus",
         "Formation",
-        "Commerce et artisanat",
-        "Indépendants et créatifs"
+        "Commerce, artisanat, tourisme"
       ],
       "motsClesCategories": {
-        "Communication et marketing": "vidéo, communication, marketing, montage, réseaux sociaux, avatar IA",
-        "Formation": "vidéo pédagogique, e-learning, formateur, avatar IA",
-        "Commerce et artisanat": "vidéos produits, TPE, e-commerce, présentation d'entreprise",
-        "Indépendants et créatifs": "vidéaste, créateur de contenu, YouTube, montage"
+        "Administratif et commercial": "administratif, assistanat, secrétariat, commercial, vente, gestion administrative",
+        "Communication et marketing": "communication, marketing, web, réseaux sociaux, image de marque, contenus",
+        "Création et contenus": "création, créatif, graphisme, photo, vidéo, contenus, artiste, indépendant, vidéaste, créateur de contenu, YouTube, montage",
+        "Formation": "formation, formateur, enseignant, pédagogie, organisme de formation, Qualiopi, vidéo pédagogique, e-learning, avatar IA",
+        "Commerce, artisanat, tourisme": "commerce, commerçant, artisan, artisanat, boutique, tourisme, restauration, e-commerce, vidéos produits, TPE, présentation d'entreprise"
       }
     },
     {
@@ -138,14 +158,14 @@ window.CONTENU = {
         "Formation"
       ],
       "categories": [
-        "Commerce et artisanat",
+        "Administratif et commercial",
         "Communication et marketing",
-        "Entreprises et associations"
+        "Commerce, artisanat, tourisme"
       ],
       "motsClesCategories": {
-        "Commerce et artisanat": "commerçant, artisan, auto-entrepreneur, immobilier, visuels, Canva",
-        "Communication et marketing": "communication, visuels, charte graphique, Canva Pro",
-        "Entreprises et associations": "association, bénévole, affiches, événements"
+        "Administratif et commercial": "administratif, assistanat, secrétariat, commercial, vente, gestion administrative",
+        "Communication et marketing": "communication, marketing, web, réseaux sociaux, image de marque, contenus, visuels, charte graphique, Canva Pro, association, bénévole, affiches, événements",
+        "Commerce, artisanat, tourisme": "commerce, commerçant, artisan, artisanat, boutique, tourisme, restauration, e-commerce"
       }
     },
     {
@@ -158,16 +178,16 @@ window.CONTENU = {
         "Formation"
       ],
       "categories": [
-        "Indépendants et créatifs",
         "Communication et marketing",
-        "Commerce et artisanat",
-        "Entreprises et associations"
+        "Création et contenus",
+        "Dirigeants et indépendants",
+        "Commerce, artisanat, tourisme"
       ],
       "motsClesCategories": {
-        "Indépendants et créatifs": "site internet, WordPress, rédaction web, indépendant",
-        "Communication et marketing": "webmaster, référencement, SEO, GEO, contenus web",
-        "Commerce et artisanat": "e-commerce, boutique en ligne, trafic, référencement",
-        "Entreprises et associations": "association, collectivité, mairie, site institutionnel, WordPress"
+        "Communication et marketing": "communication, marketing, web, réseaux sociaux, image de marque, contenus, webmaster, référencement, SEO, GEO, contenus web, association, collectivité, mairie, site institutionnel, WordPress",
+        "Création et contenus": "création, créatif, graphisme, photo, vidéo, contenus, artiste, indépendant",
+        "Dirigeants et indépendants": "dirigeant, gérant, chef d'entreprise, TPE, PME, auto-entrepreneur, indépendant, freelance",
+        "Commerce, artisanat, tourisme": "commerce, commerçant, artisan, artisanat, boutique, tourisme, restauration, e-commerce, boutique en ligne, trafic, référencement"
       }
     },
     {
@@ -180,16 +200,12 @@ window.CONTENU = {
         "Formation"
       ],
       "categories": [
-        "Bâtiment et aménagement",
-        "Industrie",
-        "Commerce et artisanat",
+        "Technique",
         "Emploi et transition"
       ],
       "motsClesCategories": {
-        "Bâtiment et aménagement": "bâtiment, BTP, architecture, aménagement intérieur et extérieur, paysage, plans, 3D",
-        "Industrie": "industrie, bureau d'études, mécanique, conception de pièces",
-        "Commerce et artisanat": "artisan, menuiserie, métallerie, fabrication",
-        "Emploi et transition": "reconversion, dessin technique, certification ICDL"
+        "Technique": "technique, bâtiment, BTP, industrie, bureau d'études, chantier, architecture, aménagement intérieur et extérieur, paysage, plans, 3D, mécanique, conception de pièces, artisan, menuiserie, métallerie, fabrication",
+        "Emploi et transition": "demandeur d'emploi, reconversion, transition professionnelle, France Travail, CPF, étudiant, dessin technique, certification ICDL"
       }
     },
     {
@@ -202,16 +218,14 @@ window.CONTENU = {
         "Formation"
       ],
       "categories": [
-        "Gestion et finance",
-        "Fonctions administratives",
-        "Fonctions commerciales et RH",
-        "Logistique et achats"
+        "Administratif et commercial",
+        "Comptabilité",
+        "Gestion et management"
       ],
       "motsClesCategories": {
-        "Gestion et finance": "gestion, finance, comptabilité, contrôle de gestion, tableaux de bord, indicateurs",
-        "Fonctions administratives": "administratif, assistanat, gestion, tableaux répétitifs",
-        "Fonctions commerciales et RH": "reporting, commercial, RH, paie, indicateurs",
-        "Logistique et achats": "logistique, stocks, achats, approvisionnement, ERP, extractions"
+        "Administratif et commercial": "administratif, assistanat, secrétariat, commercial, vente, gestion administrative, gestion, tableaux répétitifs, reporting, RH, paie, indicateurs",
+        "Comptabilité": "comptabilité, comptable, finance, chiffres, contrôle de gestion, cabinet comptable",
+        "Gestion et management": "gestion, management, pilotage, gestion de projet, manager, organisation, logistique, stocks, achats, approvisionnement, ERP, extractions"
       }
     },
     {
@@ -224,14 +238,12 @@ window.CONTENU = {
         "Formation"
       ],
       "categories": [
-        "Entreprises et associations",
-        "Indépendants et créatifs",
-        "Fonctions administratives"
+        "Administratif et commercial",
+        "Dirigeants et indépendants"
       ],
       "motsClesCategories": {
-        "Entreprises et associations": "équipe, TPE, association, travail collaboratif, télétravail, mobilité",
-        "Indépendants et créatifs": "indépendant, auto-entrepreneur, organisation personnelle",
-        "Fonctions administratives": "office manager, assistanat, organisation, gestion de l'information"
+        "Administratif et commercial": "administratif, assistanat, secrétariat, commercial, vente, gestion administrative, équipe, TPE, association, travail collaboratif, télétravail, mobilité, office manager, organisation, gestion de l'information",
+        "Dirigeants et indépendants": "dirigeant, gérant, chef d'entreprise, TPE, PME, auto-entrepreneur, indépendant, freelance, organisation personnelle"
       }
     },
     {
@@ -244,16 +256,12 @@ window.CONTENU = {
         "Formation"
       ],
       "categories": [
-        "Gestion de projet",
-        "Management",
-        "Bâtiment et industrie",
-        "Entreprises et associations"
+        "Gestion et management",
+        "Technique"
       ],
       "motsClesCategories": {
-        "Gestion de projet": "gestion de projet, planning, pilotage, chef de projet",
-        "Management": "management, équipe, priorités, agilité",
-        "Bâtiment et industrie": "chantier, production, BTP, industrie, délais",
-        "Entreprises et associations": "association, collectivité, chargé de mission, partenaires"
+        "Gestion et management": "gestion, management, pilotage, gestion de projet, manager, organisation, planning, chef de projet, équipe, priorités, agilité, association, collectivité, chargé de mission, partenaires",
+        "Technique": "technique, bâtiment, BTP, industrie, bureau d'études, chantier, production, délais"
       }
     },
     {
@@ -266,12 +274,12 @@ window.CONTENU = {
         "Formation"
       ],
       "categories": [
-        "Formation",
-        "Communication et marketing"
+        "Communication et marketing",
+        "Formation"
       ],
       "motsClesCategories": {
-        "Formation": "formation, pédagogie, e-learning, interactivité, Genially",
-        "Communication et marketing": "communication, présentations interactives, infographies"
+        "Communication et marketing": "communication, marketing, web, réseaux sociaux, image de marque, contenus, présentations interactives, infographies",
+        "Formation": "formation, formateur, enseignant, pédagogie, organisme de formation, Qualiopi, e-learning, interactivité, Genially"
       }
     }
   ],
@@ -2037,7 +2045,7 @@ window.CONTENU = {
     {
       "id": "bur-001",
       "besoin": "Fiabiliser et automatiser ses tableaux de bord.",
-      "categorie": "Gestion et finance",
+      "categorie": "Comptabilité",
       "complements": [
         {
           "formation": "col-notion",
@@ -2064,15 +2072,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "contrôleur de gestion, comptable, finance, tableaux de bord, reporting, Power Query, tableaux croisés, Power BI, automatiser",
+      "motsCles": "contrôleur de gestion, comptable, finance, tableaux de bord, reporting, Power Query, tableaux croisés, Power BI, automatiser, management, pilotage",
       "categories": [
-        "Gestion et finance"
+        "Comptabilité"
       ]
     },
     {
       "id": "bur-002",
       "besoin": "Gagner du temps sur des tableaux répétitifs.",
-      "categorie": "Fonctions administratives",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "col-workspace",
@@ -2101,13 +2109,13 @@ window.CONTENU = {
       "reponses": {},
       "motsCles": "assistant administratif, assistant de gestion, tableaux répétitifs, macros, VBA, automatisation, Excel avancé",
       "categories": [
-        "Fonctions administratives"
+        "Administratif et commercial"
       ]
     },
     {
       "id": "bur-003",
       "besoin": "Des tableaux de bord clairs et à jour sans ressaisie.",
-      "categorie": "Fonctions commerciales et RH",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "prj-agilite",
@@ -2127,15 +2135,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "reporting commercial, reporting RH, paie, indicateurs, KPI, tableaux de bord, ressaisie, Excel",
+      "motsCles": "reporting commercial, reporting RH, paie, indicateurs, KPI, tableaux de bord, ressaisie, Excel, ressources humaines",
       "categories": [
-        "Fonctions commerciales et RH"
+        "Administratif et commercial"
       ]
     },
     {
       "id": "cao-001",
       "besoin": "Produire des plans techniques fiables et des vues en 3D.",
-      "categorie": "Bâtiment et aménagement",
+      "categorie": "Technique",
       "complements": [
         {
           "formation": "prj-msproject",
@@ -2162,15 +2170,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "dessinateur, projeteur, technicien du bâtiment, BTP, bureau d'études bâtiment, plans, AutoCAD, 3D, SketchUp",
+      "motsCles": "dessinateur, projeteur, technicien du bâtiment, BTP, bureau d'études bâtiment, plans, AutoCAD, 3D, SketchUp, aménagement",
       "categories": [
-        "Bâtiment et aménagement"
+        "Technique"
       ]
     },
     {
       "id": "cao-002",
       "besoin": "Modéliser rapidement des aménagements et les montrer aux clients.",
-      "categorie": "Bâtiment et aménagement",
+      "categorie": "Technique",
       "complements": [
         {
           "formation": "paoia-design",
@@ -2197,15 +2205,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "architecte d'intérieur, agenceur, cuisiniste, décorateur, aménagement, plans 3D, SketchUp, rendus clients",
+      "motsCles": "architecte d'intérieur, agenceur, cuisiniste, décorateur, aménagement, plans 3D, SketchUp, rendus clients, bâtiment",
       "categories": [
-        "Bâtiment et aménagement"
+        "Technique"
       ]
     },
     {
       "id": "cao-003",
       "besoin": "Concevoir des pièces et assemblages et produire les plans.",
-      "categorie": "Industrie",
+      "categorie": "Technique",
       "complements": [],
       "domaine": "cao",
       "nom": "Technicien(ne) de bureau d’études, industrie",
@@ -2229,13 +2237,13 @@ window.CONTENU = {
       "reponses": {},
       "motsCles": "technicien bureau d'études, dessinateur industriel, mécanique, pièces, assemblages, mises en plan, SolidWorks",
       "categories": [
-        "Industrie"
+        "Technique"
       ]
     },
     {
       "id": "cao-004",
       "besoin": "Dessiner ses réalisations et les montrer à ses clients.",
-      "categorie": "Commerce et artisanat",
+      "categorie": "Technique",
       "complements": [],
       "domaine": "cao",
       "nom": "Artisan du bois ou du métal (menuisier, métallier…)",
@@ -2264,9 +2272,9 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "menuisier, ébéniste, métallier, serrurier, charpentier, plans de fabrication, 3D, devis clients",
+      "motsCles": "menuisier, ébéniste, métallier, serrurier, charpentier, plans de fabrication, 3D, devis clients, commerce, artisanat",
       "categories": [
-        "Commerce et artisanat"
+        "Technique"
       ]
     },
     {
@@ -2309,7 +2317,7 @@ window.CONTENU = {
     {
       "id": "col-001",
       "besoin": "Partager documents, agendas et visios simplement.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "col-notion",
@@ -2329,15 +2337,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "Google Workspace, Gmail, Drive, Agenda, Meet, Docs, Sheets, travail d'équipe, partage de documents, TPE",
+      "motsCles": "Google Workspace, Gmail, Drive, Agenda, Meet, Docs, Sheets, travail d'équipe, partage de documents, TPE, entreprise, association",
       "categories": [
-        "Entreprises et associations"
+        "Administratif et commercial"
       ]
     },
     {
       "id": "col-002",
       "besoin": "Centraliser clients, tâches et notes au même endroit.",
-      "categorie": "Indépendants et créatifs",
+      "categorie": "Dirigeants et indépendants",
       "complements": [
         {
           "formation": "prj-agilite",
@@ -2364,15 +2372,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "Notion, organisation, to-do, gestion des tâches, suivi clients, notes, indépendant, centraliser",
+      "motsCles": "Notion, organisation, to-do, gestion des tâches, suivi clients, notes, indépendant, centraliser, créatif",
       "categories": [
-        "Indépendants et créatifs"
+        "Dirigeants et indépendants"
       ]
     },
     {
       "id": "col-003",
       "besoin": "Organiser l’information et le travail de l’équipe.",
-      "categorie": "Fonctions administratives",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "prj-agilite",
@@ -2399,15 +2407,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "office manager, chef de projet, assistant, organisation d'équipe, base de connaissances, Notion, Drive",
+      "motsCles": "office manager, chef de projet, assistant, organisation d'équipe, base de connaissances, Notion, Drive, gestion, management, pilotage",
       "categories": [
-        "Fonctions administratives"
+        "Administratif et commercial"
       ]
     },
     {
       "id": "col-004",
       "besoin": "Travailler à plusieurs à distance, gratuitement.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "com-canva1",
@@ -2427,15 +2435,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "association, bénévoles, travail à distance, gratuit, Google Workspace, partage, visio",
+      "motsCles": "association, bénévoles, travail à distance, gratuit, Google Workspace, partage, visio, entreprise",
       "categories": [
-        "Entreprises et associations"
+        "Administratif et commercial"
       ]
     },
     {
       "id": "com-001",
       "besoin": "Faire ses visuels soi-même : affiches, publications, flyers.",
-      "categorie": "Commerce et artisanat",
+      "categorie": "Commerce, artisanat, tourisme",
       "complements": [
         {
           "formation": "pao-prise-vue",
@@ -2455,9 +2463,9 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "commerçant, artisan, auto-entrepreneur, affiches, flyers, publications, cartes de visite, Canva gratuit",
+      "motsCles": "commerçant, artisan, auto-entrepreneur, affiches, flyers, publications, cartes de visite, Canva gratuit, commerce, artisanat",
       "categories": [
-        "Commerce et artisanat"
+        "Commerce, artisanat, tourisme"
       ]
     },
     {
@@ -2498,7 +2506,7 @@ window.CONTENU = {
     {
       "id": "com-003",
       "besoin": "Créer affiches et publications pour ses événements.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Communication et marketing",
       "complements": [
         {
           "formation": "col-workspace",
@@ -2518,9 +2526,9 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "association, bénévole, affiches d'événements, programmes, publications, Canva gratuit pour les associations",
+      "motsCles": "association, bénévole, affiches d'événements, programmes, publications, Canva gratuit pour les associations, entreprise",
       "categories": [
-        "Entreprises et associations"
+        "Communication et marketing"
       ]
     },
     {
@@ -2554,7 +2562,7 @@ window.CONTENU = {
     {
       "id": "ia-001",
       "besoin": "Rédiger plus vite courriers, comptes rendus et synthèses, sans être « technique ».",
-      "categorie": "Fonctions administratives et commerciales",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "col-notion",
@@ -2583,13 +2591,13 @@ window.CONTENU = {
       },
       "motsCles": "assistante de direction, secrétaire, assistant administratif, courriers, comptes rendus, synthèses, mails, prise de notes, ChatGPT, Copilot",
       "categories": [
-        "Fonctions administratives et commerciales"
+        "Administratif et commercial"
       ]
     },
     {
       "id": "ia-002",
       "besoin": "Préparer ses rendez-vous, propositions et relances en moins de temps.",
-      "categorie": "Fonctions administratives et commerciales",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "com-canva1",
@@ -2618,13 +2626,13 @@ window.CONTENU = {
       },
       "motsCles": "commercial, chargé d'affaires, vendeur, technico-commercial, prospection, propositions commerciales, relances, emailing, préparation de rendez-vous",
       "categories": [
-        "Fonctions administratives et commerciales"
+        "Administratif et commercial"
       ]
     },
     {
       "id": "ia-003",
       "besoin": "Répondre plus vite et mieux aux demandes clients, sans exposer leurs données.",
-      "categorie": "Fonctions administratives et commerciales",
+      "categorie": "Accueil et relation client",
       "complements": [
         {
           "formation": "bur-excel-power",
@@ -2649,7 +2657,7 @@ window.CONTENU = {
       },
       "motsCles": "ADV, administration des ventes, service client, SAV, réclamations, réponses clients, devis, commandes, RGPD",
       "categories": [
-        "Fonctions administratives et commerciales"
+        "Accueil et relation client"
       ]
     },
     {
@@ -2686,7 +2694,7 @@ window.CONTENU = {
         "M1": "Comprendre le fonctionnement de l'IA et choisir ses outils ; bases pratiques ; règles de sécurité pour protéger son activité et ses clients.",
         "M3": "Visuels et contenus audio pour communiquer sur son activité."
       },
-      "motsCles": "auto-entrepreneur, micro-entrepreneur, freelance, indépendant, devis, factures, communication, gagner du temps, ChatGPT",
+      "motsCles": "auto-entrepreneur, micro-entrepreneur, freelance, indépendant, devis, factures, communication, gagner du temps, ChatGPT, dirigeant",
       "categories": [
         "Dirigeants et indépendants"
       ]
@@ -2728,7 +2736,7 @@ window.CONTENU = {
         "M1": "Comprendre ce qu'est l'IA et ce qu'elle change pour l'entreprise ; bases pratiques ; enjeux éthiques, juridiques et de sécurité.",
         "M3": "Visuels et contenus audio pour communiquer sur son activité."
       },
-      "motsCles": "dirigeant, gérant, patron, chef d'entreprise, TPE, artisan, commerçant, administratif, recrutement, communication, déléguer",
+      "motsCles": "dirigeant, gérant, patron, chef d'entreprise, TPE, artisan, commerçant, administratif, recrutement, communication, déléguer, indépendant, commerce, artisanat",
       "categories": [
         "Dirigeants et indépendants"
       ]
@@ -2736,7 +2744,7 @@ window.CONTENU = {
     {
       "id": "ia-006",
       "besoin": "Concevoir plus vite et prouver la mise à jour de ses compétences à ses clients.",
-      "categorie": "Formation et enseignement",
+      "categorie": "Formation",
       "complements": [
         {
           "formation": "ped-genially",
@@ -2766,13 +2774,13 @@ window.CONTENU = {
       },
       "motsCles": "formateur indépendant, consultant formateur, conception pédagogique, supports de formation, quiz, scénarios pédagogiques, Qualiopi, veille",
       "categories": [
-        "Formation et enseignement"
+        "Formation"
       ]
     },
     {
       "id": "ia-007",
       "besoin": "Intégrer l'IA dans ses séquences et savoir répondre aux stagiaires qui l'utilisent.",
-      "categorie": "Formation et enseignement",
+      "categorie": "Formation",
       "complements": [
         {
           "formation": "ped-genially",
@@ -2802,13 +2810,13 @@ window.CONTENU = {
       },
       "motsCles": "formateur, organisme de formation, OF, séquences pédagogiques, évaluations, stagiaires, supports, avatar vidéo, voix off",
       "categories": [
-        "Formation et enseignement"
+        "Formation"
       ]
     },
     {
       "id": "ia-008",
       "besoin": "Préparer cours, exercices et évaluations plus rapidement.",
-      "categorie": "Formation et enseignement",
+      "categorie": "Formation",
       "complements": [
         {
           "formation": "ped-genially",
@@ -2834,13 +2842,13 @@ window.CONTENU = {
       },
       "motsCles": "enseignant, professeur, prof, lycée, collège, cours, exercices, évaluations, corrections, différenciation",
       "categories": [
-        "Formation et enseignement"
+        "Formation"
       ]
     },
     {
       "id": "ia-010",
       "besoin": "Former ses collègues ou accompagner des alternants avec des supports efficaces.",
-      "categorie": "Formation et enseignement",
+      "categorie": "Formation",
       "complements": [
         {
           "formation": "ped-genially",
@@ -2870,7 +2878,7 @@ window.CONTENU = {
       },
       "motsCles": "formateur interne, tuteur, maître d'apprentissage, alternants, intégration, onboarding, supports internes, modes opératoires",
       "categories": [
-        "Formation et enseignement"
+        "Formation"
       ]
     },
     {
@@ -3054,7 +3062,7 @@ window.CONTENU = {
         "M1": "Comprendre comment fonctionne l'IA, sans prérequis ; bases pratiques ; éthique et confidentialité des données des collaborateurs.",
         "M3": "Communication d'équipe simple et efficace."
       },
-      "motsCles": "manager, chef d'équipe, responsable d'équipe, entretiens annuels, recrutement, fonction RH, management",
+      "motsCles": "manager, chef d'équipe, responsable d'équipe, entretiens annuels, recrutement, fonction RH, management, gestion, pilotage",
       "categories": [
         "Ressources humaines"
       ]
@@ -3105,7 +3113,7 @@ window.CONTENU = {
     {
       "id": "ia-017",
       "besoin": "Synthèses, courriers aux clients et procédures plus rapides, sans exposer les chiffres.",
-      "categorie": "Fonctions administratives et commerciales",
+      "categorie": "Comptabilité",
       "complements": [
         {
           "formation": "bur-excel-power",
@@ -3134,13 +3142,13 @@ window.CONTENU = {
       },
       "motsCles": "comptable, aide-comptable, assistant de gestion, cabinet comptable, synthèses financières, courriers clients, procédures, confidentialité",
       "categories": [
-        "Fonctions administratives et commerciales"
+        "Comptabilité"
       ]
     },
     {
       "id": "ia-018",
       "besoin": "Courriers et comptes rendus plus rapides, avec des données très sensibles.",
-      "categorie": "Fonctions administratives et commerciales",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "col-notion",
@@ -3163,15 +3171,15 @@ window.CONTENU = {
         "M1": "Comprendre le fonctionnement de l'IA ; bases pratiques ; secret professionnel et données qui ne doivent jamais être saisies.",
         "M3": "Affichages et documents d'information pour la patientèle ou la clientèle."
       },
-      "motsCles": "secrétaire médicale, assistante juridique, cabinet libéral, notaire, avocat, comptes rendus, courriers, données sensibles, secret professionnel",
+      "motsCles": "secrétaire médicale, assistante juridique, cabinet libéral, notaire, avocat, comptes rendus, courriers, données sensibles, secret professionnel, santé, social",
       "categories": [
-        "Fonctions administratives et commerciales"
+        "Administratif et commercial"
       ]
     },
     {
       "id": "ia-019",
       "besoin": "Gérer à la fois l'administratif, l'accueil des salariés et la communication interne.",
-      "categorie": "Fonctions administratives et commerciales",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "col-workspace",
@@ -3207,7 +3215,7 @@ window.CONTENU = {
       },
       "motsCles": "office manager, services généraux, responsable administratif, accueil des salariés, communication interne, achats, organisation",
       "categories": [
-        "Fonctions administratives et commerciales"
+        "Administratif et commercial"
       ]
     },
     {
@@ -3255,7 +3263,7 @@ window.CONTENU = {
     {
       "id": "ia-021",
       "besoin": "Annonces, comptes rendus de visite et relances clients plus rapides.",
-      "categorie": "Fonctions administratives et commerciales",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "pao-prise-vue",
@@ -3284,13 +3292,13 @@ window.CONTENU = {
       },
       "motsCles": "agent immobilier, négociateur, mandataire, annonces immobilières, comptes rendus de visite, relances, descriptifs de biens",
       "categories": [
-        "Fonctions administratives et commerciales"
+        "Administratif et commercial"
       ]
     },
     {
       "id": "ia-022",
       "besoin": "Répondre par écrit, clairement et rapidement, aux demandes.",
-      "categorie": "Fonctions administratives et commerciales",
+      "categorie": "Accueil et relation client",
       "complements": [
         {
           "formation": "com-canva1",
@@ -3315,13 +3323,13 @@ window.CONTENU = {
       },
       "motsCles": "chargé d'accueil, hôte d'accueil, conseiller clientèle, relation client, standard, réponses écrites, mails, FAQ",
       "categories": [
-        "Fonctions administratives et commerciales"
+        "Accueil et relation client"
       ]
     },
     {
       "id": "ia-023",
       "besoin": "Procédures, preuves, questionnaires et bilans plus rapides.",
-      "categorie": "Formation et enseignement",
+      "categorie": "Formation",
       "complements": [
         {
           "formation": "bur-excel-power",
@@ -3358,13 +3366,13 @@ window.CONTENU = {
       },
       "motsCles": "responsable qualité, Qualiopi, démarche qualité, procédures, preuves, audits, questionnaires de satisfaction, bilans, ISO",
       "categories": [
-        "Formation et enseignement"
+        "Formation"
       ]
     },
     {
       "id": "ia-024",
       "besoin": "Préparer ses entretiens, synthèses et supports d'atelier.",
-      "categorie": "Formation et enseignement",
+      "categorie": "Santé et social",
       "complements": [
         {
           "formation": "ped-genially",
@@ -3399,15 +3407,15 @@ window.CONTENU = {
         "M1": "Fonctionnement de l'IA et bases pratiques ; éthique, biais et protection des données des bénéficiaires.",
         "M3": "Supports d'atelier visuels et audio."
       },
-      "motsCles": "conseiller en insertion, CIP, conseiller d'orientation, bilan de compétences, accompagnement, entretiens, synthèses, ateliers",
+      "motsCles": "conseiller en insertion, CIP, conseiller d'orientation, bilan de compétences, accompagnement, entretiens, synthèses, ateliers, formation",
       "categories": [
-        "Formation et enseignement"
+        "Santé et social"
       ]
     },
     {
       "id": "ia-025",
       "besoin": "Menus, affichages, mails clients et réponses aux avis en ligne.",
-      "categorie": "Dirigeants et indépendants",
+      "categorie": "Commerce, artisanat, tourisme",
       "complements": [
         {
           "formation": "com-canva1",
@@ -3434,9 +3442,9 @@ window.CONTENU = {
         "M1": "Comprendre ce qu'est l'IA et comment elle fonctionne ; bases pratiques ; bons réflexes de sécurité.",
         "M3": "Visuels de menus, d'offres et d'affichages en boutique."
       },
-      "motsCles": "commerçant, restaurateur, restaurant, café, bar, menus, affichage, avis en ligne, Google, mails clients",
+      "motsCles": "commerçant, restaurateur, restaurant, café, bar, menus, affichage, avis en ligne, Google, mails clients, dirigeant, indépendant",
       "categories": [
-        "Dirigeants et indépendants"
+        "Commerce, artisanat, tourisme"
       ]
     },
     {
@@ -3488,7 +3496,7 @@ window.CONTENU = {
     {
       "id": "pao-002",
       "besoin": "Des prises de vue maîtrisées et des images retouchées à un niveau professionnel.",
-      "categorie": "Indépendants et créatifs",
+      "categorie": "Création et contenus",
       "complements": [
         {
           "formation": "paoia-adobe",
@@ -3526,15 +3534,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "photographe, vidéaste, retouche, développement photo, Lightroom, Photoshop, exposition, cadrage, éclairage",
+      "motsCles": "photographe, vidéaste, retouche, développement photo, Lightroom, Photoshop, exposition, cadrage, éclairage, indépendant, créatif",
       "categories": [
-        "Indépendants et créatifs"
+        "Création et contenus"
       ]
     },
     {
       "id": "pao-003",
       "besoin": "De belles photos de produits et des visuels pour vendre, sans budget logiciel.",
-      "categorie": "Commerce et artisanat",
+      "categorie": "Commerce, artisanat, tourisme",
       "complements": [
         {
           "formation": "com-canva1",
@@ -3568,9 +3576,9 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "commerçant, artisan, e-commerçant, photos produits, fiches produits, boutique en ligne, logiciel gratuit, Affinity",
+      "motsCles": "commerçant, artisan, e-commerçant, photos produits, fiches produits, boutique en ligne, logiciel gratuit, Affinity, commerce, artisanat",
       "categories": [
-        "Commerce et artisanat"
+        "Commerce, artisanat, tourisme"
       ]
     },
     {
@@ -3618,7 +3626,7 @@ window.CONTENU = {
     {
       "id": "pao-005",
       "besoin": "Créer ses affiches, flyers et visuels sans abonnement payant.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Communication et marketing",
       "complements": [
         {
           "formation": "com-canva1",
@@ -3645,15 +3653,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "association, petite structure, sans budget, logiciel gratuit, Affinity, affiches, flyers, alternative à Adobe",
+      "motsCles": "association, petite structure, sans budget, logiciel gratuit, Affinity, affiches, flyers, alternative à Adobe, entreprise",
       "categories": [
-        "Entreprises et associations"
+        "Communication et marketing"
       ]
     },
     {
       "id": "paoia-001",
       "besoin": "Gagner du temps sur la création grâce à l’IA, sans quitter ses outils.",
-      "categorie": "Communication et marketing",
+      "categorie": "Création et contenus",
       "complements": [
         {
           "formation": "pao-photoshop-perf",
@@ -3686,7 +3694,7 @@ window.CONTENU = {
       "reponses": {},
       "motsCles": "graphiste, maquettiste, directeur artistique, Adobe Firefly, Photoshop IA, Illustrator IA, remplissage génératif, gagner du temps",
       "categories": [
-        "Communication et marketing"
+        "Création et contenus"
       ]
     },
     {
@@ -3735,7 +3743,7 @@ window.CONTENU = {
     {
       "id": "paoia-003",
       "besoin": "Des visuels originaux pour se démarquer, sans graphiste.",
-      "categorie": "Indépendants et créatifs",
+      "categorie": "Création et contenus",
       "complements": [
         {
           "formation": "com-canva1",
@@ -3759,9 +3767,9 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "créateur de contenu, auto-entrepreneur créatif, visuels originaux, illustrations, Midjourney, Ideogram, sans graphiste",
+      "motsCles": "créateur de contenu, auto-entrepreneur créatif, visuels originaux, illustrations, Midjourney, Ideogram, sans graphiste, indépendant",
       "categories": [
-        "Indépendants et créatifs"
+        "Création et contenus"
       ]
     },
     {
@@ -3874,7 +3882,7 @@ window.CONTENU = {
     {
       "id": "prj-001",
       "besoin": "Planifier, suivre et piloter ses projets.",
-      "categorie": "Gestion de projet",
+      "categorie": "Gestion et management",
       "complements": [
         {
           "formation": "col-notion",
@@ -3903,13 +3911,13 @@ window.CONTENU = {
       "reponses": {},
       "motsCles": "chef de projet, chargé de projet, planning, Gantt, MS Project, suivi, ressources, pilotage",
       "categories": [
-        "Gestion de projet"
+        "Gestion et management"
       ]
     },
     {
       "id": "prj-002",
       "besoin": "Organiser le travail de l’équipe et suivre les priorités.",
-      "categorie": "Management",
+      "categorie": "Gestion et management",
       "complements": [
         {
           "formation": "col-workspace",
@@ -3931,13 +3939,13 @@ window.CONTENU = {
       "reponses": {},
       "motsCles": "manager, chef d'équipe, agilité, Scrum, Kanban, priorités, Trello, outils collaboratifs",
       "categories": [
-        "Management"
+        "Gestion et management"
       ]
     },
     {
       "id": "prj-003",
       "besoin": "Tenir les délais et coordonner les intervenants.",
-      "categorie": "Bâtiment et industrie",
+      "categorie": "Technique",
       "complements": [
         {
           "formation": "bur-excel-power",
@@ -3957,15 +3965,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "conducteur de travaux, responsable de production, chantier, planning, délais, coordination, MS Project",
+      "motsCles": "conducteur de travaux, responsable de production, chantier, planning, délais, coordination, MS Project, bâtiment, industrie, gestion, management, pilotage",
       "categories": [
-        "Bâtiment et industrie"
+        "Technique"
       ]
     },
     {
       "id": "prj-004",
       "besoin": "Mener ses projets avec des partenaires multiples.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Gestion et management",
       "complements": [
         {
           "formation": "col-workspace",
@@ -3985,15 +3993,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "chargé de mission, association, collectivité, partenaires, projets multi-acteurs, agilité, outils en ligne",
+      "motsCles": "chargé de mission, association, collectivité, partenaires, projets multi-acteurs, agilité, outils en ligne, entreprise",
       "categories": [
-        "Entreprises et associations"
+        "Gestion et management"
       ]
     },
     {
       "id": "rs-001",
       "besoin": "Se faire connaître et trouver ses premiers clients, avec peu de temps et sans budget agence.",
-      "categorie": "Indépendants et auto-entrepreneurs",
+      "categorie": "Dirigeants et indépendants",
       "complements": [
         {
           "formation": "com-canva1",
@@ -4039,15 +4047,15 @@ window.CONTENU = {
         "M1 Base": "Choisir les réseaux de sa cible et créer une page pro complète pendant la formation.",
         "M2.1": "Un rythme de publication tenable et des formats simples qui font venir des clients."
       },
-      "motsCles": "auto-entrepreneur, micro-entrepreneur, création d'activité, premiers clients, se faire connaître, Instagram, Facebook, page pro, petit budget",
+      "motsCles": "auto-entrepreneur, micro-entrepreneur, création d'activité, premiers clients, se faire connaître, Instagram, Facebook, page pro, petit budget, indépendant",
       "categories": [
-        "Indépendants et auto-entrepreneurs"
+        "Dirigeants et indépendants"
       ]
     },
     {
       "id": "rs-002",
       "besoin": "Montrer ses créations et vendre en direct ou en ligne.",
-      "categorie": "Indépendants et auto-entrepreneurs",
+      "categorie": "Commerce, artisanat, tourisme",
       "complements": [
         {
           "formation": "pao-prise-vue",
@@ -4090,15 +4098,15 @@ window.CONTENU = {
         "M1 Base": "Page pro qui met en valeur ses créations.",
         "M2.1": "Publications régulières autour des créations, des coulisses et des ventes."
       },
-      "motsCles": "artisan d'art, créateur, céramiste, bijoutier, couturière, vente en ligne, marchés, Instagram, Pinterest, montrer ses créations",
+      "motsCles": "artisan d'art, créateur, céramiste, bijoutier, couturière, vente en ligne, marchés, Instagram, Pinterest, montrer ses créations, indépendant, auto-entrepreneur",
       "categories": [
-        "Indépendants et auto-entrepreneurs"
+        "Commerce, artisanat, tourisme"
       ]
     },
     {
       "id": "rs-003",
       "besoin": "Trouver des clients professionnels et asseoir son expertise.",
-      "categorie": "Indépendants et auto-entrepreneurs",
+      "categorie": "Dirigeants et indépendants",
       "complements": [
         {
           "formation": "com-canva1",
@@ -4132,15 +4140,15 @@ window.CONTENU = {
         "M1 Base": "Identifier sa cible professionnelle et soigner sa présence.",
         "M2.1": "Une stratégie de contenu qui démontre son expertise."
       },
-      "motsCles": "consultant, freelance, coach d'entreprise, B2B, expertise, LinkedIn, prospection, personal branding",
+      "motsCles": "consultant, freelance, coach d'entreprise, B2B, expertise, LinkedIn, prospection, personal branding, indépendant, auto-entrepreneur",
       "categories": [
-        "Indépendants et auto-entrepreneurs"
+        "Dirigeants et indépendants"
       ]
     },
     {
       "id": "rs-004",
       "besoin": "Faire connaître son activité et rassurer de futurs clients.",
-      "categorie": "Indépendants et auto-entrepreneurs",
+      "categorie": "Santé et social",
       "complements": [
         {
           "formation": "com-canva1",
@@ -4181,15 +4189,15 @@ window.CONTENU = {
         "M1 Base": "Page pro claire sur l'offre et la prise de rendez-vous.",
         "M2.1": "Contenus qui créent la confiance et la proximité."
       },
-      "motsCles": "coach, praticien, thérapeute, sophrologue, bien-être, professeur de yoga, cours particuliers, rassurer, avis, Google",
+      "motsCles": "coach, praticien, thérapeute, sophrologue, bien-être, professeur de yoga, cours particuliers, rassurer, avis, Google, indépendant, auto-entrepreneur, dirigeant",
       "categories": [
-        "Indépendants et auto-entrepreneurs"
+        "Santé et social"
       ]
     },
     {
       "id": "rs-005",
       "besoin": "Définir son image avant de se lancer sur les réseaux.",
-      "categorie": "Indépendants et auto-entrepreneurs",
+      "categorie": "Dirigeants et indépendants",
       "complements": [
         {
           "formation": "com-canva1",
@@ -4221,9 +4229,9 @@ window.CONTENU = {
         "M1 Base": "Pages pro créées dès le départ aux couleurs de la marque.",
         "M2.1": "Publications cohérentes qui installent la marque."
       },
-      "motsCles": "créateur d'entreprise, lancement, marque, logo, charte graphique, identité visuelle, positionnement, nom de marque",
+      "motsCles": "créateur d'entreprise, lancement, marque, logo, charte graphique, identité visuelle, positionnement, nom de marque, indépendant, auto-entrepreneur",
       "categories": [
-        "Indépendants et auto-entrepreneurs"
+        "Dirigeants et indépendants"
       ]
     },
     {
@@ -4270,7 +4278,7 @@ window.CONTENU = {
         "M1 Base": "Réseaux adaptés à ses clientèles locale et touristique.",
         "M2.1": "Publications qui donnent envie : plats, lieu, événements, saisons."
       },
-      "motsCles": "restaurateur, hôtel, gîte, chambre d'hôtes, camping, tourisme, Google Business Profile, avis clients, Instagram, réservations",
+      "motsCles": "restaurateur, hôtel, gîte, chambre d'hôtes, camping, tourisme, Google Business Profile, avis clients, Instagram, réservations, commerce, artisanat",
       "categories": [
         "Commerce, artisanat, tourisme"
       ]
@@ -4317,7 +4325,7 @@ window.CONTENU = {
         "M1 Base": "Pages pro tournées vers la clientèle locale.",
         "M2.1": "Publications sur les nouveautés, promotions et événements."
       },
-      "motsCles": "commerçant, boutique, salon de coiffure, institut, épicerie, fleuriste, clientèle de quartier, Google Maps, fiche Google",
+      "motsCles": "commerçant, boutique, salon de coiffure, institut, épicerie, fleuriste, clientèle de quartier, Google Maps, fiche Google, commerce, artisanat, tourisme",
       "categories": [
         "Commerce, artisanat, tourisme"
       ]
@@ -4364,7 +4372,7 @@ window.CONTENU = {
         "M1 Base": "Page pro qui montre ses réalisations.",
         "M2.1": "Avant / après et chantiers publiés régulièrement."
       },
-      "motsCles": "artisan du bâtiment, plombier, électricien, peintre, menuisier, services à domicile, zone d'intervention, avis Google, chantiers",
+      "motsCles": "artisan du bâtiment, plombier, électricien, peintre, menuisier, services à domicile, zone d'intervention, avis Google, chantiers, commerce, artisanat, tourisme",
       "categories": [
         "Commerce, artisanat, tourisme"
       ]
@@ -4410,7 +4418,7 @@ window.CONTENU = {
         "M1 Base": "Réseaux adaptés à sa clientèle et pages reliées à la boutique.",
         "M2.1": "Publications qui valorisent les produits et génèrent des visites."
       },
-      "motsCles": "e-commerce, boutique en ligne, Shopify, WooCommerce, trafic, Instagram, TikTok, publicité, vidéos produits",
+      "motsCles": "e-commerce, boutique en ligne, Shopify, WooCommerce, trafic, Instagram, TikTok, publicité, vidéos produits, artisanat, tourisme",
       "categories": [
         "Commerce, artisanat, tourisme"
       ]
@@ -4453,7 +4461,7 @@ window.CONTENU = {
         "M1 Base": "Audit de la page existante et corrections prioritaires.",
         "M2.1": "Planning éditorial et lecture des statistiques."
       },
-      "motsCles": "irrégulier, manque de temps, calendrier éditorial, planification, régularité, Meta Business Suite, publications",
+      "motsCles": "irrégulier, manque de temps, calendrier éditorial, planification, régularité, Meta Business Suite, publications, commerce, artisanat, tourisme",
       "categories": [
         "Commerce, artisanat, tourisme"
       ]
@@ -4461,7 +4469,7 @@ window.CONTENU = {
     {
       "id": "rs-011",
       "besoin": "Prendre en charge les réseaux sans formation en communication.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Communication et marketing",
       "complements": [
         {
           "formation": "com-canva1",
@@ -4500,15 +4508,15 @@ window.CONTENU = {
         "M1 Base": "Bases solides : cible, plateformes, page professionnelle.",
         "M2.1": "Méthode pour proposer et tenir une stratégie de publication."
       },
-      "motsCles": "community manager, salarié polyvalent, réseaux de l'entreprise, ligne éditoriale, planification, statistiques",
+      "motsCles": "community manager, salarié polyvalent, réseaux de l'entreprise, ligne éditoriale, planification, statistiques, association",
       "categories": [
-        "Entreprises et associations"
+        "Communication et marketing"
       ]
     },
     {
       "id": "rs-012",
       "besoin": "Harmoniser l'image et produire des contenus en interne.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Communication et marketing",
       "complements": [
         {
           "formation": "com-canva-pro",
@@ -4553,15 +4561,15 @@ window.CONTENU = {
         "M1 Base": "Audit de la présence existante, plateforme par plateforme.",
         "M2.1": "Stratégie de publication cohérente et mesurable."
       },
-      "motsCles": "responsable communication, chargé de marketing, collectivité, mairie, charte, stratégie de contenus, image de marque",
+      "motsCles": "responsable communication, chargé de marketing, collectivité, mairie, charte, stratégie de contenus, image de marque, entreprise, association",
       "categories": [
-        "Entreprises et associations"
+        "Communication et marketing"
       ]
     },
     {
       "id": "rs-013",
       "besoin": "Incarner son entreprise et gagner en crédibilité.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Dirigeants et indépendants",
       "complements": [
         {
           "formation": "video-ia-avatar",
@@ -4591,15 +4599,15 @@ window.CONTENU = {
         "M1 Base": "Articuler page entreprise et présence du dirigeant.",
         "M2.1": "Messages clés et calendrier de publication."
       },
-      "motsCles": "dirigeant, gérant, PDG, chef d'entreprise, PME, LinkedIn, crédibilité, incarner l'entreprise, marque employeur",
+      "motsCles": "dirigeant, gérant, PDG, chef d'entreprise, PME, LinkedIn, crédibilité, incarner l'entreprise, marque employeur, association",
       "categories": [
-        "Entreprises et associations"
+        "Dirigeants et indépendants"
       ]
     },
     {
       "id": "rs-014",
       "besoin": "Prospecter et entretenir sa relation client sur les réseaux.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "com-canva1",
@@ -4622,15 +4630,15 @@ window.CONTENU = {
         "M1 Base": "Cibler les bons interlocuteurs.",
         "M2.1": "Contenus qui ouvrent la conversation."
       },
-      "motsCles": "commercial B2B, business developer, prospection, social selling, LinkedIn, relation client, réseau",
+      "motsCles": "commercial B2B, business developer, prospection, social selling, LinkedIn, relation client, réseau, entreprise, association",
       "categories": [
-        "Entreprises et associations"
+        "Administratif et commercial"
       ]
     },
     {
       "id": "rs-015",
       "besoin": "Valoriser la marque employeur et attirer des candidats.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Ressources humaines",
       "complements": [
         {
           "formation": "com-canva1",
@@ -4664,15 +4672,15 @@ window.CONTENU = {
         "M1 Base": "Présence pensée pour les candidats.",
         "M2.1": "Publications marque employeur régulières."
       },
-      "motsCles": "RH, recruteur, marque employeur, offres d'emploi, attirer des candidats, LinkedIn, vidéos métiers",
+      "motsCles": "RH, recruteur, marque employeur, offres d'emploi, attirer des candidats, LinkedIn, vidéos métiers, entreprise, association",
       "categories": [
-        "Entreprises et associations"
+        "Ressources humaines"
       ]
     },
     {
       "id": "rs-016",
       "besoin": "Faire connaître les actions et mobiliser son public.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Communication et marketing",
       "complements": [
         {
           "formation": "com-canva1",
@@ -4704,9 +4712,9 @@ window.CONTENU = {
         "M1 Base": "Page claire, adaptée aux adhérents et partenaires.",
         "M2.1": "Publications qui annoncent et valorisent les événements."
       },
-      "motsCles": "association, bénévole, salarié associatif, événements, mobiliser, adhérents, dons, Facebook, Instagram",
+      "motsCles": "association, bénévole, salarié associatif, événements, mobiliser, adhérents, dons, Facebook, Instagram, entreprise",
       "categories": [
-        "Entreprises et associations"
+        "Communication et marketing"
       ]
     },
     {
@@ -4748,7 +4756,7 @@ window.CONTENU = {
     {
       "id": "rs-018",
       "besoin": "Mettre en avant ses biens et être reconnu dans son secteur.",
-      "categorie": "Indépendants et auto-entrepreneurs",
+      "categorie": "Administratif et commercial",
       "complements": [
         {
           "formation": "pao-prise-vue",
@@ -4789,9 +4797,9 @@ window.CONTENU = {
         "M1 Base": "Choisir les réseaux de ses acheteurs et vendeurs, page pro complète.",
         "M2.1": "Publications de biens, de ventes réalisées et de conseils locaux."
       },
-      "motsCles": "agent immobilier, mandataire, biens à vendre, visites virtuelles, vidéos de biens, notoriété locale, Google",
+      "motsCles": "agent immobilier, mandataire, biens à vendre, visites virtuelles, vidéos de biens, notoriété locale, Google, indépendant, auto-entrepreneur, dirigeant",
       "categories": [
-        "Indépendants et auto-entrepreneurs"
+        "Administratif et commercial"
       ]
     },
     {
@@ -4838,7 +4846,7 @@ window.CONTENU = {
         "M1 Base": "Page pro avec produits, horaires et lieux de vente.",
         "M2.1": "Publications de saison, récoltes et annonces de marchés."
       },
-      "motsCles": "agriculteur, producteur, maraîcher, vente directe, vente à la ferme, marchés, circuit court, AMAP, Facebook",
+      "motsCles": "agriculteur, producteur, maraîcher, vente directe, vente à la ferme, marchés, circuit court, AMAP, Facebook, commerce, artisanat, tourisme",
       "categories": [
         "Commerce, artisanat, tourisme"
       ]
@@ -4846,7 +4854,7 @@ window.CONTENU = {
     {
       "id": "rs-020",
       "besoin": "Montrer son style et trouver des clients.",
-      "categorie": "Indépendants et auto-entrepreneurs",
+      "categorie": "Création et contenus",
       "complements": [
         {
           "formation": "pao-lightroom",
@@ -4880,15 +4888,15 @@ window.CONTENU = {
         "M1 Base": "Choisir les réseaux où se trouvent ses clients, portfolio en ligne.",
         "M2.1": "Rythme de publication et formats qui valorisent ses réalisations."
       },
-      "motsCles": "photographe, vidéaste, portfolio, style, Instagram, clients, mariages, reportages",
+      "motsCles": "photographe, vidéaste, portfolio, style, Instagram, clients, mariages, reportages, indépendant, auto-entrepreneur",
       "categories": [
-        "Indépendants et auto-entrepreneurs"
+        "Création et contenus"
       ]
     },
     {
       "id": "rs-021",
       "besoin": "Donner envie avec ses réalisations et se démarquer.",
-      "categorie": "Indépendants et auto-entrepreneurs",
+      "categorie": "Dirigeants et indépendants",
       "complements": [
         {
           "formation": "pao-prise-vue",
@@ -4922,15 +4930,15 @@ window.CONTENU = {
         "M1 Base": "Page pro qui présente ses prestations et ses réalisations.",
         "M2.1": "Publications avant, pendant et après les événements."
       },
-      "motsCles": "organisateur d'événements, wedding planner, mariage, décoration, événementiel, inspirations, Instagram, Pinterest",
+      "motsCles": "organisateur d'événements, wedding planner, mariage, décoration, événementiel, inspirations, Instagram, Pinterest, indépendant, auto-entrepreneur",
       "categories": [
-        "Indépendants et auto-entrepreneurs"
+        "Dirigeants et indépendants"
       ]
     },
     {
       "id": "rs-022",
       "besoin": "Développer son public et annoncer ses dates ou ses sorties.",
-      "categorie": "Indépendants et auto-entrepreneurs",
+      "categorie": "Création et contenus",
       "complements": [
         {
           "formation": "com-canva1",
@@ -4964,9 +4972,9 @@ window.CONTENU = {
         "M1 Base": "Choisir ses réseaux selon son public, page artiste complète.",
         "M2.1": "Calendrier de publications autour des dates, sorties et coulisses."
       },
-      "motsCles": "artiste, musicien, groupe, auteur, écrivain, concerts, sorties, public, fans, Instagram, YouTube",
+      "motsCles": "artiste, musicien, groupe, auteur, écrivain, concerts, sorties, public, fans, Instagram, YouTube, indépendant, auto-entrepreneur",
       "categories": [
-        "Indépendants et auto-entrepreneurs"
+        "Création et contenus"
       ]
     },
     {
@@ -5000,7 +5008,7 @@ window.CONTENU = {
         "M1 Base": "Page du point de vente, dans le cadre fixé par l'enseigne.",
         "M2.1": "Publications locales : animations, nouveautés, équipe."
       },
-      "motsCles": "franchise, franchisé, point de vente, enseigne, magasin, clientèle locale, charte de l'enseigne",
+      "motsCles": "franchise, franchisé, point de vente, enseigne, magasin, clientèle locale, charte de l'enseigne, commerce, artisanat, tourisme",
       "categories": [
         "Commerce, artisanat, tourisme"
       ]
@@ -5042,7 +5050,7 @@ window.CONTENU = {
         "M1 Base": "Page pro avec offres, horaires et inscriptions.",
         "M2.1": "Défis, résultats, événements et conseils publiés régulièrement."
       },
-      "motsCles": "salle de sport, club sportif, coach sportif, fitness, adhérents, communauté, vidéos d'exercices",
+      "motsCles": "salle de sport, club sportif, coach sportif, fitness, adhérents, communauté, vidéos d'exercices, commerce, artisanat, tourisme",
       "categories": [
         "Commerce, artisanat, tourisme"
       ]
@@ -5050,7 +5058,7 @@ window.CONTENU = {
     {
       "id": "rs-025",
       "besoin": "Valoriser un territoire auprès des visiteurs.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Communication et marketing",
       "complements": [
         {
           "formation": "video-premiere",
@@ -5084,15 +5092,15 @@ window.CONTENU = {
         "M1 Base": "Réseaux adaptés aux visiteurs et aux habitants.",
         "M2.1": "Calendrier éditorial autour des saisons et des événements du territoire."
       },
-      "motsCles": "office de tourisme, attractivité, territoire, destination, visiteurs, patrimoine, événements, collectivité",
+      "motsCles": "office de tourisme, attractivité, territoire, destination, visiteurs, patrimoine, événements, collectivité, entreprise, association",
       "categories": [
-        "Entreprises et associations"
+        "Communication et marketing"
       ]
     },
     {
       "id": "rs-026",
       "besoin": "Être visible auprès des entreprises et des partenaires.",
-      "categorie": "Entreprises et associations",
+      "categorie": "Gestion et management",
       "complements": [
         {
           "formation": "com-canva1",
@@ -5124,15 +5132,15 @@ window.CONTENU = {
         "M1 Base": "Cibler entreprises, partenaires et porteurs de projet.",
         "M2.1": "Contenus sur les actions, dispositifs et réussites du territoire."
       },
-      "motsCles": "développement économique, collectivité, réseau d'entreprises, CCI, partenaires, LinkedIn, événements",
+      "motsCles": "développement économique, collectivité, réseau d'entreprises, CCI, partenaires, LinkedIn, événements, association",
       "categories": [
-        "Entreprises et associations"
+        "Gestion et management"
       ]
     },
     {
       "id": "rs-027",
       "besoin": "Construire une audience régulière.",
-      "categorie": "Indépendants et auto-entrepreneurs",
+      "categorie": "Création et contenus",
       "complements": [
         {
           "formation": "video-premiere",
@@ -5166,9 +5174,9 @@ window.CONTENU = {
         "M1 Base": "Choisir sa cible et ses plateformes.",
         "M2.1": "Ligne éditoriale, régularité et lecture des statistiques."
       },
-      "motsCles": "créateur de contenu, influenceur, YouTube, TikTok, Instagram, audience, vidéos courtes, reels",
+      "motsCles": "créateur de contenu, influenceur, YouTube, TikTok, Instagram, audience, vidéos courtes, reels, indépendant, auto-entrepreneur",
       "categories": [
-        "Indépendants et auto-entrepreneurs"
+        "Création et contenus"
       ]
     },
     {
@@ -5275,7 +5283,7 @@ window.CONTENU = {
     {
       "id": "video-003",
       "besoin": "Présenter ses produits et son entreprise en vidéo, sans agence.",
-      "categorie": "Commerce et artisanat",
+      "categorie": "Commerce, artisanat, tourisme",
       "complements": [
         {
           "formation": "pao-prise-vue",
@@ -5302,15 +5310,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "dirigeant, TPE, e-commerçant, vidéos produits, présentation d'entreprise, avatar, sans agence",
+      "motsCles": "dirigeant, TPE, e-commerçant, vidéos produits, présentation d'entreprise, avatar, sans agence, commerce, artisanat",
       "categories": [
-        "Commerce et artisanat"
+        "Commerce, artisanat, tourisme"
       ]
     },
     {
       "id": "video-004",
       "besoin": "Un montage plus professionnel pour ses vidéos.",
-      "categorie": "Indépendants et créatifs",
+      "categorie": "Création et contenus",
       "complements": [
         {
           "formation": "pao-prise-vue",
@@ -5334,15 +5342,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "vidéaste, monteur, créateur de contenu, YouTube, montage professionnel, étalonnage, Premiere Pro",
+      "motsCles": "vidéaste, monteur, créateur de contenu, YouTube, montage professionnel, étalonnage, Premiere Pro, indépendant, créatif",
       "categories": [
-        "Indépendants et créatifs"
+        "Création et contenus"
       ]
     },
     {
       "id": "web-001",
       "besoin": "Créer et faire vivre son site sans dépendre d’un prestataire.",
-      "categorie": "Indépendants et créatifs",
+      "categorie": "Dirigeants et indépendants",
       "complements": [
         {
           "formation": "com-canva1",
@@ -5369,9 +5377,9 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "site internet, site vitrine, WordPress, autonomie, sans prestataire, mise à jour, TPE, auto-entrepreneur",
+      "motsCles": "site internet, site vitrine, WordPress, autonomie, sans prestataire, mise à jour, TPE, auto-entrepreneur, indépendant, créatif",
       "categories": [
-        "Indépendants et créatifs"
+        "Dirigeants et indépendants"
       ]
     },
     {
@@ -5416,7 +5424,7 @@ window.CONTENU = {
     {
       "id": "web-003",
       "besoin": "Attirer plus de visiteurs sur sa boutique en ligne.",
-      "categorie": "Commerce et artisanat",
+      "categorie": "Commerce, artisanat, tourisme",
       "complements": [
         {
           "formation": "pao-prise-vue",
@@ -5443,15 +5451,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "e-commerce, boutique en ligne, WooCommerce, trafic, référencement, fiches produits, SEO",
+      "motsCles": "e-commerce, boutique en ligne, WooCommerce, trafic, référencement, fiches produits, SEO, artisanat",
       "categories": [
-        "Commerce et artisanat"
+        "Commerce, artisanat, tourisme"
       ]
     },
     {
       "id": "web-004",
       "besoin": "Écrire des contenus qui se positionnent bien.",
-      "categorie": "Indépendants et créatifs",
+      "categorie": "Création et contenus",
       "complements": [],
       "domaine": "web",
       "nom": "Rédacteur(trice), créateur(trice) de contenu",
@@ -5466,15 +5474,15 @@ window.CONTENU = {
         }
       ],
       "reponses": {},
-      "motsCles": "rédacteur web, copywriter, blog, articles, SEO, GEO, mots-clés, stratégie éditoriale, IA",
+      "motsCles": "rédacteur web, copywriter, blog, articles, SEO, GEO, mots-clés, stratégie éditoriale, IA, indépendant, créatif",
       "categories": [
-        "Indépendants et créatifs"
+        "Création et contenus"
       ]
     },
     {
       "id": "ia-030",
       "domaine": "ia",
-      "categorie": "Communication, web et création",
+      "categorie": "Communication et marketing",
       "nom": "Webmaster, chargé(e) de contenus web",
       "besoin": "Produire plus vite des contenus bien référencés, visibles sur Google et dans les réponses des IA.",
       "reponses": {
@@ -5506,14 +5514,14 @@ window.CONTENU = {
       ],
       "motsCles": "webmaster, rédacteur web, chargé de contenus, SEO, GEO, référencement naturel, articles, blog, site internet, ChatGPT",
       "categories": [
-        "Communication, web et création"
+        "Communication et marketing"
       ],
       "ordre": 26
     },
     {
       "id": "ia-031",
       "domaine": "ia",
-      "categorie": "Communication, web et création",
+      "categorie": "Création et contenus",
       "nom": "Graphiste, chargé(e) de communication visuelle",
       "besoin": "Explorer plus de pistes créatives et livrer plus vite, en gardant la main sur le rendu final.",
       "reponses": {
@@ -5537,14 +5545,14 @@ window.CONTENU = {
       ],
       "motsCles": "graphiste, infographiste, directeur artistique, maquettiste, Midjourney, Ideogram, Photoshop, création visuelle, pistes créatives",
       "categories": [
-        "Communication, web et création"
+        "Création et contenus"
       ],
       "ordre": 27
     },
     {
       "id": "ia-032",
       "domaine": "ia",
-      "categorie": "Communication, web et création",
+      "categorie": "Communication et marketing",
       "nom": "Chargé(e) de communication ou de marketing",
       "besoin": "Produire plus de contenus de campagne, textes et visuels, sans perdre en qualité ni en cohérence.",
       "reponses": {
@@ -5576,14 +5584,14 @@ window.CONTENU = {
       ],
       "motsCles": "chargé de communication, chargé de marketing, community manager, campagnes, emailing, newsletter, réseaux sociaux, contenus, IA générative",
       "categories": [
-        "Communication, web et création"
+        "Communication et marketing"
       ],
       "ordre": 28
     },
     {
       "id": "pao-006",
       "domaine": "pao",
-      "categorie": "Communication et marketing",
+      "categorie": "Création et contenus",
       "nom": "Maquettiste ou assistant(e) PAO (imprimerie, édition, agence)",
       "besoin": "Monter des documents prêts pour l'impression : catalogues, magazines, plaquettes.",
       "reponses": {},
@@ -5618,14 +5626,14 @@ window.CONTENU = {
       ],
       "motsCles": "maquettiste, metteur en page, opérateur PAO, imprimerie, édition, catalogue, magazine, InDesign, impression, PDF",
       "categories": [
-        "Communication et marketing"
+        "Création et contenus"
       ],
       "ordre": 6
     },
     {
       "id": "bur-004",
       "domaine": "bur",
-      "categorie": "Logistique et achats",
+      "categorie": "Gestion et management",
       "nom": "Gestionnaire de stock, acheteur(se), logisticien(ne)",
       "besoin": "Croiser des extractions (ERP, fournisseurs) et suivre stocks et achats sans ressaisie.",
       "reponses": {},
@@ -5646,16 +5654,16 @@ window.CONTENU = {
         }
       ],
       "complements": [],
-      "motsCles": "gestionnaire de stock, magasinier, acheteur, approvisionneur, logisticien, supply chain, ERP, inventaire, extractions, Power Query",
+      "motsCles": "gestionnaire de stock, magasinier, acheteur, approvisionneur, logisticien, supply chain, ERP, inventaire, extractions, Power Query, logistique, achats",
       "categories": [
-        "Logistique et achats"
+        "Gestion et management"
       ],
       "ordre": 4
     },
     {
       "id": "bur-005",
       "domaine": "bur",
-      "categorie": "Gestion et finance",
+      "categorie": "Gestion et management",
       "nom": "Dirigeant(e) de TPE-PME qui pilote ses chiffres",
       "besoin": "Suivre chiffre d'affaires, marges et trésorerie dans un tableau de bord fiable.",
       "reponses": {},
@@ -5674,16 +5682,16 @@ window.CONTENU = {
           "pourquoi": "Déléguer une partie de l'administratif à l'IA (parcours certifiant)."
         }
       ],
-      "motsCles": "dirigeant, gérant, chef d'entreprise, TPE, PME, chiffre d'affaires, marges, trésorerie, tableau de bord, pilotage",
+      "motsCles": "dirigeant, gérant, chef d'entreprise, TPE, PME, chiffre d'affaires, marges, trésorerie, tableau de bord, pilotage, gestion, finance",
       "categories": [
-        "Gestion et finance"
+        "Gestion et management"
       ],
       "ordre": 5
     },
     {
       "id": "video-005",
       "domaine": "video",
-      "categorie": "Communication et marketing",
+      "categorie": "Administratif et commercial",
       "nom": "Commercial(e) ou chef(fe) de produit à l'international",
       "besoin": "Présenter produits et offres en vidéo, en plusieurs langues, sans tournage.",
       "reponses": {},
@@ -5706,14 +5714,14 @@ window.CONTENU = {
       "complements": [],
       "motsCles": "commercial export, chef de produit, international, multilingue, traduction, vidéos produits, salons, avatar IA, HeyGen, Synthesia",
       "categories": [
-        "Communication et marketing"
+        "Administratif et commercial"
       ],
       "ordre": 5
     },
     {
       "id": "cao-006",
       "domaine": "cao",
-      "categorie": "Bâtiment et aménagement",
+      "categorie": "Technique",
       "nom": "Paysagiste, aménagement extérieur",
       "besoin": "Montrer en 3D jardins, terrasses et aménagements avant les travaux.",
       "reponses": {},
@@ -5734,16 +5742,16 @@ window.CONTENU = {
         }
       ],
       "complements": [],
-      "motsCles": "paysagiste, jardinier, aménagement extérieur, terrasse, jardin, piscine, espaces verts, plans 3D, SketchUp",
+      "motsCles": "paysagiste, jardinier, aménagement extérieur, terrasse, jardin, piscine, espaces verts, plans 3D, SketchUp, bâtiment",
       "categories": [
-        "Bâtiment et aménagement"
+        "Technique"
       ],
       "ordre": 6
     },
     {
       "id": "col-005",
       "domaine": "col",
-      "categorie": "Entreprises et associations",
+      "categorie": "Administratif et commercial",
       "nom": "Commercial(e) ou équipe itinérante",
       "besoin": "Partager fichiers, agendas et comptes rendus en déplacement.",
       "reponses": {},
@@ -5764,16 +5772,16 @@ window.CONTENU = {
         }
       ],
       "complements": [],
-      "motsCles": "commercial itinérant, technicien itinérant, équipe terrain, mobilité, smartphone, agenda partagé, Drive, Meet, comptes rendus",
+      "motsCles": "commercial itinérant, technicien itinérant, équipe terrain, mobilité, smartphone, agenda partagé, Drive, Meet, comptes rendus, entreprise, association",
       "categories": [
-        "Entreprises et associations"
+        "Administratif et commercial"
       ],
       "ordre": 5
     },
     {
       "id": "web-005",
       "domaine": "web",
-      "categorie": "Entreprises et associations",
+      "categorie": "Communication et marketing",
       "nom": "Association ou collectivité qui gère son site",
       "besoin": "Mettre à jour son site soi-même et être bien trouvé.",
       "reponses": {},
@@ -5799,16 +5807,16 @@ window.CONTENU = {
           "pourquoi": "Créer les visuels des actualités et des événements."
         }
       ],
-      "motsCles": "association, collectivité, mairie, commune, site institutionnel, actualités, agenda, WordPress, mise à jour",
+      "motsCles": "association, collectivité, mairie, commune, site institutionnel, actualités, agenda, WordPress, mise à jour, entreprise",
       "categories": [
-        "Entreprises et associations"
+        "Communication et marketing"
       ],
       "ordre": 5
     },
     {
       "id": "com-005",
       "domaine": "com",
-      "categorie": "Commerce et artisanat",
+      "categorie": "Administratif et commercial",
       "nom": "Agent immobilier, commercial(e) qui crée ses supports",
       "besoin": "Créer annonces, fiches produits et présentations soignées sans graphiste.",
       "reponses": {},
@@ -5829,9 +5837,9 @@ window.CONTENU = {
         }
       ],
       "complements": [],
-      "motsCles": "agent immobilier, mandataire, commercial, annonces, fiches produits, présentations, supports de vente, Canva",
+      "motsCles": "agent immobilier, mandataire, commercial, annonces, fiches produits, présentations, supports de vente, Canva, commerce, artisanat",
       "categories": [
-        "Commerce et artisanat"
+        "Administratif et commercial"
       ],
       "ordre": 5
     }
