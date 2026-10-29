@@ -272,6 +272,15 @@ details.group .profiles{padding:6px 0 4px 6px}
 .fo-ccard .fo-foot{margin-top:3px}
 .fo-cpf small{display:block;font-weight:500;color:var(--muted);font-size:11px}
 
+.sidebox{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:10px;padding:8px 10px 10px;background:var(--surface)}
+.sidetit{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--orange)}
+.scope{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.scopelab{font-size:12.5px;color:var(--muted);margin-right:2px}
+.scbtn{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--blue-ink);border-radius:999px;padding:3px 10px;cursor:pointer}
+.scbtn[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+.ailleurs{display:flex;flex-direction:column;gap:6px;margin-top:4px;padding-top:8px;border-top:2px dashed var(--line)}
+.ailtit{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--orange)}
+.pdom{display:block;font-size:11.5px;font-weight:500;color:var(--muted);margin-top:1px}
 .catchecks{display:flex;flex-wrap:wrap;gap:4px 14px;margin:6px 0}
 .catchk{display:inline-flex;align-items:center;gap:5px;font-size:13.5px;font-weight:500}
 .catrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
@@ -389,12 +398,26 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
   <div id="consult">
     <div class="grid">
       <div class="side">
-        <label class="searchlab" for="domSel">Domaine de formation
-          <select class="search domsel" id="domSel"></select>
-        </label>
-        <label class="searchlab" for="q">Rechercher un métier ou un besoin
-          <input class="search" id="q" type="search" placeholder="ex. auto-entrepreneur, restaurateur, recrutement">
-        </label>
+        <div class="sidebox">
+          <span class="sidetit">Parcourir</span>
+          <label class="searchlab" for="domSel">Domaine de formation
+            <select class="search domsel" id="domSel"></select>
+          </label>
+          <label class="searchlab" for="catSel">Catégorie de profils
+            <select class="search" id="catSel"><option value="">Toutes les catégories</option></select>
+          </label>
+        </div>
+        <div class="sidebox">
+          <span class="sidetit">Rechercher</span>
+          <label class="searchlab" for="q">Un métier, un besoin, un mot-clé
+            <input class="search" id="q" type="search" placeholder="ex. auto-entrepreneur, restaurateur, recrutement">
+          </label>
+          <div class="scope" id="scope" role="group" aria-label="Où chercher">
+            <span class="scopelab">Chercher dans</span>
+            <button type="button" class="scbtn" data-scope="tous" aria-pressed="true">Tous les domaines</button>
+            <button type="button" class="scbtn" data-scope="domaine" aria-pressed="false">Le domaine choisi</button>
+          </div>
+        </div>
         <div id="groups" class="profgroups"></div>
       </div>
       <section class="result" id="detail" aria-live="polite"><div class="state">Chargement des profils…</div></section>
@@ -513,7 +536,7 @@ function buildModel(){
       prix: prixParcours(f), tarifCertification: f.tarifCertification,
       liens: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).filter(m => m.lien).map(m => [m.code, m.lien])) })),
     profils: (RAW.profils || []).filter(p => p.domaine === d.id).sort(byOrdre).map(p => ({
-      id: p.id, categorie: profCats(p)[0], categories: profCats(p), nom: p.nom || "", besoin: p.besoin || "", reponses: p.reponses || {},
+      id: p.id, categorie: profCats(p)[0], categories: profCats(p), motsCles: p.motsCles || "", nom: p.nom || "", besoin: p.besoin || "", reponses: p.reponses || {},
       parcours: Object.fromEntries((Array.isArray(p.parcours) ? p.parcours : []).map(x => [x.formation, { pourquoi: x.pourquoi || "", reponses: x.reponses || {} }])),
       complements: (Array.isArray(p.complements) ? p.complements : []).filter(c => c && c.formation) }))
   }));
@@ -553,13 +576,28 @@ function renderDomains(){
 }
 
 const ouvertes = new Set();
+/* texte dans lequel on cherche : nom, besoin, catégories et leurs mots-clés, mots-clés du sous-profil, parcours et modules proposés */
+function hayOf(p, d){
+  const rd = (RAW.domaines || []).find(x => x.id === d.id) || {}, mc = rd.motsClesCategories || {};
+  const fs = Object.keys(p.parcours).map(id => d.formations.find(f => f.id === id)).filter(Boolean);
+  return norm([p.nom, p.besoin, p.motsCles, d.nom, ...p.categories, ...p.categories.map(c => mc[c] || ""),
+    ...fs.map(f => f.nom + " " + f.intitule + " " + Object.values(f.modules).join(" "))].join(" "));
+}
+const matchQ = (hay, q) => q.split(/[\s,;]+/).filter(Boolean).every(w => hay.includes(w));
+function renderCatSel(){
+  const d = dom(), el = $("catSel"); if(!d || !el) return;
+  const l = domCats(d); if(state.cat && !l.includes(state.cat)) state.cat = "";
+  el.innerHTML = `<option value="">Toutes les catégories</option>` + l.map(c => `<option${c===state.cat?" selected":""}>${esc(c)}</option>`).join("");
+  document.querySelectorAll(".scbtn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.scope === (state.scope || "tous"))));
+}
 function renderList(){
   const d = dom(); if(!d){ $("groups").innerHTML = ""; return; }
+  renderCatSel();
   const q = norm(state.q.trim()), cats = [];
   d.profils.forEach(p => {
-    const hay = norm(p.nom + " " + p.besoin + " " + p.categories.join(" ") + " " + Object.keys(p.parcours).map(id => (d.formations.find(f => f.id === id)||{}).nom).join(" "));
-    if(q && !hay.includes(q)) return;
-    p.categories.forEach(nom => { let c = cats.find(x => x.nom === nom); if(!c){ c = {nom, items:[]}; cats.push(c); } c.items.push(p); });
+    if(state.cat && !p.categories.includes(state.cat)) return;
+    if(q && !matchQ(hayOf(p, d), q)) return;
+    p.categories.filter(nom => !state.cat || nom === state.cat).forEach(nom => { let c = cats.find(x => x.nom === nom); if(!c){ c = {nom, items:[]}; cats.push(c); } c.items.push(p); });
   });
   const ordre = domCats(d); cats.sort((a, b) => ordre.indexOf(a.nom) - ordre.indexOf(b.nom));
   const sel = d.profils.find(p => p.id === state.pid);
@@ -569,7 +607,15 @@ function renderList(){
       const n = Object.keys(p.parcours).length;
       return `<button type="button" class="prof" data-pid="${esc(p.id)}" aria-pressed="${state.pid===p.id}"><span>${esc(p.nom)}</span><span class="count" title="${n} parcours possible${n>1?"s":""}">${n}</span></button>`;
     }).join("")}</div></details>`;
-  }).join("") : `<p class="none">${d.profils.length ? `Aucun profil ne correspond à « ${esc(state.q)} ».` : "Aucun profil dans ce domaine pour l'instant."}</p>`;
+  }).join("") : `<p class="none">${!d.profils.length ? "Aucun profil dans ce domaine pour l'instant." : q ? `Rien dans ce domaine pour « ${esc(state.q)} »${state.cat ? ` (catégorie « ${esc(state.cat)} »)` : ""}.` : "Aucun sous-profil dans cette catégorie."}</p>`;
+  /* recherche dans tous les domaines : les résultats des autres domaines viennent ensuite */
+  if(q && (state.scope || "tous") === "tous" && !state.cat){
+    const autres = [];
+    DOMAINES.filter(x => x.id !== d.id).forEach(x => x.profils.forEach(p => { if(matchQ(hayOf(p, x), q)) autres.push({ p, x }); }));
+    if(autres.length) $("groups").insertAdjacentHTML("beforeend", `<div class="ailleurs"><div class="ailtit">Dans les autres domaines (${autres.length})</div>${autres.map(({p, x}) =>
+      `<button type="button" class="prof" data-pid="${esc(p.id)}" data-dom="${esc(x.id)}"><span>${esc(p.nom)}<small class="pdom">${esc(x.nom)} · ${esc(p.categories[0])}</small></span><span class="count">${Object.keys(p.parcours).length}</span></button>`).join("")}</div>`);
+    else if(!cats.length) $("groups").insertAdjacentHTML("beforeend", `<p class="none">Rien non plus dans les autres domaines. Essayez un autre mot.</p>`);
+  }
 }
 
 function renderDetail(){
@@ -665,10 +711,11 @@ function fixSelection(){
 function renderConsult(){ fixSelection(); renderDomains(); renderList(); renderDetail(); }
 
 $("domSel").addEventListener("change", e => {
-  state.dom = e.target.value; state.pid = ""; fixSelection(); save(); renderConsult();
+  state.dom = e.target.value; state.pid = ""; state.cat = ""; fixSelection(); save(); renderConsult();
 });
 $("groups").addEventListener("click", e => {
   const b = e.target.closest(".prof"); if(!b) return;
+  if(b.dataset.dom && b.dataset.dom !== state.dom){ state.dom = b.dataset.dom; state.cat = ""; renderDomains(); }
   state.pid = b.dataset.pid; save(); renderList(); renderDetail();
   document.querySelector(`.prof[data-pid="${CSS.escape(state.pid)}"]`)?.focus();
   if(window.matchMedia("(max-width:900px)").matches) $("detail").scrollIntoView({behavior:"smooth", block:"start"});
@@ -678,6 +725,8 @@ $("groups").addEventListener("toggle", e => {
   const k = state.dom + "|" + el.dataset.cat; el.open ? ouvertes.add(k) : ouvertes.delete(k);
 }, true);
 $("q").addEventListener("input", e => { state.q = e.target.value; renderList(); });
+$("catSel").addEventListener("change", e => { state.cat = e.target.value; renderList(); });
+$("scope").addEventListener("click", e => { const b = e.target.closest("[data-scope]"); if(!b) return; state.scope = b.dataset.scope; renderList(); });
 
 /* ---------- Vues ---------- */
 $("views").addEventListener("click", e => {
@@ -786,6 +835,7 @@ function formDomaine(el){
     const data = { nom, financement: $("fFin").value.trim(), certification: $("fCert").value.trim(),
       ordreModules: $("fMods").value.split(",").map(s => s.trim()).filter(Boolean), ordre };
     if(Array.isArray(r.categories)) data.categories = r.categories;
+    if(r.motsClesCategories) data.motsClesCategories = r.motsClesCategories;
     await write(() => db.doc("domaines/" + id).set(data), "Domaine enregistré", () => { adm.dom = id; adm.sel = id; adm.tab = "domaine"; });
   });
 }
@@ -890,7 +940,8 @@ function formCategorie(el, d){
   const dedans = isNew ? [] : d.profils.filter(p => p.categories.includes(nomAct)), dehors = d.profils.filter(p => !dedans.includes(p));
   const rd = rawD(d.id) || {};
   el.innerHTML = `<div class="form"><h2>${isNew ? "Nouvelle catégorie" : "Catégorie : " + esc(nomAct)}</h2>
-    <div class="fgrid">${field("Nom de la catégorie *", inp("fCatNom", nomAct, "ex. Commerce et artisanat"), true)}</div>
+    <div class="fgrid">${field("Nom de la catégorie *", inp("fCatNom", nomAct, "ex. Commerce et artisanat"), true)}
+      ${field("Mots-clés pour la recherche <small class=\"fhint\">— valent pour tous les sous-profils de la catégorie</small>", ta("fCatMots", ((rd.motsClesCategories || {})[nomAct]) || "", "ex. TPE, PME, gérant, patron, chef d'entreprise"), true)}</div>
     ${isNew ? "" : `<div class="actions" style="border:0;padding:0"><button type="button" class="btn small" data-move="-1">Monter dans la liste</button><button type="button" class="btn small" data-move="1">Descendre dans la liste</button><span class="fhint">Position ${toutes.indexOf(nomAct) + 1} sur ${toutes.length}</span></div>
     <div class="fsec"><h3>Sous-profils de cette catégorie (${dedans.length})</h3>
       <p class="fhint">Un sous-profil peut être dans plusieurs catégories. « Retirer » l'enlève seulement d'ici ; s'il n'est que dans cette catégorie, choisissez où le déplacer.</p>
@@ -901,7 +952,8 @@ function formCategorie(el, d){
     </div>`}
     ${formActions(!isNew)}</div>`;
   const majProfil = async (p, cats) => { await db.doc("profils/" + p.id).update({ categorie: cats[0], categories: cats }); };
-  const majOrdre = async l => { await db.doc("domaines/" + d.id).update({ categories: l }); };
+  const majOrdre = async (l, mots) => { const u = { categories: l }; if(mots) u.motsClesCategories = mots; await db.doc("domaines/" + d.id).update(u); };
+  const motsAvec = (ancien, nouveau, texte) => { const m = Object.assign({}, rd.motsClesCategories || {}); if(ancien && ancien !== nouveau) delete m[ancien]; if(nouveau){ if(texte) m[nouveau] = texte; else delete m[nouveau]; } return m; };
   el.onclick = async e => {
     const mv = e.target.closest("[data-move]");
     if(mv){ const l = toutes.slice(), i = l.indexOf(nomAct), j = i + Number(mv.dataset.move); if(j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; return write(() => majOrdre(l), "Ordre enregistré", () => {}); }
@@ -921,15 +973,16 @@ function formCategorie(el, d){
     if(act === "cancel"){ adm.sel = null; renderAdmin(true); return; }
     if(act === "del"){
       if(dedans.length) return setMsg("Déplacez ou retirez d'abord les sous-profils de cette catégorie.");
-      return askConfirm(`Supprimer la catégorie « ${nomAct} » ?`, async () => { await majOrdre(toutes.filter(c => c !== nomAct)); adm.sel = null; toast("Catégorie supprimée"); });
+      return askConfirm(`Supprimer la catégorie « ${nomAct} » ?`, async () => { await majOrdre(toutes.filter(c => c !== nomAct), motsAvec(nomAct, "", "")); adm.sel = null; toast("Catégorie supprimée"); });
     }
     const nom = $("fCatNom").value.trim(); if(!nom) return setMsg("Le nom est obligatoire.");
     if(nom !== nomAct && toutes.includes(nom)) return setMsg("Une catégorie porte déjà ce nom dans ce domaine.");
-    if(isNew) return write(() => majOrdre(toutes.concat(nom)), "Catégorie créée", () => { adm.sel = nom; });
-    if(nom === nomAct) return setMsg("Aucun changement.", true);
+    const mots = $("fCatMots").value.trim();
+    if(isNew) return write(() => majOrdre(toutes.concat(nom), motsAvec("", nom, mots)), "Catégorie créée", () => { adm.sel = nom; });
+    if(nom === nomAct) return write(() => majOrdre(toutes, motsAvec(nomAct, nomAct, mots)), "Catégorie enregistrée", () => {});
     await write(async () => {
       for(const p of dedans) await majProfil(p, p.categories.map(c => c === nomAct ? nom : c));
-      await majOrdre(toutes.map(c => c === nomAct ? nom : c));
+      await majOrdre(toutes.map(c => c === nomAct ? nom : c), motsAvec(nomAct, nom, mots));
     }, "Catégorie renommée", () => { adm.sel = nom; });
   }));
 }
@@ -949,6 +1002,7 @@ function formProfil(el, d){
         <div class="catchecks" id="fCats">${cats.map(c => `<label class="catchk"><input type="checkbox" value="${esc(c)}"${mes.includes(c)?" checked":""}> ${esc(c)}</label>`).join("")}</div>
         <input class="inp" id="fCatNew" placeholder="ou nouvelle catégorie : saisir son nom"></div>
       ${field("Besoin", ta("fBesoin", r.besoin || ""), true)}
+      ${field("Mots-clés pour la recherche <small class=\"fhint\">— séparés par des virgules : synonymes, métiers voisins, besoins exprimés (invisibles pour le conseiller)</small>", ta("fMotsCles", r.motsCles || "", "ex. boulanger, pâtissier, traiteur, attirer des clients"), true)}
     </div>
     <div class="fsec"><h3>Arguments communs à tous ses parcours</h3>
       <p class="fhint">Utilisés dans chaque parcours qui contient le module, sauf si un argument propre est saisi plus bas. Laissez vide si l'argument change selon le parcours.</p>
@@ -1003,7 +1057,8 @@ function formProfil(el, d){
     const id = isNew ? d.id + "-" + slug(nom) : adm.sel;
     if(isNew && rawP(id)) return setMsg("Un profil porte déjà ce nom dans ce domaine.");
     const maxOrdre = Math.max(0, ...d.profils.map(p => (rawP(p.id) || {}).ordre || 0));
-    const data = { domaine: d.id, categorie, categories, nom, besoin: $("fBesoin").value.trim(), reponses, parcours, complements,
+    const motsCles = $("fMotsCles").value.trim();
+    const data = { domaine: d.id, categorie, categories, motsCles, nom, besoin: $("fBesoin").value.trim(), reponses, parcours, complements,
       ordre: Number($("fOrdre").value) || (isNew ? maxOrdre + 1 : (r.ordre ?? 99)) };
     await write(() => db.doc("profils/" + id).set(data), "Profil enregistré", () => { adm.sel = id; });
   });
