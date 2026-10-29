@@ -601,7 +601,7 @@ function renderDomains(){
   $("domSel").innerHTML = DOMAINES.map(d => `<option value="${esc(d.id)}"${state.dom===d.id?" selected":""}>${esc(d.nom)}</option>`).join("");
 }
 
-const ouvertes = new Set();
+const fermees = new Set(); /* catégories que la conseillère a refermées */
 /* texte dans lequel on cherche : nom, besoin, catégories et leurs mots-clés, mots-clés du sous-profil, parcours et modules proposés */
 function hayOf(p, d){
   const rd = (RAW.domaines || []).find(x => x.id === d.id) || {}, mc = rd.motsClesCategories || {};
@@ -628,7 +628,7 @@ function renderList(){
   const ordre = domCats(d); cats.sort((a, b) => ordre.indexOf(a.nom) - ordre.indexOf(b.nom));
   const sel = d.profils.find(p => p.id === state.pid);
   $("groups").innerHTML = cats.length ? cats.map(c => {
-    const open = q || ouvertes.has(d.id + "|" + c.nom); /* fermées par défaut ; ouvertes pendant une recherche */
+    const open = q || !fermees.has(d.id + "|" + c.nom); /* toutes ouvertes par défaut ; on peut en refermer */
     return `<details class="group" data-cat="${esc(c.nom)}"${open?" open":""}><summary><span class="sum">${esc(c.nom)}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="profiles">${c.items.map(p => {
       const n = Object.keys(p.parcours).length;
       return `<button type="button" class="prof" data-pid="${esc(p.id)}" aria-pressed="${state.pid===p.id}"><span>${esc(p.nom)}</span><span class="count" title="${n} parcours possible${n>1?"s":""}">${n}</span></button>`;
@@ -761,7 +761,7 @@ $("groups").addEventListener("click", e => {
 });
 $("groups").addEventListener("toggle", e => {
   const el = e.target; if(!el.matches || !el.matches("details.group") || state.q.trim()) return;
-  const k = state.dom + "|" + el.dataset.cat; el.open ? ouvertes.add(k) : ouvertes.delete(k);
+  const k = state.dom + "|" + el.dataset.cat; el.open ? fermees.delete(k) : fermees.add(k);
 }, true);
 $("q").addEventListener("input", e => { state.q = e.target.value; renderList(); renderDetail(); });
 $("catSel").addEventListener("change", e => { state.cat = e.target.value; renderList(); renderDetail(); });
