@@ -17,6 +17,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `contenu.js` | Copie de secours du contenu, utilisée seulement si la base Supabase ne répond pas. |
 | `supabase-installation.sql` | Script d'installation de la base Supabase. |
 | `supabase-mise-a-jour-2027.sql` | Mise à jour du 29/10/2026 : dates 2027, tarifs, positionnement, CPF et certifications. À lancer une fois dans Supabase ; ne remplace rien d'autre. |
+| `supabase-mise-a-jour-2027-n2.sql` | Mise à jour n°2 : parcours IA Webmaster et IA Graphiste, coût de certification (330 €). À lancer après la précédente. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 
@@ -96,8 +97,8 @@ Chaque module peut porter, en plus de `code`, `titre` et `lien` :
 ```js
 "sessions": [ { "texte": "18-19 et 25-26 janvier 2027", "debut": "2027-01-18", "fin": "2027-01-26" } ],
 "tarif": 1650,                 // tarif normal
-"tarifParcours": 1500,         // tarif préférentiel dans un parcours de 3 jours et plus
-"positionnement": "Questionnaire de positionnement …",   // prérequis
+"tarifParcours": 1500,         // tarif dans un parcours (affiché seulement dans un parcours)
+"positionnement": "Questionnaire de positionnement …",   // seulement si niveau 2 sans niveau 1 (masqué dans un parcours qui contient un M1)
 "positionnementLien": "https://forms.cloud.microsoft/…",
 "cpf": "Oui (certification Tosa)"
 ```

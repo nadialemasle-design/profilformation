@@ -563,7 +563,8 @@ window.CONTENU = {
         }
       ],
       "nom": "Parcours IA Administratif & commercial",
-      "ordre": 1
+      "ordre": 1,
+      "tarifCertification": 330
     },
     {
       "id": "ia-form",
@@ -650,7 +651,8 @@ window.CONTENU = {
         }
       ],
       "nom": "Parcours IA Formation & enseignement",
-      "ordre": 2
+      "ordre": 2,
+      "tarifCertification": 330
     },
     {
       "id": "ia-rh",
@@ -739,7 +741,190 @@ window.CONTENU = {
         }
       ],
       "nom": "Parcours IA Ressources humaines",
-      "ordre": 3
+      "ordre": 3,
+      "tarifCertification": 330
+    },
+    {
+      "id": "ia-graphiste",
+      "domaine": "ia",
+      "nom": "Parcours IA Graphiste",
+      "intitule": "Boostez la performance de vos contenus textes et visuels grâce à l'IA générative",
+      "duree": "5 jours",
+      "tarifCertification": 330,
+      "modules": [
+        {
+          "code": "M1",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/plongez-dans-lia-generative",
+          "titre": "IA générative débutant : plongez dans les outils, les méthodes et les usages professionnels",
+          "sessions": [
+            {
+              "texte": "15 janvier 2027",
+              "debut": "2027-01-15",
+              "fin": "2027-01-15"
+            },
+            {
+              "texte": "9 avril 2027",
+              "debut": "2027-04-09",
+              "fin": "2027-04-09"
+            },
+            {
+              "texte": "24 juin 2027",
+              "debut": "2027-06-24",
+              "fin": "2027-06-24"
+            },
+            {
+              "texte": "27 septembre 2027",
+              "debut": "2027-09-27",
+              "fin": "2027-09-27"
+            }
+          ],
+          "tarif": 420,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
+        },
+        {
+          "code": "M2",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ia-generative-niveau-avance-usages-approfondis-prompts-avances-et-optimisation-des-pratiques-professionnelles",
+          "titre": "Perfectionnement IA générative : maîtrisez les outils, affinez vos méthodes et sécurisez vos pratiques professionnelles",
+          "sessions": [
+            {
+              "texte": "4-5 février 2027",
+              "debut": "2027-02-04",
+              "fin": "2027-02-05"
+            },
+            {
+              "texte": "10-11 mai 2027",
+              "debut": "2027-05-10",
+              "fin": "2027-05-11"
+            },
+            {
+              "texte": "5-6 juillet 2027",
+              "debut": "2027-07-05",
+              "fin": "2027-07-06"
+            },
+            {
+              "texte": "18-19 novembre 2027",
+              "debut": "2027-11-18",
+              "fin": "2027-11-19"
+            }
+          ],
+          "tarif": 820,
+          "tarifParcours": 700,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
+        },
+        {
+          "code": "M3",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/developper-sa-creativite-graphique-avec-lia-midjourney-et-ideogram",
+          "titre": "IA design graphique : créez des visuels percutants grâce aux solutions IA leaders du design graphique",
+          "sessions": [
+            {
+              "texte": "22-23 février 2027",
+              "debut": "2027-02-22",
+              "fin": "2027-02-23"
+            },
+            {
+              "texte": "13-14 décembre 2027",
+              "debut": "2027-12-13",
+              "fin": "2027-12-14"
+            }
+          ],
+          "tarif": 860,
+          "tarifParcours": 800,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
+          "cpf": "Oui, dans un parcours IA de 4 jours minimum"
+        }
+      ],
+      "ordre": 5
+    },
+    {
+      "id": "ia-webmaster",
+      "domaine": "ia",
+      "nom": "Parcours IA Webmaster",
+      "intitule": "Boostez la performance de vos sites web grâce à l'IA générative",
+      "duree": "4 jours",
+      "tarifCertification": 330,
+      "modules": [
+        {
+          "code": "M1",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/plongez-dans-lia-generative",
+          "titre": "IA générative débutant : plongez dans les outils, les méthodes et les usages professionnels",
+          "sessions": [
+            {
+              "texte": "15 janvier 2027",
+              "debut": "2027-01-15",
+              "fin": "2027-01-15"
+            },
+            {
+              "texte": "9 avril 2027",
+              "debut": "2027-04-09",
+              "fin": "2027-04-09"
+            },
+            {
+              "texte": "24 juin 2027",
+              "debut": "2027-06-24",
+              "fin": "2027-06-24"
+            },
+            {
+              "texte": "27 septembre 2027",
+              "debut": "2027-09-27",
+              "fin": "2027-09-27"
+            }
+          ],
+          "tarif": 420,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
+        },
+        {
+          "code": "M2",
+          "titre": "GEO- SEO Référencement naturel & stratégie éditoriale : créez du contenu grâce à l'IA",
+          "sessions": [
+            {
+              "texte": "2 et 16 avril 2027",
+              "debut": "2027-04-02",
+              "fin": "2027-04-16"
+            },
+            {
+              "texte": "5 et 12 octobre 2027",
+              "debut": "2027-10-05",
+              "fin": "2027-10-12"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
+        },
+        {
+          "code": "M3",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ia-intelligence-artificielle-multimedia",
+          "titre": "IA multimédia : produisez vos premiers visuels et contenus audio avec l'IA générative",
+          "sessions": [
+            {
+              "texte": "15 février 2027",
+              "debut": "2027-02-15",
+              "fin": "2027-02-15"
+            },
+            {
+              "texte": "18 mai 2027",
+              "debut": "2027-05-18",
+              "fin": "2027-05-18"
+            },
+            {
+              "texte": "6 décembre 2027",
+              "debut": "2027-12-06",
+              "fin": "2027-12-06"
+            }
+          ],
+          "tarif": 420,
+          "tarifParcours": 350,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
+        }
+      ],
+      "ordre": 4
     },
     {
       "id": "pao-prise-vue",
@@ -3136,6 +3321,10 @@ window.CONTENU = {
         {
           "formation": "pao-photoshop-perf",
           "pourquoi": "Retouches et compositions avancées."
+        },
+        {
+          "formation": "ia-graphiste",
+          "pourquoi": "Parcours IA certifiant : textes et visuels avec les outils IA du design."
         }
       ],
       "domaine": "paoia",
@@ -3171,6 +3360,10 @@ window.CONTENU = {
         {
           "formation": "video-ia-avatar",
           "pourquoi": "Produire des vidéos avec un avatar IA, sans se filmer."
+        },
+        {
+          "formation": "ia-graphiste",
+          "pourquoi": "Parcours IA certifiant : textes et visuels de communication avec l'IA."
         }
       ],
       "domaine": "paoia",
@@ -4676,6 +4869,10 @@ window.CONTENU = {
         {
           "formation": "com-canva-pro",
           "pourquoi": "Aller plus loin sur Canva : charte, vidéo, IA, automatisation."
+        },
+        {
+          "formation": "ia-webmaster",
+          "pourquoi": "Parcours IA certifiant : référencement GEO-SEO et contenus du site avec l'IA."
         }
       ],
       "domaine": "web",

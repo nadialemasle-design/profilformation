@@ -340,14 +340,16 @@ const today = () => { const d = new Date(); return d.getFullYear() + "-" + Strin
 const aVenir = m => (Array.isArray(m && m.sessions) ? m.sessions : []).filter(x => x && x.texte && (!x.fin || x.fin >= today()))
   .sort((a,b) => String(a.debut || a.fin || "").localeCompare(String(b.debut || b.fin || "")));
 const eur = n => (n === "" || n == null || isNaN(Number(n))) ? "" : Number(n).toLocaleString("fr-FR") + " €";
+/* opts.parcours : le module fait partie d'un parcours (plusieurs modules) ; opts.avecM1 : ce parcours contient un module de niveau 1 */
 function infoHtml(m, opts){
   if(!m) return "";
   const o = opts || {}, out = [], s = aVenir(m), has = Array.isArray(m.sessions) && m.sessions.length;
   if(has) out.push(`<span class="ml">${ic("cal")}<span>${s.length ? `<b>Prochaines dates :</b> <span class="dates">${s.slice(0, o.max || 99).map(x => esc(x.texte)).join(" · ")}${o.max && s.length > o.max ? " …" : ""}</span>` : `<span class="none">Aucune date à venir</span>`}</span></span>`);
-  if(m.tarif) out.push(`<span class="ml">${ic("euro")}<span><b>${eur(m.tarif)}</b>${m.tarifParcours ? ` · ${eur(m.tarifParcours)} dans un parcours de 3 jours et plus` : ""}</span></span>`);
-  if(m.positionnement || m.positionnementLien){
+  if(m.tarif) out.push(`<span class="ml">${ic("euro")}<span><b>${eur(m.tarif)}</b>${o.parcours && m.tarifParcours ? ` · ${eur(m.tarifParcours)} dans ce parcours` : ""}</span></span>`);
+  /* le positionnement n'est demandé que si la personne fait le niveau 2 sans le niveau 1 */
+  if((m.positionnement || m.positionnementLien) && !o.avecM1){
     const u = safeUrl(m.positionnementLien), n = esc(m.positionnement || "Questionnaire de positionnement");
-    out.push(`<span class="ml pos">${ic("pos")}<span><b>Prérequis :</b> ${u ? `<a href="${esc(u)}" target="_blank" rel="noopener">${n}</a>` : n}</span></span>`);
+    out.push(`<span class="ml pos">${ic("pos")}<span><b>Positionnement si pas de niveau 1 :</b> ${u ? `<a href="${esc(u)}" target="_blank" rel="noopener">${n}</a>` : n}</span></span>`);
   }
   if(m.cpf) out.push(`<span class="ml">${ic("certif")}<span><b>CPF :</b> ${esc(m.cpf)}</span></span>`);
   return out.length ? `<span class="minfo">${out.join("")}</span>` : "";
@@ -366,6 +368,7 @@ function lireSession(t){
   const iso = ([m, j]) => an + "-" + String(m).padStart(2,"0") + "-" + String(j).padStart(2,"0");
   return { texte: String(t).trim(), debut: iso(jours[0]), fin: iso(jours[jours.length - 1]) };
 }
+const ctxF = f => { const codes = Object.keys(f.modules || {}); return { parcours: codes.length > 1, avecM1: codes.length > 1 && codes.some(c => /^M1\b/i.test(c)) }; };
 const INFO_KEYS = ["sessions", "tarif", "tarifParcours", "positionnement", "positionnementLien", "cpf"];
 
 /* ---------- Données ---------- */
@@ -395,7 +398,8 @@ function buildModel(){
 function prixParcours(f){
   const mods = Array.isArray(f.modules) ? f.modules : [];
   if(mods.length < 2 || (parseInt(f.duree, 10) || 0) < 3 || !mods.every(m => Number(m.tarifParcours) > 0)) return null;
-  return { parcours: mods.reduce((t, m) => t + Number(m.tarifParcours), 0), separe: mods.every(m => Number(m.tarif) > 0) ? mods.reduce((t, m) => t + Number(m.tarif), 0) : null };
+  const parcours = mods.reduce((t, m) => t + Number(m.tarifParcours), 0), cert = Number(f.tarifCertification) || 0;
+  return { parcours, cert, cpf: cert ? parcours + cert : null, separe: mods.every(m => Number(m.tarif) > 0) ? mods.reduce((t, m) => t + Number(m.tarif), 0) : null };
 }
 const ready = () => RAW.domaines && RAW.formations && RAW.profils;
 
@@ -447,7 +451,7 @@ function renderDetail(){
   const cell = (f, m) => {
     if(!f.modules[m]) return `<td class="abs">${ic("moins")}Non inclus</td>`;
     const spec = cols.length > 1 && !commun(m);
-    return `<td${spec?' class="spec"':""}><span class="mt">${titre(f, m, spec?ic("plus"):"")}</span>${esc(txtOf(f, m))}${infoHtml(f.infos[m])}</td>`;
+    return `<td${spec?' class="spec"':""}><span class="mt">${titre(f, m, spec?ic("plus"):"")}</span>${esc(txtOf(f, m))}${infoHtml(f.infos[m], ctxF(f))}</td>`;
   };
   el.innerHTML = `
     <div class="head">
@@ -461,14 +465,14 @@ function renderDetail(){
       <table class="cmp" style="min-width:${92 + cols.length*200}px">
         <colgroup><col class="rowh">${cols.map(() => `<col>`).join("")}</colgroup>
         <thead><tr><th scope="col" class="cnt"><span class="num">${cols.length}</span><span class="cl">${cols.every(f => Object.keys(f.modules).length < 2) ? "formation" : "parcours"} possible${cols.length>1?"s":""}</span></th>${cols.map((f,i) =>
-          `<th scope="col" title="${esc(f.intitule)}"><span class="pname">${esc(f.nom)}</span>${cols.length<4?`<span class="pint">${esc(f.intitule)}</span>`:""}<span class="tags">${i===0 && cols.length>1?`<span class="pill best">${ic("star")}Le plus adapté</span>`:""}${f.duree?`<span class="pill">${ic("duree")}${esc(f.duree)}</span>`:""}${Object.keys(f.modules).length>1?`<span class="pill">${ic("modules")}${Object.keys(f.modules).length} modules</span>`:""}${f.certification?`<span class="pill">${ic("certif")}${esc(f.certification)}</span>`:""}${f.prix?`<span class="pill tp" title="Tarif préférentiel du parcours${f.prix.separe?` (${eur(f.prix.separe)} si les modules sont pris séparément)`:""}">${ic("euro")}${eur(f.prix.parcours)} le parcours</span>`:""}</span></th>`).join("")}</tr></thead>
+          `<th scope="col" title="${esc(f.intitule)}"><span class="pname">${esc(f.nom)}</span>${cols.length<4?`<span class="pint">${esc(f.intitule)}</span>`:""}<span class="tags">${i===0 && cols.length>1?`<span class="pill best">${ic("star")}Le plus adapté</span>`:""}${f.duree?`<span class="pill">${ic("duree")}${esc(f.duree)}</span>`:""}${Object.keys(f.modules).length>1?`<span class="pill">${ic("modules")}${Object.keys(f.modules).length} modules</span>`:""}${f.certification?`<span class="pill">${ic("certif")}${esc(f.certification)}</span>`:""}${f.prix?`<span class="pill tp" title="Tarif préférentiel du parcours${f.prix.separe?` (${eur(f.prix.separe)} si les modules sont pris séparément)`:""}">${ic("euro")}${eur(f.prix.parcours)} le parcours</span>${f.prix.cpf?`<span class="pill tp" title="Parcours ${eur(f.prix.parcours)} + certification ${eur(f.prix.cert)}">${ic("certif")}Total CPF ${eur(f.prix.cpf)}</span>`:""}`:""}</span></th>`).join("")}</tr></thead>
         <tbody>
           <tr class="whyrow"><th scope="row"><span class="rh">${ic("why")}Pourquoi</span></th>${cols.map(f => `<td class="why">${esc(p.parcours[f.id].pourquoi)}</td>`).join("")}</tr>
           ${rows.map(m => {
             const txts = cols.map(f => f.modules[m] ? txtOf(f, m) : null);
             const same = cols.length > 1 && commun(m) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]);
             return `<tr><th scope="row"><span class="code">${esc(m)}</span></th>${same
-              ? `<td class="all" colspan="${cols.length}"><span class="mt">${titre(cols[0], m, ic("commun"))} · commun à tous les parcours</span>${esc(txts[0])}${infoHtml(cols[0].infos[m])}</td>`
+              ? `<td class="all" colspan="${cols.length}"><span class="mt">${titre(cols[0], m, ic("commun"))} · commun à tous les parcours</span>${esc(txts[0])}${infoHtml(cols[0].infos[m], ctxF(cols[0]))}</td>`
               : cols.map(f => cell(f, m)).join("")}</tr>`;
           }).join("")}
         </tbody>
@@ -481,8 +485,12 @@ function complementsHtml(p, d){
   return `<section class="compl" aria-label="Formations complémentaires"><h3>${ic("plus")}<span>Formations<br>complémentaires</span></h3><div class="ccards">${items.map(({c, f}) => {
     const dom = (RAW.domaines || []).find(x => x.id === f.domaine), m = (Array.isArray(f.modules) ? f.modules : [])[0] || {}, u = safeUrl(m.lien);
     const nom = u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener">${esc(f.nom)}${ic("ext")}</a>` : esc(f.nom);
-    return `<div class="ccard"><span class="cl1"><b>${nom}</b><span class="cmeta">${f.duree?`${ic("duree")}${esc(f.duree)}`:""}${f.certification?` · ${esc(f.certification)}`:""} · ${esc(dom ? dom.nom : "")}</span></span><span class="cwhy">${esc(c.pourquoi || "")}</span>${infoHtml(m, { max: 2 })}</div>`;
+    return `<div class="ccard"><span class="cl1"><b>${nom}</b><span class="cmeta">${f.duree?`${ic("duree")}${esc(f.duree)}`:""}${f.certification?` · ${esc(f.certification)}`:""} · ${esc(dom ? dom.nom : "")}</span></span><span class="cwhy">${esc(c.pourquoi || "")}</span>${(f.modules || []).length > 1 ? prixCarte(f) : infoHtml(m, { max: 2 })}</div>`;
   }).join("")}</div></section>`;
+}
+function prixCarte(f){
+  const x = prixParcours(f), n = (f.modules || []).length;
+  return `<span class="minfo"><span class="ml">${ic("modules")}<span>Parcours de ${n} modules${x ? ` · <b>${eur(x.parcours)}</b>${x.cpf ? ` · Total CPF ${eur(x.cpf)}` : ""}` : ""}</span></span></span>`;
 }
 function safeUrl(u){ try{ const x = new URL(String(u || "")); return /^https?:$/.test(x.protocol) ? x.href : ""; }catch(e){ return ""; } }
 
@@ -624,6 +632,7 @@ function formFormation(el, d){
       ${field("Intitulé (sous-titre)", inp("fInt", r.intitule || ""), true)}
       ${field("Durée", inp("fDuree", r.duree || "", "ex. 2 jours"))}
       ${field("Certification (facultatif)", inp("fCertF", r.certification || "", "ex. Tosa, ICDL"))}
+      ${field("Coût de la certification, pour le total CPF d'un parcours (€)", inp("fCertPrix", r.tarifCertification ?? "", "ex. 330"))}
       ${field("Référence interne (facultatif)", inp("fRef", r.reference || "", "ex. PAO-1.2 Photo Init"))}
       ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
     </div>
@@ -668,6 +677,7 @@ function formFormation(el, d){
     const data = { domaine: cible, nom, intitule: $("fInt").value.trim(), duree: $("fDuree").value.trim(), certification: $("fCertF").value.trim(), modules,
       ordre: Number($("fOrdre").value) || (isNew || change ? dc.formations.length + 1 : (r.ordre ?? 99)) };
     const ref = $("fRef").value.trim(); if(ref) data.reference = ref;
+    const cp = Number($("fCertPrix").value.replace(/[^\d.,]/g, "").replace(",", ".")); if(cp > 0) data.tarifCertification = cp;
     let reportes = 0, ok = false;
     await write(async () => {
       await db.doc("formations/" + id).set(data);
@@ -696,8 +706,8 @@ const modLine = m => `<div class="modline"><input class="inp mc" value="${esc(m.
   <details class="mextra"><summary>Dates, tarifs, positionnement, CPF${(m.sessions||[]).length ? ` · ${aVenir(m).length} date${aVenir(m).length>1?"s":""} à venir` : ""}</summary><div class="fgrid">
     ${field("Dates (une session par ligne, avec l'année)", `<textarea class="inp mses" placeholder="ex. 18-19 et 25-26 janvier 2027&#10;15 avril 2027">${esc((m.sessions || []).map(x => x.texte).join("\n"))}</textarea>`, true)}
     ${field("Tarif (€)", `<input class="inp mtar" inputmode="decimal" value="${esc(m.tarif ?? "")}" placeholder="ex. 780">`)}
-    ${field("Tarif préférentiel en parcours de 3 jours et plus (€)", `<input class="inp mtp" inputmode="decimal" value="${esc(m.tarifParcours ?? "")}" placeholder="ex. 700">`)}
-    ${field("Positionnement prérequis (nom du questionnaire)", `<input class="inp mpos" value="${esc(m.positionnement || "")}" placeholder="Laisser vide si aucun">`)}
+    ${field("Tarif dans un parcours (€) — affiché seulement dans un parcours", `<input class="inp mtp" inputmode="decimal" value="${esc(m.tarifParcours ?? "")}" placeholder="ex. 700">`)}
+    ${field("Positionnement si pas de niveau 1 (nom du questionnaire)", `<input class="inp mpos" value="${esc(m.positionnement || "")}" placeholder="Laisser vide si aucun">`)}
     ${field("Lien du questionnaire de positionnement", `<input class="inp mposl" value="${esc(m.positionnementLien || "")}" placeholder="https://forms…">`)}
     ${field("Éligibilité CPF", `<input class="inp mcpf" value="${esc(m.cpf || "")}" placeholder="ex. Oui (certification Tosa) ; Non ; Oui, dans un parcours de 4 jours minimum">`, true)}
   </div></details></div>`;
