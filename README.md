@@ -16,6 +16,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `index.html` | L'application (mise en page, couleurs, fonctionnement). Pas besoin d'y toucher. |
 | `contenu.js` | Copie de secours du contenu, utilisée seulement si la base Supabase ne répond pas. |
 | `supabase-installation.sql` | Script d'installation de la base Supabase. |
+| `supabase-mise-a-jour-2027.sql` | Mise à jour du 29/10/2026 : dates 2027, tarifs, positionnement, CPF et certifications. À lancer une fois dans Supabase ; ne remplace rien d'autre. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 
@@ -87,6 +88,23 @@ Le format ci-dessous sert de référence : c'est celui des documents de la base,
   "ordre": 2
 },
 ```
+
+### Dates, tarifs, positionnement et CPF (par module)
+
+Chaque module peut porter, en plus de `code`, `titre` et `lien` :
+
+```js
+"sessions": [ { "texte": "18-19 et 25-26 janvier 2027", "debut": "2027-01-18", "fin": "2027-01-26" } ],
+"tarif": 1650,                 // tarif normal
+"tarifParcours": 1500,         // tarif préférentiel dans un parcours de 3 jours et plus
+"positionnement": "Questionnaire de positionnement …",   // prérequis
+"positionnementLien": "https://forms.cloud.microsoft/…",
+"cpf": "Oui (certification Tosa)"
+```
+
+- Dans **Gestion**, il suffit d'écrire une session par ligne, en texte, avec l'année : premier et dernier jour sont calculés automatiquement.
+- Les sessions dont le dernier jour est passé sont masquées automatiquement.
+- Les dates, tarifs, positionnement et CPF d'un module sont reportés dans tous les parcours qui contiennent le même module (même titre).
 
 ### Les pièges à éviter
 

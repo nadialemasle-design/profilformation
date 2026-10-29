@@ -144,6 +144,21 @@ details.group .profiles{padding:6px 0 4px 6px}
 /* Toute case de module présent : même vert ; seules les cases « Non inclus » restent grises. */
 .cmp tbody td:not(.abs):not(.why){background:var(--green-soft);box-shadow:inset 3px 0 0 var(--green-mid)}
 .cmp tbody td:not(.abs):not(.why) .mt{color:var(--green)}
+/* Dates, tarifs, positionnement, CPF sous chaque module */
+.minfo{display:flex;flex-direction:column;gap:2px;margin-top:6px;padding-top:5px;border-top:1px dashed var(--line);font-size:12px;line-height:1.35;color:var(--muted);text-align:left}
+.minfo .ml{display:flex;gap:2px;align-items:flex-start}
+.minfo .ic{width:15px;height:15px;margin:1px 4px 0 0;vertical-align:0}
+.minfo b{color:var(--fg);font-weight:600}
+.minfo .dates{color:var(--fg)}
+.minfo .none{font-style:italic}
+.minfo .pos,.minfo .pos b{color:var(--orange)}
+.minfo a{color:inherit;text-decoration:underline}
+.pill.tp{background:var(--green-mid);color:#10260A}
+.ccard .minfo{margin-top:3px}
+.mextra{grid-column:1/-1;border:1px solid var(--line);border-radius:7px;padding:5px 9px;background:var(--sunk)}
+.mextra summary{cursor:pointer;font-size:12.5px;color:var(--blue-ink);font-weight:600}
+.mextra .fgrid{margin-top:8px}
+.mextra textarea.inp{min-height:70px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 
 /* ---------- Vues et back office ---------- */
@@ -267,7 +282,7 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
       <label for="admDom">Domaine <select id="admDom"></select></label>
       <div class="subtabs" id="admTabs">
         <button type="button" class="stab" data-tab="profils" aria-pressed="true">Profils</button>
-        <button type="button" class="stab" data-tab="formations" aria-pressed="false">Parcours</button>
+        <button type="button" class="stab" data-tab="formations" aria-pressed="false">Formations &amp; parcours</button>
         <button type="button" class="stab" data-tab="domaine" aria-pressed="false">Domaine</button>
       </div>
       <button type="button" class="btn add" id="admNewDom">+ Nouveau domaine</button>
@@ -308,6 +323,8 @@ const ICONS = {
   ia: '<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>',
   rs: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
   ext: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  pos: '<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 12l2 2 4-4"/>',
   domaine: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'
 };
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ICONS.domaine}</svg>`;
@@ -316,6 +333,40 @@ const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "
 const slug = s => norm(s).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "x";
 const byOrdre = (a,b) => (a.ordre ?? 1e9) - (b.ordre ?? 1e9) || String(a.nom||"").localeCompare(String(b.nom||""), "fr");
 const $ = id => document.getElementById(id);
+
+/* ---------- Dates (texte), tarifs, positionnement, CPF ---------- */
+const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); };
+/* sessions à venir : on masque automatiquement celles dont le dernier jour est passé */
+const aVenir = m => (Array.isArray(m && m.sessions) ? m.sessions : []).filter(x => x && x.texte && (!x.fin || x.fin >= today()))
+  .sort((a,b) => String(a.debut || a.fin || "").localeCompare(String(b.debut || b.fin || "")));
+const eur = n => (n === "" || n == null || isNaN(Number(n))) ? "" : Number(n).toLocaleString("fr-FR") + " €";
+function infoHtml(m, opts){
+  if(!m) return "";
+  const o = opts || {}, out = [], s = aVenir(m), has = Array.isArray(m.sessions) && m.sessions.length;
+  if(has) out.push(`<span class="ml">${ic("cal")}<span>${s.length ? `<b>Prochaines dates :</b> <span class="dates">${s.slice(0, o.max || 99).map(x => esc(x.texte)).join(" · ")}${o.max && s.length > o.max ? " …" : ""}</span>` : `<span class="none">Aucune date à venir</span>`}</span></span>`);
+  if(m.tarif) out.push(`<span class="ml">${ic("euro")}<span><b>${eur(m.tarif)}</b>${m.tarifParcours ? ` · ${eur(m.tarifParcours)} dans un parcours de 3 jours et plus` : ""}</span></span>`);
+  if(m.positionnement || m.positionnementLien){
+    const u = safeUrl(m.positionnementLien), n = esc(m.positionnement || "Questionnaire de positionnement");
+    out.push(`<span class="ml pos">${ic("pos")}<span><b>Prérequis :</b> ${u ? `<a href="${esc(u)}" target="_blank" rel="noopener">${n}</a>` : n}</span></span>`);
+  }
+  if(m.cpf) out.push(`<span class="ml">${ic("certif")}<span><b>CPF :</b> ${esc(m.cpf)}</span></span>`);
+  return out.length ? `<span class="minfo">${out.join("")}</span>` : "";
+}
+/* Lit une session écrite en texte (ex. « 18-19 et 25-26 janvier 2027 ») pour retrouver son premier et son dernier jour. */
+const MOISN = {jan:1,janv:1,janvier:1,fev:2,fevr:2,fevrier:2,mar:3,mars:3,avr:4,avril:4,mai:5,juin:6,juil:7,juillet:7,aout:8,sep:9,sept:9,septembre:9,oct:10,octobre:10,nov:11,novembre:11,dec:12,decembre:12};
+function lireSession(t){
+  const s = norm(t).replace(/(\d+)\s*(?:er)?\s*au\s*(\d+)/g, (x, a, b) => { const r = []; for(let i = +a; i <= +b && r.length < 31; i++) r.push(i); return r.join(" "); });
+  let an = null, pend = [], jours = [];
+  (s.match(/\d+|[a-z]+/g) || []).forEach(k => {
+    if(/^\d{4}$/.test(k)) an = +k;
+    else if(/^\d{1,2}$/.test(k)) pend.push(+k);
+    else if(MOISN[k]){ pend.forEach(j => jours.push([MOISN[k], j])); pend = []; }
+  });
+  if(!jours.length || !an || jours.some(([m, j]) => j < 1 || j > 31)) return null;
+  const iso = ([m, j]) => an + "-" + String(m).padStart(2,"0") + "-" + String(j).padStart(2,"0");
+  return { texte: String(t).trim(), debut: iso(jours[0]), fin: iso(jours[jours.length - 1]) };
+}
+const INFO_KEYS = ["sessions", "tarif", "tarifParcours", "positionnement", "positionnementLien", "cpf"];
 
 /* ---------- Données ---------- */
 let db = null, user = null, canAdmin = false;
@@ -329,6 +380,8 @@ function buildModel(){
     formations: (RAW.formations || []).filter(f => f.domaine === d.id).sort(byOrdre).map(f => ({
       id: f.id, nom: f.nom || f.id, intitule: f.intitule || "", duree: f.duree || "", certification: f.certification || "",
       modules: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).map(m => [m.code, m.titre])),
+      infos: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).map(m => [m.code, m])),
+      prix: prixParcours(f),
       liens: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).filter(m => m.lien).map(m => [m.code, m.lien])) })),
     profils: (RAW.profils || []).filter(p => p.domaine === d.id).sort(byOrdre).map(p => ({
       id: p.id, categorie: p.categorie || "Autres profils", nom: p.nom || "", besoin: p.besoin || "", reponses: p.reponses || {},
@@ -337,6 +390,12 @@ function buildModel(){
   }));
   /* lignes de modules : ordre du domaine, puis modules non listés */
   DOMAINES.forEach(d => d.formations.forEach(f => Object.keys(f.modules).forEach(m => { if(!d.ordreModules.includes(m)) d.ordreModules = d.ordreModules.concat(m); })));
+}
+/* Tarif préférentiel d'un parcours de 3 jours et plus : somme des tarifs « parcours » de ses modules */
+function prixParcours(f){
+  const mods = Array.isArray(f.modules) ? f.modules : [];
+  if(mods.length < 2 || (parseInt(f.duree, 10) || 0) < 3 || !mods.every(m => Number(m.tarifParcours) > 0)) return null;
+  return { parcours: mods.reduce((t, m) => t + Number(m.tarifParcours), 0), separe: mods.every(m => Number(m.tarif) > 0) ? mods.reduce((t, m) => t + Number(m.tarif), 0) : null };
 }
 const ready = () => RAW.domaines && RAW.formations && RAW.profils;
 
@@ -388,7 +447,7 @@ function renderDetail(){
   const cell = (f, m) => {
     if(!f.modules[m]) return `<td class="abs">${ic("moins")}Non inclus</td>`;
     const spec = cols.length > 1 && !commun(m);
-    return `<td${spec?' class="spec"':""}><span class="mt">${titre(f, m, spec?ic("plus"):"")}</span>${esc(txtOf(f, m))}</td>`;
+    return `<td${spec?' class="spec"':""}><span class="mt">${titre(f, m, spec?ic("plus"):"")}</span>${esc(txtOf(f, m))}${infoHtml(f.infos[m])}</td>`;
   };
   el.innerHTML = `
     <div class="head">
@@ -402,14 +461,14 @@ function renderDetail(){
       <table class="cmp" style="min-width:${92 + cols.length*200}px">
         <colgroup><col class="rowh">${cols.map(() => `<col>`).join("")}</colgroup>
         <thead><tr><th scope="col" class="cnt"><span class="num">${cols.length}</span><span class="cl">${cols.every(f => Object.keys(f.modules).length < 2) ? "formation" : "parcours"} possible${cols.length>1?"s":""}</span></th>${cols.map((f,i) =>
-          `<th scope="col" title="${esc(f.intitule)}"><span class="pname">${esc(f.nom)}</span>${cols.length<4?`<span class="pint">${esc(f.intitule)}</span>`:""}<span class="tags">${i===0 && cols.length>1?`<span class="pill best">${ic("star")}Le plus adapté</span>`:""}${f.duree?`<span class="pill">${ic("duree")}${esc(f.duree)}</span>`:""}${Object.keys(f.modules).length>1?`<span class="pill">${ic("modules")}${Object.keys(f.modules).length} modules</span>`:""}${f.certification?`<span class="pill">${ic("certif")}${esc(f.certification)}</span>`:""}</span></th>`).join("")}</tr></thead>
+          `<th scope="col" title="${esc(f.intitule)}"><span class="pname">${esc(f.nom)}</span>${cols.length<4?`<span class="pint">${esc(f.intitule)}</span>`:""}<span class="tags">${i===0 && cols.length>1?`<span class="pill best">${ic("star")}Le plus adapté</span>`:""}${f.duree?`<span class="pill">${ic("duree")}${esc(f.duree)}</span>`:""}${Object.keys(f.modules).length>1?`<span class="pill">${ic("modules")}${Object.keys(f.modules).length} modules</span>`:""}${f.certification?`<span class="pill">${ic("certif")}${esc(f.certification)}</span>`:""}${f.prix?`<span class="pill tp" title="Tarif préférentiel du parcours${f.prix.separe?` (${eur(f.prix.separe)} si les modules sont pris séparément)`:""}">${ic("euro")}${eur(f.prix.parcours)} le parcours</span>`:""}</span></th>`).join("")}</tr></thead>
         <tbody>
           <tr class="whyrow"><th scope="row"><span class="rh">${ic("why")}Pourquoi</span></th>${cols.map(f => `<td class="why">${esc(p.parcours[f.id].pourquoi)}</td>`).join("")}</tr>
           ${rows.map(m => {
             const txts = cols.map(f => f.modules[m] ? txtOf(f, m) : null);
             const same = cols.length > 1 && commun(m) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]);
             return `<tr><th scope="row"><span class="code">${esc(m)}</span></th>${same
-              ? `<td class="all" colspan="${cols.length}"><span class="mt">${titre(cols[0], m, ic("commun"))} · commun à tous les parcours</span>${esc(txts[0])}</td>`
+              ? `<td class="all" colspan="${cols.length}"><span class="mt">${titre(cols[0], m, ic("commun"))} · commun à tous les parcours</span>${esc(txts[0])}${infoHtml(cols[0].infos[m])}</td>`
               : cols.map(f => cell(f, m)).join("")}</tr>`;
           }).join("")}
         </tbody>
@@ -422,7 +481,7 @@ function complementsHtml(p, d){
   return `<section class="compl" aria-label="Formations complémentaires"><h3>${ic("plus")}<span>Formations<br>complémentaires</span></h3><div class="ccards">${items.map(({c, f}) => {
     const dom = (RAW.domaines || []).find(x => x.id === f.domaine), m = (Array.isArray(f.modules) ? f.modules : [])[0] || {}, u = safeUrl(m.lien);
     const nom = u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener">${esc(f.nom)}${ic("ext")}</a>` : esc(f.nom);
-    return `<div class="ccard"><span class="cl1"><b>${nom}</b><span class="cmeta">${f.duree?`${ic("duree")}${esc(f.duree)}`:""}${f.certification?` · ${esc(f.certification)}`:""} · ${esc(dom ? dom.nom : "")}</span></span><span class="cwhy">${esc(c.pourquoi || "")}</span></div>`;
+    return `<div class="ccard"><span class="cl1"><b>${nom}</b><span class="cmeta">${f.duree?`${ic("duree")}${esc(f.duree)}`:""}${f.certification?` · ${esc(f.certification)}`:""} · ${esc(dom ? dom.nom : "")}</span></span><span class="cwhy">${esc(c.pourquoi || "")}</span>${infoHtml(m, { max: 2 })}</div>`;
   }).join("")}</div></section>`;
 }
 function safeUrl(u){ try{ const x = new URL(String(u || "")); return /^https?:$/.test(x.protocol) ? x.href : ""; }catch(e){ return ""; } }
@@ -484,7 +543,7 @@ function renderAdmList(){
   if(!d){ el.innerHTML = `<p class="none">Aucun domaine. Créez-en un avec « + Nouveau domaine ».</p>`; return; }
   if(adm.tab === "domaine"){ el.innerHTML = `<button type="button" class="adm-item" aria-pressed="true"><b>${esc(d.nom)}</b><small>${d.formations.length} parcours · ${d.profils.length} profils</small></button>`; return; }
   if(adm.tab === "formations"){
-    el.innerHTML = `<button type="button" class="btn add" data-new="1">+ Nouveau parcours</button>` + d.formations.map(f => {
+    el.innerHTML = `<button type="button" class="btn add" data-new="1">+ Nouvelle formation ou parcours</button>` + d.formations.map(f => {
       const n = d.profils.filter(p => p.parcours[f.id]).length;
       return `<button type="button" class="adm-item" data-sel="${esc(f.id)}" aria-pressed="${adm.sel===f.id}"><b>${esc(f.nom)}</b><small>${esc(f.duree)} · ${Object.keys(f.modules).length} modules · ${n} profils</small></button>`;
     }).join("");
@@ -538,7 +597,7 @@ function formDomaine(el){
     if(a === "cancel"){ if(isNew){ adm.tab = "profils"; adm.sel = null; } renderAdmin(true); return; }
     if(a === "del"){
       const d = admDom();
-      if(d && (d.formations.length || d.profils.length)){ setMsg("Supprimez d'abord les parcours et les profils de ce domaine."); return; }
+      if(d && (d.formations.length || d.profils.length)){ setMsg("Supprimez d'abord les formations, parcours et profils de ce domaine."); return; }
       return askConfirm(`Supprimer le domaine « ${r.nom} » ?`, async () => { await db.doc("domaines/" + adm.dom).delete(); adm.dom = ""; adm.tab = "profils"; adm.sel = null; toast("Domaine supprimé"); });
     }
     const nom = $("fNom").value.trim(); if(!nom) return setMsg("Le nom du domaine est obligatoire.");
@@ -551,50 +610,97 @@ function formDomaine(el){
   });
 }
 
-/* ----- Formulaire parcours (formation) ----- */
+/* ----- Formulaire formation ou parcours ----- */
 function formFormation(el, d){
   const isNew = adm.sel === "new", r = isNew ? { modules: [] } : (rawF(adm.sel) || { modules: [] });
-  const mods = Array.isArray(r.modules) && r.modules.length ? r.modules : [{code:"", titre:""}];
+  const mods = Array.isArray(r.modules) && r.modules.length ? r.modules : [{ code: "Formation", titre: "" }];
   const used = isNew ? [] : d.profils.filter(p => p.parcours[adm.sel]);
-  el.innerHTML = `<div class="form"><h2>${isNew ? "Nouveau parcours" : "Parcours : " + esc(r.nom)}</h2>
+  const domCur = r.domaine || d.id;
+  const quoi = isNew ? "Nouvelle formation ou parcours" : (mods.length > 1 ? "Parcours : " : "Formation : ") + esc(r.nom);
+  el.innerHTML = `<div class="form"><h2>${quoi}</h2>
     <div class="fgrid">
-      ${field("Nom du parcours *", inp("fNom", r.nom || "", "ex. Réseaux & e-commerce"))}
-      ${field("Durée", inp("fDuree", r.duree || "", "ex. 4 jours"))}
+      ${field("Nom de la formation ou du parcours *", inp("fNom", r.nom || "", "ex. Photoshop initiation"))}
+      ${field("Domaine de rattachement *", `<select class="inp" id="fDomF">${DOMAINES.map(x => `<option value="${esc(x.id)}"${x.id===domCur?" selected":""}>${esc(x.nom)}</option>`).join("")}</select>`)}
       ${field("Intitulé (sous-titre)", inp("fInt", r.intitule || ""), true)}
-      ${field("Certification propre à ce parcours (facultatif)", inp("fCertF", r.certification || "", "ex. Tosa"))}
+      ${field("Durée", inp("fDuree", r.duree || "", "ex. 2 jours"))}
+      ${field("Certification (facultatif)", inp("fCertF", r.certification || "", "ex. Tosa, ICDL"))}
+      ${field("Référence interne (facultatif)", inp("fRef", r.reference || "", "ex. PAO-1.2 Photo Init"))}
       ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
     </div>
-    <div class="fsec"><h3>Modules</h3><p class="fhint">Code court (ex. M1, M2.3), titre du module et lien vers sa fiche (facultatif). Un nouveau code s'ajoute aux lignes du tableau.</p>
+    <div class="fsec"><h3>Modules</h3><p class="fhint">Formation seule : un seul module, avec le code « Formation ». Parcours : un module par code (M1, M2, M2.3…). Ouvrez « Dates, tarifs, positionnement, CPF » sous chaque module pour les compléter. Ces informations sont reportées automatiquement dans les autres parcours qui contiennent le même module (même titre).</p>
       <div id="modLines">${mods.map(modLine).join("")}</div>
       <div><button type="button" class="btn add small" id="addMod">+ Ajouter un module</button></div></div>
-    ${!isNew ? `<p class="ro-note">Utilisé par ${used.length} profil${used.length>1?"s":""}.</p>` : ""}
+    ${!isNew ? `<p class="ro-note">Proposé dans ${used.length} profil${used.length>1?"s":""}.</p>` : ""}
     ${formActions(!isNew)}</div>`;
-  $("addMod").onclick = () => $("modLines").insertAdjacentHTML("beforeend", modLine({code:"", titre:""}));
+  $("addMod").onclick = () => $("modLines").insertAdjacentHTML("beforeend", modLine({ code: "", titre: "" }));
   $("modLines").addEventListener("click", e => { if(e.target.closest("[data-rm]")) e.target.closest(".modline").remove(); });
   el.querySelector(".actions").addEventListener("click", async e => {
     const a = e.target.closest("[data-act]")?.dataset.act; if(!a) return;
     if(a === "cancel"){ adm.sel = null; renderAdmin(true); return; }
-    if(a === "del") return askConfirm(`Supprimer le parcours « ${r.nom} » ?${used.length ? ` Il sera retiré de ${used.length} profil${used.length>1?"s":""}.` : ""}`, async () => {
+    if(a === "del") return askConfirm(`Supprimer « ${r.nom} » ?${used.length ? ` Elle sera retirée de ${used.length} profil${used.length>1?"s":""}.` : ""}`, async () => {
       for(const p of used){ const rp = rawP(p.id); await db.doc("profils/" + p.id).update({ parcours: (rp.parcours || []).filter(x => x.formation !== adm.sel) }); }
       for(const rp of (RAW.profils || []).filter(x => (x.complements || []).some(c => c.formation === adm.sel))){ await db.doc("profils/" + rp.id).update({ complements: rp.complements.filter(c => c.formation !== adm.sel) }); }
-      await db.doc("formations/" + adm.sel).delete(); adm.sel = null; toast("Parcours supprimé");
+      await db.doc("formations/" + adm.sel).delete(); adm.sel = null; toast("Supprimé");
     });
-    const nom = $("fNom").value.trim(); if(!nom) return setMsg("Le nom du parcours est obligatoire.");
-    const modules = [...document.querySelectorAll("#modLines .modline")].map(l => { const m = { code: l.querySelector(".mc").value.trim(), titre: l.querySelector(".mtit").value.trim() }; const u = l.querySelector(".mlien").value.trim(); if(u) m.lien = u; return m; }).filter(m => m.code);
+    const nom = $("fNom").value.trim(); if(!nom) return setMsg("Le nom est obligatoire.");
+    const cible = $("fDomF").value, dc = DOMAINES.find(x => x.id === cible);
+    if(!dc) return setMsg("Choisissez le domaine de rattachement.");
+    const erreurs = [];
+    const modules = [...document.querySelectorAll("#modLines .modline")].map(l => {
+      const q = c => l.querySelector(c), m = { code: q(".mc").value.trim(), titre: q(".mtit").value.trim() };
+      const u = q(".mlien").value.trim(); if(u) m.lien = u;
+      const sessions = q(".mses").value.split("\n").map(t => t.trim()).filter(Boolean).map(t => { const x = lireSession(t); if(!x) erreurs.push(`« ${t} » (${m.code || "module"})`); return x; }).filter(Boolean);
+      if(sessions.length) m.sessions = sessions;
+      const tarif = Number(q(".mtar").value.replace(/[^\d.,]/g, "").replace(",", ".")), tp = Number(q(".mtp").value.replace(/[^\d.,]/g, "").replace(",", "."));
+      if(tarif > 0) m.tarif = tarif;
+      if(tp > 0) m.tarifParcours = tp;
+      [["positionnement", ".mpos"], ["positionnementLien", ".mposl"], ["cpf", ".mcpf"]].forEach(([k, c]) => { const v = q(c).value.trim(); if(v) m[k] = v; });
+      return m;
+    }).filter(m => m.code);
+    if(erreurs.length) return setMsg("Date illisible : " + erreurs.slice(0, 2).join(" ; ") + ". Écrivez le jour, le mois et l'année, ex. « 18-19 et 25-26 janvier 2027 ».");
     if(!modules.length) return setMsg("Ajoutez au moins un module.");
     if(new Set(modules.map(m => m.code)).size !== modules.length) return setMsg("Deux modules ont le même code.");
-    const id = isNew ? d.id + "-" + slug(nom) : adm.sel;
-    if(isNew && rawF(id)) return setMsg("Un parcours porte déjà ce nom.");
-    const data = { domaine: d.id, nom, intitule: $("fInt").value.trim(), duree: $("fDuree").value.trim(), certification: $("fCertF").value.trim(), modules,
-      ordre: Number($("fOrdre").value) || (isNew ? d.formations.length + 1 : (r.ordre ?? 99)) };
+    const bad = modules.find(m => m.tarif && m.tarifParcours && m.tarifParcours >= m.tarif);
+    if(bad) return setMsg(`Module ${bad.code} : le tarif parcours doit être inférieur au tarif normal.`);
+    const id = isNew ? cible + "-" + slug(nom) : adm.sel;
+    if(isNew && rawF(id)) return setMsg("Une formation porte déjà ce nom dans ce domaine.");
+    const change = !isNew && cible !== (r.domaine || d.id);
+    const data = { domaine: cible, nom, intitule: $("fInt").value.trim(), duree: $("fDuree").value.trim(), certification: $("fCertF").value.trim(), modules,
+      ordre: Number($("fOrdre").value) || (isNew || change ? dc.formations.length + 1 : (r.ordre ?? 99)) };
+    const ref = $("fRef").value.trim(); if(ref) data.reference = ref;
+    let reportes = 0, ok = false;
     await write(async () => {
       await db.doc("formations/" + id).set(data);
-      const rd = rawD(d.id), om = (rd && rd.ordreModules) || [], add = modules.map(m => m.code).filter(c => !om.includes(c));
-      if(add.length) await db.doc("domaines/" + d.id).update({ ordreModules: om.concat(add) });
-    }, "Parcours enregistré", () => { adm.sel = id; });
+      const rd = rawD(cible), om = (rd && rd.ordreModules) || [], add = modules.map(m => m.code).filter(c => !om.includes(c));
+      if(add.length) await db.doc("domaines/" + cible).update({ ordreModules: om.concat(add) });
+      /* changement de domaine : un parcours de profil doit rester dans le domaine du profil */
+      if(change) for(const p of used){ const rp = rawP(p.id); await db.doc("profils/" + p.id).update({ parcours: (rp.parcours || []).filter(x => x.formation !== id) }); }
+      /* report des dates, tarifs, positionnement et CPF dans les autres parcours contenant le même module */
+      for(const o of (RAW.formations || []).filter(x => x.id !== id && Array.isArray(x.modules))){
+        let touche = false;
+        const mm = o.modules.map(om => {
+          const src = modules.find(m => m.titre && norm(m.titre) === norm(om.titre || ""));
+          if(!src) return om;
+          const n = Object.assign({}, om); INFO_KEYS.forEach(k => { if(src[k] !== undefined) n[k] = src[k]; else delete n[k]; });
+          if(JSON.stringify(n) !== JSON.stringify(om)){ touche = true; return n; }
+          return om;
+        });
+        if(touche){ await db.doc("formations/" + o.id).update({ modules: mm }); reportes++; }
+      }
+    }, "Enregistré", () => { ok = true; adm.sel = id; if(change){ adm.dom = cible; } });
+    if(ok && reportes) toast(`Enregistré · reporté dans ${reportes} autre${reportes>1?"s":""} parcours`);
+    if(ok && change && used.length) toast(`Enregistré · retiré de ${used.length} profil${used.length>1?"s":""} de l'ancien domaine`);
   });
 }
-const modLine = m => `<div class="modline"><input class="inp mc" value="${esc(m.code)}" placeholder="Code" aria-label="Code du module"><input class="inp mtit" value="${esc(m.titre)}" placeholder="Titre du module" aria-label="Titre du module"><button type="button" class="btn small danger" data-rm="1">Retirer</button><input class="inp mlien" value="${esc(m.lien || "")}" placeholder="Lien vers la fiche (https://…)" aria-label="Lien vers la fiche du module"></div>`;
+const modLine = m => `<div class="modline"><input class="inp mc" value="${esc(m.code)}" placeholder="Code" aria-label="Code du module"><input class="inp mtit" value="${esc(m.titre)}" placeholder="Titre du module" aria-label="Titre du module"><button type="button" class="btn small danger" data-rm="1">Retirer</button><input class="inp mlien" value="${esc(m.lien || "")}" placeholder="Lien vers la fiche (https://…)" aria-label="Lien vers la fiche du module">
+  <details class="mextra"><summary>Dates, tarifs, positionnement, CPF${(m.sessions||[]).length ? ` · ${aVenir(m).length} date${aVenir(m).length>1?"s":""} à venir` : ""}</summary><div class="fgrid">
+    ${field("Dates (une session par ligne, avec l'année)", `<textarea class="inp mses" placeholder="ex. 18-19 et 25-26 janvier 2027&#10;15 avril 2027">${esc((m.sessions || []).map(x => x.texte).join("\n"))}</textarea>`, true)}
+    ${field("Tarif (€)", `<input class="inp mtar" inputmode="decimal" value="${esc(m.tarif ?? "")}" placeholder="ex. 780">`)}
+    ${field("Tarif préférentiel en parcours de 3 jours et plus (€)", `<input class="inp mtp" inputmode="decimal" value="${esc(m.tarifParcours ?? "")}" placeholder="ex. 700">`)}
+    ${field("Positionnement prérequis (nom du questionnaire)", `<input class="inp mpos" value="${esc(m.positionnement || "")}" placeholder="Laisser vide si aucun">`)}
+    ${field("Lien du questionnaire de positionnement", `<input class="inp mposl" value="${esc(m.positionnementLien || "")}" placeholder="https://forms…">`)}
+    ${field("Éligibilité CPF", `<input class="inp mcpf" value="${esc(m.cpf || "")}" placeholder="ex. Oui (certification Tosa) ; Non ; Oui, dans un parcours de 4 jours minimum">`, true)}
+  </div></details></div>`;
 
 /* ----- Formulaire profil ----- */
 function formProfil(el, d){

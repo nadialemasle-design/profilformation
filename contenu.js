@@ -5,7 +5,7 @@
                   et modules (code, titre, lien vers la fiche CCI)
    - profils    : profils types d'un domaine, leurs parcours possibles
                   (du plus adapté au moins adapté) et leurs formations complémentaires
-   Copie de la base de la version Claude au 28/10/2026.
+   Copie de la base au 29/10/2026 (dates 2027, tarifs, positionnement et CPF ajoutés).
    ===================================================================== */
 window.CONTENU = {
   "domaines": [
@@ -140,7 +140,7 @@ window.CONTENU = {
   "formations": [
     {
       "id": "bur-excel-power",
-      "certification": "",
+      "certification": "Tosa",
       "domaine": "bur",
       "duree": "4 jours",
       "intitule": "Excel Power Tools : analysez, automatisez & visualisez vos données avec Power Query, Pivot & BI",
@@ -148,7 +148,32 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/analyse-de-donnees-avec-excel-power-tools-power-bi",
-          "titre": "Excel Power Tools : analysez, automatisez & visualisez vos données avec Power Query, Pivot & BI"
+          "titre": "Excel Power Tools : analysez, automatisez & visualisez vos données avec Power Query, Pivot & BI",
+          "sessions": [
+            {
+              "texte": "5-6 et 12-13 avril 2027",
+              "debut": "2027-04-05",
+              "fin": "2027-04-13"
+            },
+            {
+              "texte": "15-16 juin, 1er et 2 juillet 2027",
+              "debut": "2027-06-15",
+              "fin": "2027-07-02"
+            },
+            {
+              "texte": "11-12 et 18-19 octobre 2027",
+              "debut": "2027-10-11",
+              "fin": "2027-10-19"
+            },
+            {
+              "texte": "15-16 et 22-23 novembre 2027",
+              "debut": "2027-11-15",
+              "fin": "2027-11-23"
+            }
+          ],
+          "tarif": 1680,
+          "tarifParcours": 1560,
+          "cpf": "Oui (certification Tosa)"
         }
       ],
       "nom": "Excel Power Tools",
@@ -165,7 +190,21 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/excel-macro-vba-automatiser-des-processus-dans-les-applications-microsoft-office-avec-vba-tosa",
-          "titre": "Excel macro VBA - Automatiser des processus dans les applications Microsoft Office avec VBA (Tosa)"
+          "titre": "Excel macro VBA - Automatiser des processus dans les applications Microsoft Office avec VBA (Tosa)",
+          "sessions": [
+            {
+              "texte": "3-4 et 7 juin 2027",
+              "debut": "2027-06-03",
+              "fin": "2027-06-07"
+            },
+            {
+              "texte": "4-5 et 8 novembre 2027",
+              "debut": "2027-11-04",
+              "fin": "2027-11-08"
+            }
+          ],
+          "tarif": 1260,
+          "cpf": "Oui (certification Tosa)"
         }
       ],
       "nom": "Excel macro VBA",
@@ -174,7 +213,7 @@ window.CONTENU = {
     },
     {
       "id": "cao-autocad",
-      "certification": "",
+      "certification": "ICDL",
       "domaine": "cao",
       "duree": "4 jours",
       "intitule": "AutoCAD LT : dessinez, cotez et mettez en page vos plans techniques 2D prêts à l'emploi",
@@ -182,7 +221,26 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/dao-autocad-2d-creer-et-presenter-des-plans-techniques",
-          "titre": "AutoCAD LT : dessinez, cotez et mettez en page vos plans techniques 2D prêts à l'emploi"
+          "titre": "AutoCAD LT : dessinez, cotez et mettez en page vos plans techniques 2D prêts à l'emploi",
+          "sessions": [
+            {
+              "texte": "11-12 et 18-19 mars 2027",
+              "debut": "2027-03-11",
+              "fin": "2027-03-19"
+            },
+            {
+              "texte": "3-4 et 10-11 juin 2027",
+              "debut": "2027-06-03",
+              "fin": "2027-06-11"
+            },
+            {
+              "texte": "2-3 et 9-10 novembre 2027",
+              "debut": "2027-11-02",
+              "fin": "2027-11-10"
+            }
+          ],
+          "tarif": 1650,
+          "cpf": "Oui (certification ICDL)"
         }
       ],
       "nom": "AutoCAD LT",
@@ -191,7 +249,7 @@ window.CONTENU = {
     },
     {
       "id": "cao-sketchup",
-      "certification": "",
+      "certification": "ICDL",
       "domaine": "cao",
       "duree": "4 jours",
       "intitule": "SketchUp Pro initiation : concevez et modélisez vos premiers projets en 3D sans compétences techniques",
@@ -199,7 +257,26 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/sketchup-pro-initiation",
-          "titre": "SketchUp Pro initiation : concevez et modélisez vos premiers projets en 3D sans compétences techniques"
+          "titre": "SketchUp Pro initiation : concevez et modélisez vos premiers projets en 3D sans compétences techniques",
+          "sessions": [
+            {
+              "texte": "11-12 et 18-19 février 2027",
+              "debut": "2027-02-11",
+              "fin": "2027-02-19"
+            },
+            {
+              "texte": "13-14 et 20-21 mai 2027",
+              "debut": "2027-05-13",
+              "fin": "2027-05-21"
+            },
+            {
+              "texte": "30 septembre, 1er et 7-8 octobre 2027",
+              "debut": "2027-09-30",
+              "fin": "2027-10-08"
+            }
+          ],
+          "tarif": 1640,
+          "cpf": "Oui (certification ICDL)"
         }
       ],
       "nom": "SketchUp Pro initiation",
@@ -208,7 +285,7 @@ window.CONTENU = {
     },
     {
       "id": "cao-solidworks",
-      "certification": "",
+      "certification": "ICDL",
       "domaine": "cao",
       "duree": "4 jours",
       "intitule": "SolidWorks - Maîtrisez la modélisation 3D avec SolidWorks : pièces, assemblages & plans techniques",
@@ -216,7 +293,26 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/solidworks",
-          "titre": "SolidWorks - Maîtrisez la modélisation 3D avec SolidWorks : pièces, assemblages & plans techniques"
+          "titre": "SolidWorks - Maîtrisez la modélisation 3D avec SolidWorks : pièces, assemblages & plans techniques",
+          "sessions": [
+            {
+              "texte": "18-19 et 25-26 janvier 2027",
+              "debut": "2027-01-18",
+              "fin": "2027-01-26"
+            },
+            {
+              "texte": "24-25 et 31 mai, 1er juin 2027",
+              "debut": "2027-05-24",
+              "fin": "2027-06-01"
+            },
+            {
+              "texte": "15-16 et 22-23 novembre 2027",
+              "debut": "2027-11-15",
+              "fin": "2027-11-23"
+            }
+          ],
+          "tarif": 1650,
+          "cpf": "Oui (certification ICDL)"
         }
       ],
       "nom": "SolidWorks",
@@ -225,7 +321,7 @@ window.CONTENU = {
     },
     {
       "id": "col-workspace",
-      "certification": "",
+      "certification": "Tosa",
       "domaine": "col",
       "duree": "2 jours",
       "intitule": "Google Workspace : collaborez, organisez & gagnez en productivité avec Gmail, Drive, Meet & Docs",
@@ -233,7 +329,22 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/google-workspace-les-outils-collaboratifs-de-google",
-          "titre": "Google Workspace : collaborez, organisez & gagnez en productivité avec Gmail, Drive, Meet & Docs"
+          "titre": "Google Workspace : collaborez, organisez & gagnez en productivité avec Gmail, Drive, Meet & Docs",
+          "sessions": [
+            {
+              "texte": "25-26 mars 2027",
+              "debut": "2027-03-25",
+              "fin": "2027-03-26"
+            },
+            {
+              "texte": "14-15 octobre 2027",
+              "debut": "2027-10-14",
+              "fin": "2027-10-15"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "cpf": "Oui (certification Tosa)"
         }
       ],
       "nom": "Google Workspace",
@@ -242,7 +353,7 @@ window.CONTENU = {
     },
     {
       "id": "col-notion",
-      "certification": "",
+      "certification": "Tosa",
       "domaine": "col",
       "duree": "1 jour",
       "intitule": "Organiser et centraliser son travail avec Notion - De la prise en main à un espace de travail opérationnel",
@@ -250,7 +361,16 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/creer-un-espace-de-travail-personnalise-et-structure-avec-notion-pour-centraliser-et-piloter-ses-donnees-professionnelles-",
-          "titre": "Organiser et centraliser son travail avec Notion - De la prise en main à un espace de travail opérationnel"
+          "titre": "Organiser et centraliser son travail avec Notion - De la prise en main à un espace de travail opérationnel",
+          "sessions": [
+            {
+              "texte": "10 juin 2027",
+              "debut": "2027-06-10",
+              "fin": "2027-06-10"
+            }
+          ],
+          "tarif": 390,
+          "cpf": "Oui (certification Tosa)"
         }
       ],
       "nom": "Notion",
@@ -259,7 +379,7 @@ window.CONTENU = {
     },
     {
       "id": "com-canva1",
-      "certification": "",
+      "certification": "Tosa (à venir)",
       "domaine": "com",
       "duree": "1 jour",
       "intitule": "Canva niveau 1 : concevez des visuels percutants pour votre communication sans compétences graphiques",
@@ -267,7 +387,37 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/canva-creez-des-visuels-professionnels-et-percutants",
-          "titre": "Canva niveau 1 : concevez des visuels percutants pour votre communication sans compétences graphiques"
+          "titre": "Canva niveau 1 : concevez des visuels percutants pour votre communication sans compétences graphiques",
+          "sessions": [
+            {
+              "texte": "10 mars 2027",
+              "debut": "2027-03-10",
+              "fin": "2027-03-10"
+            },
+            {
+              "texte": "31 mars 2027",
+              "debut": "2027-03-31",
+              "fin": "2027-03-31"
+            },
+            {
+              "texte": "12 mai 2027",
+              "debut": "2027-05-12",
+              "fin": "2027-05-12"
+            },
+            {
+              "texte": "16 juin 2027",
+              "debut": "2027-06-16",
+              "fin": "2027-06-16"
+            },
+            {
+              "texte": "3 novembre 2027",
+              "debut": "2027-11-03",
+              "fin": "2027-11-03"
+            }
+          ],
+          "tarif": 390,
+          "tarifParcours": 350,
+          "cpf": "À venir (Tosa), pas encore de date officielle"
         }
       ],
       "nom": "Canva niveau 1",
@@ -276,7 +426,7 @@ window.CONTENU = {
     },
     {
       "id": "com-canva-pro",
-      "certification": "",
+      "certification": "Tosa (à venir)",
       "domaine": "com",
       "duree": "2 jours",
       "intitule": "Canva Pro perfectionnement : exploiter la puissance des outils : IA, charte graphique, vidéo et automatisation",
@@ -284,7 +434,32 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/canva-pro-perfectionnement",
-          "titre": "Canva Pro perfectionnement : exploiter la puissance des outils : IA, charte graphique, vidéo et automatisation"
+          "titre": "Canva Pro perfectionnement : exploiter la puissance des outils : IA, charte graphique, vidéo et automatisation",
+          "sessions": [
+            {
+              "texte": "16-17 mars 2027",
+              "debut": "2027-03-16",
+              "fin": "2027-03-17"
+            },
+            {
+              "texte": "1er et 2 juin 2027",
+              "debut": "2027-06-01",
+              "fin": "2027-06-02"
+            },
+            {
+              "texte": "19-20 octobre 2027",
+              "debut": "2027-10-19",
+              "fin": "2027-10-20"
+            },
+            {
+              "texte": "23-24 novembre 2027",
+              "debut": "2027-11-23",
+              "fin": "2027-11-24"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "cpf": "À venir (Tosa), pas encore de date officielle"
         }
       ],
       "nom": "Canva Pro perfectionnement",
@@ -300,17 +475,91 @@ window.CONTENU = {
         {
           "code": "M1",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/plongez-dans-lia-generative",
-          "titre": "IA générative débutant : plongez dans les outils, les méthodes et les usages professionnels"
+          "titre": "IA générative débutant : plongez dans les outils, les méthodes et les usages professionnels",
+          "sessions": [
+            {
+              "texte": "15 janvier 2027",
+              "debut": "2027-01-15",
+              "fin": "2027-01-15"
+            },
+            {
+              "texte": "9 avril 2027",
+              "debut": "2027-04-09",
+              "fin": "2027-04-09"
+            },
+            {
+              "texte": "24 juin 2027",
+              "debut": "2027-06-24",
+              "fin": "2027-06-24"
+            },
+            {
+              "texte": "27 septembre 2027",
+              "debut": "2027-09-27",
+              "fin": "2027-09-27"
+            }
+          ],
+          "tarif": 420,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
         },
         {
           "code": "M2",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ia-generative-niveau-avance-usages-approfondis-prompts-avances-et-optimisation-des-pratiques-professionnelles",
-          "titre": "Perfectionnement IA générative : maîtrisez les outils, affinez vos méthodes et sécurisez vos pratiques professionnelles"
+          "titre": "Perfectionnement IA générative : maîtrisez les outils, affinez vos méthodes et sécurisez vos pratiques professionnelles",
+          "sessions": [
+            {
+              "texte": "4-5 février 2027",
+              "debut": "2027-02-04",
+              "fin": "2027-02-05"
+            },
+            {
+              "texte": "10-11 mai 2027",
+              "debut": "2027-05-10",
+              "fin": "2027-05-11"
+            },
+            {
+              "texte": "5-6 juillet 2027",
+              "debut": "2027-07-05",
+              "fin": "2027-07-06"
+            },
+            {
+              "texte": "18-19 novembre 2027",
+              "debut": "2027-11-18",
+              "fin": "2027-11-19"
+            }
+          ],
+          "tarif": 820,
+          "tarifParcours": 700,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
         },
         {
           "code": "M3",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ia-intelligence-artificielle-multimedia",
-          "titre": "IA multimédia : produisez vos premiers visuels et contenus audio avec l'IA générative"
+          "titre": "IA multimédia : produisez vos premiers visuels et contenus audio avec l'IA générative",
+          "sessions": [
+            {
+              "texte": "15 février 2027",
+              "debut": "2027-02-15",
+              "fin": "2027-02-15"
+            },
+            {
+              "texte": "18 mai 2027",
+              "debut": "2027-05-18",
+              "fin": "2027-05-18"
+            },
+            {
+              "texte": "6 décembre 2027",
+              "debut": "2027-12-06",
+              "fin": "2027-12-06"
+            }
+          ],
+          "tarif": 420,
+          "tarifParcours": 350,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
         }
       ],
       "nom": "Parcours IA Administratif & commercial",
@@ -325,17 +574,79 @@ window.CONTENU = {
         {
           "code": "M1",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/plongez-dans-lia-generative",
-          "titre": "IA générative débutant : plongez dans les outils, les méthodes et les usages professionnels"
+          "titre": "IA générative débutant : plongez dans les outils, les méthodes et les usages professionnels",
+          "sessions": [
+            {
+              "texte": "15 janvier 2027",
+              "debut": "2027-01-15",
+              "fin": "2027-01-15"
+            },
+            {
+              "texte": "9 avril 2027",
+              "debut": "2027-04-09",
+              "fin": "2027-04-09"
+            },
+            {
+              "texte": "24 juin 2027",
+              "debut": "2027-06-24",
+              "fin": "2027-06-24"
+            },
+            {
+              "texte": "27 septembre 2027",
+              "debut": "2027-09-27",
+              "fin": "2027-09-27"
+            }
+          ],
+          "tarif": 420,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
         },
         {
           "code": "M2",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ia-generative-au-service-de-lenseignement-et-des-formateurs",
-          "titre": "L'intelligence artificielle au service de l'enseignement et des formateurs - outils, méthodes et pratiques pédagogiques innovantes"
+          "titre": "L'intelligence artificielle au service de l'enseignement et des formateurs - outils, méthodes et pratiques pédagogiques innovantes",
+          "sessions": [
+            {
+              "texte": "25-26 janvier 2027",
+              "debut": "2027-01-25",
+              "fin": "2027-01-26"
+            },
+            {
+              "texte": "11-12 octobre 2027",
+              "debut": "2027-10-11",
+              "fin": "2027-10-12"
+            }
+          ],
+          "tarif": 820,
+          "tarifParcours": 700,
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
         },
         {
           "code": "M3",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ia-intelligence-artificielle-multimedia",
-          "titre": "IA multimédia : produisez vos premiers visuels et contenus audio avec l'IA générative"
+          "titre": "IA multimédia : produisez vos premiers visuels et contenus audio avec l'IA générative",
+          "sessions": [
+            {
+              "texte": "15 février 2027",
+              "debut": "2027-02-15",
+              "fin": "2027-02-15"
+            },
+            {
+              "texte": "18 mai 2027",
+              "debut": "2027-05-18",
+              "fin": "2027-05-18"
+            },
+            {
+              "texte": "6 décembre 2027",
+              "debut": "2027-12-06",
+              "fin": "2027-12-06"
+            }
+          ],
+          "tarif": 420,
+          "tarifParcours": 350,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
         }
       ],
       "nom": "Parcours IA Formation & enseignement",
@@ -350,17 +661,81 @@ window.CONTENU = {
         {
           "code": "M1",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/plongez-dans-lia-generative",
-          "titre": "IA générative débutant : plongez dans les outils, les méthodes et les usages professionnels"
+          "titre": "IA générative débutant : plongez dans les outils, les méthodes et les usages professionnels",
+          "sessions": [
+            {
+              "texte": "15 janvier 2027",
+              "debut": "2027-01-15",
+              "fin": "2027-01-15"
+            },
+            {
+              "texte": "9 avril 2027",
+              "debut": "2027-04-09",
+              "fin": "2027-04-09"
+            },
+            {
+              "texte": "24 juin 2027",
+              "debut": "2027-06-24",
+              "fin": "2027-06-24"
+            },
+            {
+              "texte": "27 septembre 2027",
+              "debut": "2027-09-27",
+              "fin": "2027-09-27"
+            }
+          ],
+          "tarif": 420,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
         },
         {
           "code": "M2",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ia-perfectionnement-intelligence-artificielle-pour-les-ressources-humaines",
-          "titre": "Intelligence artificielle perfectionnement pour les ressources humaines - maîtrisez les outils, affinez vos méthodes et sécurisez vos pratiques professionnelles"
+          "titre": "Intelligence artificielle perfectionnement pour les ressources humaines - maîtrisez les outils, affinez vos méthodes et sécurisez vos pratiques professionnelles",
+          "sessions": [
+            {
+              "texte": "12-13 avril 2027",
+              "debut": "2027-04-12",
+              "fin": "2027-04-13"
+            },
+            {
+              "texte": "29-30 novembre 2027",
+              "debut": "2027-11-29",
+              "fin": "2027-11-30"
+            }
+          ],
+          "tarif": 820,
+          "tarifParcours": 700,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
         },
         {
           "code": "M3",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ia-intelligence-artificielle-multimedia",
-          "titre": "IA multimédia : produisez vos premiers visuels et contenus audio avec l'IA générative"
+          "titre": "IA multimédia : produisez vos premiers visuels et contenus audio avec l'IA générative",
+          "sessions": [
+            {
+              "texte": "15 février 2027",
+              "debut": "2027-02-15",
+              "fin": "2027-02-15"
+            },
+            {
+              "texte": "18 mai 2027",
+              "debut": "2027-05-18",
+              "fin": "2027-05-18"
+            },
+            {
+              "texte": "6 décembre 2027",
+              "debut": "2027-12-06",
+              "fin": "2027-12-06"
+            }
+          ],
+          "tarif": 420,
+          "tarifParcours": 350,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
         }
       ],
       "nom": "Parcours IA Ressources humaines",
@@ -376,7 +751,26 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/prise-de-vue-photo-et-video",
-          "titre": "Prise de vue photo et vidéo : de l'exposition au cadrage, les clés pour des prises de vue professionnelles"
+          "titre": "Prise de vue photo et vidéo : de l'exposition au cadrage, les clés pour des prises de vue professionnelles",
+          "sessions": [
+            {
+              "texte": "16-17 mars 2027",
+              "debut": "2027-03-16",
+              "fin": "2027-03-17"
+            },
+            {
+              "texte": "25-26 mai 2027",
+              "debut": "2027-05-25",
+              "fin": "2027-05-26"
+            },
+            {
+              "texte": "5-6 octobre 2027",
+              "debut": "2027-10-05",
+              "fin": "2027-10-06"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700
         }
       ],
       "nom": "Prise de vue photo et vidéo",
@@ -393,7 +787,26 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/lightroom",
-          "titre": "Lightroom initiation : organisez et sublimez vos photos professionnelles"
+          "titre": "Lightroom initiation : organisez et sublimez vos photos professionnelles",
+          "sessions": [
+            {
+              "texte": "18 mars 2027",
+              "debut": "2027-03-18",
+              "fin": "2027-03-18"
+            },
+            {
+              "texte": "27 mai 2027",
+              "debut": "2027-05-27",
+              "fin": "2027-05-27"
+            },
+            {
+              "texte": "7 octobre 2027",
+              "debut": "2027-10-07",
+              "fin": "2027-10-07"
+            }
+          ],
+          "tarif": 390,
+          "tarifParcours": 350
         }
       ],
       "nom": "Lightroom initiation",
@@ -410,7 +823,27 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/photoshop-initiation-realiser-des-retouches-et-des-compositions-dimages-avec-photoshop-tosa",
-          "titre": "Photoshop initiation - Réaliser des retouches et des compositions d'images avec Photoshop (Tosa)"
+          "titre": "Photoshop initiation - Réaliser des retouches et des compositions d'images avec Photoshop (Tosa)",
+          "sessions": [
+            {
+              "texte": "21-22 et 28 janvier 2027",
+              "debut": "2027-01-21",
+              "fin": "2027-01-28"
+            },
+            {
+              "texte": "7-8 et 14 juin 2027",
+              "debut": "2027-06-07",
+              "fin": "2027-06-14"
+            },
+            {
+              "texte": "18 au 20 octobre 2027",
+              "debut": "2027-10-18",
+              "fin": "2027-10-20"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 800,
+          "cpf": "Oui (certification Tosa)"
         }
       ],
       "nom": "Photoshop initiation",
@@ -419,7 +852,7 @@ window.CONTENU = {
     },
     {
       "id": "pao-photoshop-perf",
-      "certification": "",
+      "certification": "Tosa",
       "domaine": "pao",
       "duree": "2 jours",
       "intitule": "Photoshop perfectionnement",
@@ -427,7 +860,24 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/photoshop-perfectionnement",
-          "titre": "Photoshop perfectionnement"
+          "titre": "Photoshop perfectionnement",
+          "sessions": [
+            {
+              "texte": "13-14 avril 2027",
+              "debut": "2027-04-13",
+              "fin": "2027-04-14"
+            },
+            {
+              "texte": "9-10 novembre 2027",
+              "debut": "2027-11-09",
+              "fin": "2027-11-10"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "positionnement": "Questionnaire de positionnement Photoshop perfectionnement",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUQ1pETzdXMFRWUVAyWktZVDRITU1VUE5HVS4u",
+          "cpf": "Oui (certification Tosa)"
         }
       ],
       "nom": "Photoshop perfectionnement",
@@ -444,7 +894,27 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/illustrator-initiation-creer-des-illustrations-vectorielles-et-des-graphiques-avec-illustrator-tosa",
-          "titre": "Illustrator Initiation : créer des illustrations vectorielles et des graphiques avec Illustrator (Tosa)"
+          "titre": "Illustrator Initiation : créer des illustrations vectorielles et des graphiques avec Illustrator (Tosa)",
+          "sessions": [
+            {
+              "texte": "29-30 mars, 5 avril 2027",
+              "debut": "2027-03-29",
+              "fin": "2027-04-05"
+            },
+            {
+              "texte": "23-24 juin, 1er juillet 2027",
+              "debut": "2027-06-23",
+              "fin": "2027-07-01"
+            },
+            {
+              "texte": "26-27 octobre, 2 novembre 2027",
+              "debut": "2027-10-26",
+              "fin": "2027-11-02"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 800,
+          "cpf": "Oui (certification Tosa)"
         }
       ],
       "nom": "Illustrator initiation",
@@ -461,7 +931,27 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/indesign-initiation-concevoir-des-mises-en-page-et-des-publications-professionnelles-avec-indesign-tosa",
-          "titre": "Concevoir des mises en page et des publications professionnelles avec InDesign (Tosa)"
+          "titre": "Concevoir des mises en page et des publications professionnelles avec InDesign (Tosa)",
+          "sessions": [
+            {
+              "texte": "8-9 et 16 avril 2027",
+              "debut": "2027-04-08",
+              "fin": "2027-04-16"
+            },
+            {
+              "texte": "10-11 et 15 juin 2027",
+              "debut": "2027-06-10",
+              "fin": "2027-06-15"
+            },
+            {
+              "texte": "1er-2 et 8 juillet 2027",
+              "debut": "2027-07-01",
+              "fin": "2027-07-08"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 800,
+          "cpf": "Oui (certification Tosa)"
         }
       ],
       "nom": "InDesign",
@@ -478,7 +968,21 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/maitriser-affinity-lalternative-professionnelle-gratuite-pour-creer-vos-supports-de-communication",
-          "titre": "Affinity by Canva : formation au logiciel gratuit de retouche photo, illustration vectorielle et mise en page"
+          "titre": "Affinity by Canva : formation au logiciel gratuit de retouche photo, illustration vectorielle et mise en page",
+          "sessions": [
+            {
+              "texte": "31 mai, 1er et 7 juin 2027",
+              "debut": "2027-05-31",
+              "fin": "2027-06-07"
+            },
+            {
+              "texte": "24 et 29-30 septembre 2027",
+              "debut": "2027-09-24",
+              "fin": "2027-09-30"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 800
         }
       ],
       "nom": "Affinity by Canva",
@@ -495,7 +999,22 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ia-et-logiciels-adobe-aller-plus-loin-dans-ses-projets-",
-          "titre": "Adobe & IA : boostez votre productivité créative avec l'intelligence artificielle de la suite Adobe"
+          "titre": "Adobe & IA : boostez votre productivité créative avec l'intelligence artificielle de la suite Adobe",
+          "sessions": [
+            {
+              "texte": "18-19 février 2027",
+              "debut": "2027-02-18",
+              "fin": "2027-02-19"
+            },
+            {
+              "texte": "9-10 décembre 2027",
+              "debut": "2027-12-09",
+              "fin": "2027-12-10"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "cpf": "Non"
         }
       ],
       "nom": "Adobe & IA",
@@ -512,7 +1031,24 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/developper-sa-creativite-graphique-avec-lia-midjourney-et-ideogram",
-          "titre": "IA design graphique : créez des visuels percutants grâce aux solutions IA leaders du design graphique"
+          "titre": "IA design graphique : créez des visuels percutants grâce aux solutions IA leaders du design graphique",
+          "sessions": [
+            {
+              "texte": "22-23 février 2027",
+              "debut": "2027-02-22",
+              "fin": "2027-02-23"
+            },
+            {
+              "texte": "13-14 décembre 2027",
+              "debut": "2027-12-13",
+              "fin": "2027-12-14"
+            }
+          ],
+          "tarif": 860,
+          "tarifParcours": 800,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
+          "cpf": "Oui, dans un parcours IA de 4 jours minimum"
         }
       ],
       "nom": "IA design graphique",
@@ -529,7 +1065,21 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/creer-des-formations-interactives-avec-genially",
-          "titre": "Créer des formations interactives avec Genially : scénarisation et production"
+          "titre": "Créer des formations interactives avec Genially : scénarisation et production",
+          "sessions": [
+            {
+              "texte": "8-9 juillet 2027",
+              "debut": "2027-07-08",
+              "fin": "2027-07-09"
+            },
+            {
+              "texte": "25-26 octobre 2027",
+              "debut": "2027-10-25",
+              "fin": "2027-10-26"
+            }
+          ],
+          "tarif": 840,
+          "cpf": "Non"
         }
       ],
       "nom": "Genially",
@@ -545,7 +1095,21 @@ window.CONTENU = {
       "modules": [
         {
           "code": "Formation",
-          "titre": "Organiser et piloter ses projets avec agilité — Découverte des méthodes et outils collaboratifs en ligne"
+          "titre": "Organiser et piloter ses projets avec agilité — Découverte des méthodes et outils collaboratifs en ligne",
+          "sessions": [
+            {
+              "texte": "9-10 mars 2027",
+              "debut": "2027-03-09",
+              "fin": "2027-03-10"
+            },
+            {
+              "texte": "6-7 juillet 2027",
+              "debut": "2027-07-06",
+              "fin": "2027-07-07"
+            }
+          ],
+          "tarif": 810,
+          "cpf": "Non"
         }
       ],
       "nom": "Gestion de projet agile",
@@ -562,7 +1126,22 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ms-project",
-          "titre": "MS Project : piloter vos projets en créant votre planning, en gérant vos ressources et en suivant l’avancement"
+          "titre": "MS Project : piloter vos projets en créant votre planning, en gérant vos ressources et en suivant l’avancement",
+          "sessions": [
+            {
+              "texte": "22-23 mars 2027",
+              "debut": "2027-03-22",
+              "fin": "2027-03-23"
+            },
+            {
+              "texte": "7-8 octobre 2027",
+              "debut": "2027-10-07",
+              "fin": "2027-10-08"
+            }
+          ],
+          "tarif": 760,
+          "tarifParcours": 700,
+          "cpf": "Non"
         }
       ],
       "nom": "MS Project",
@@ -578,12 +1157,54 @@ window.CONTENU = {
         {
           "code": "M1 Base",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/reseaux-sociaux-creer-et-animez-votre-presence-sur-les-reseaux-sociaux",
-          "titre": "Créer et animer votre présence sur les réseaux sociaux : de la cible à votre page pro"
+          "titre": "Créer et animer votre présence sur les réseaux sociaux : de la cible à votre page pro",
+          "sessions": [
+            {
+              "texte": "29 janvier 2027",
+              "debut": "2027-01-29",
+              "fin": "2027-01-29"
+            },
+            {
+              "texte": "4 juin 2027",
+              "debut": "2027-06-04",
+              "fin": "2027-06-04"
+            },
+            {
+              "texte": "8 octobre 2027",
+              "debut": "2027-10-08",
+              "fin": "2027-10-08"
+            }
+          ],
+          "tarif": 390,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         },
         {
           "code": "M2.1",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/strategie-de-communication-sur-le-digital-et-les-reseaux-sociaux",
-          "titre": "Développez votre stratégie de communication sur le digital et les réseaux sociaux : optimiser vos publications"
+          "titre": "Développez votre stratégie de communication sur le digital et les réseaux sociaux : optimiser vos publications",
+          "sessions": [
+            {
+              "texte": "5 et 12 février 2027",
+              "debut": "2027-02-05",
+              "fin": "2027-02-12"
+            },
+            {
+              "texte": "11 et 18 juin 2027",
+              "debut": "2027-06-11",
+              "fin": "2027-06-18"
+            },
+            {
+              "texte": "5 et 15 novembre 2027",
+              "debut": "2027-11-05",
+              "fin": "2027-11-15"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUNjJTNFE5VUJMNUVCVzA2Qk9CUkhHRFhQNS4u",
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         }
       ],
       "nom": "Stratégie réseaux · Parcours simple",
@@ -598,17 +1219,84 @@ window.CONTENU = {
         {
           "code": "M1 Socle",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/creer-ou-optimiser-son-image-de-marque-du-logo-a-sa-carte-de-visite",
-          "titre": "Réseaux sociaux : posez les bases de votre marque digitale - du positionnement à la charte graphique"
+          "titre": "Réseaux sociaux : posez les bases de votre marque digitale - du positionnement à la charte graphique",
+          "sessions": [
+            {
+              "texte": "28 janvier 2027",
+              "debut": "2027-01-28",
+              "fin": "2027-01-28"
+            },
+            {
+              "texte": "14 avril 2027",
+              "debut": "2027-04-14",
+              "fin": "2027-04-14"
+            },
+            {
+              "texte": "14 mai 2027",
+              "debut": "2027-05-14",
+              "fin": "2027-05-14"
+            },
+            {
+              "texte": "1er octobre 2027",
+              "debut": "2027-10-01",
+              "fin": "2027-10-01"
+            }
+          ],
+          "tarif": 390,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         },
         {
           "code": "M1 Base",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/reseaux-sociaux-creer-et-animez-votre-presence-sur-les-reseaux-sociaux",
-          "titre": "Créer et animer votre présence sur les réseaux sociaux : de la cible à votre page pro"
+          "titre": "Créer et animer votre présence sur les réseaux sociaux : de la cible à votre page pro",
+          "sessions": [
+            {
+              "texte": "29 janvier 2027",
+              "debut": "2027-01-29",
+              "fin": "2027-01-29"
+            },
+            {
+              "texte": "4 juin 2027",
+              "debut": "2027-06-04",
+              "fin": "2027-06-04"
+            },
+            {
+              "texte": "8 octobre 2027",
+              "debut": "2027-10-08",
+              "fin": "2027-10-08"
+            }
+          ],
+          "tarif": 390,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         },
         {
           "code": "M2.1",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/strategie-de-communication-sur-le-digital-et-les-reseaux-sociaux",
-          "titre": "Développez votre stratégie de communication sur le digital et les réseaux sociaux : optimiser vos publications"
+          "titre": "Développez votre stratégie de communication sur le digital et les réseaux sociaux : optimiser vos publications",
+          "sessions": [
+            {
+              "texte": "5 et 12 février 2027",
+              "debut": "2027-02-05",
+              "fin": "2027-02-12"
+            },
+            {
+              "texte": "11 et 18 juin 2027",
+              "debut": "2027-06-11",
+              "fin": "2027-06-18"
+            },
+            {
+              "texte": "5 et 15 novembre 2027",
+              "debut": "2027-11-05",
+              "fin": "2027-11-15"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUNjJTNFE5VUJMNUVCVzA2Qk9CUkhHRFhQNS4u",
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         }
       ],
       "nom": "Réseaux & identité de marque",
@@ -623,17 +1311,81 @@ window.CONTENU = {
         {
           "code": "M1 Base",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/reseaux-sociaux-creer-et-animez-votre-presence-sur-les-reseaux-sociaux",
-          "titre": "Créer et animer votre présence sur les réseaux sociaux : de la cible à votre page pro"
+          "titre": "Créer et animer votre présence sur les réseaux sociaux : de la cible à votre page pro",
+          "sessions": [
+            {
+              "texte": "29 janvier 2027",
+              "debut": "2027-01-29",
+              "fin": "2027-01-29"
+            },
+            {
+              "texte": "4 juin 2027",
+              "debut": "2027-06-04",
+              "fin": "2027-06-04"
+            },
+            {
+              "texte": "8 octobre 2027",
+              "debut": "2027-10-08",
+              "fin": "2027-10-08"
+            }
+          ],
+          "tarif": 390,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         },
         {
           "code": "M2.1",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/strategie-de-communication-sur-le-digital-et-les-reseaux-sociaux",
-          "titre": "Développez votre stratégie de communication sur le digital et les réseaux sociaux : optimiser vos publications"
+          "titre": "Développez votre stratégie de communication sur le digital et les réseaux sociaux : optimiser vos publications",
+          "sessions": [
+            {
+              "texte": "5 et 12 février 2027",
+              "debut": "2027-02-05",
+              "fin": "2027-02-12"
+            },
+            {
+              "texte": "11 et 18 juin 2027",
+              "debut": "2027-06-11",
+              "fin": "2027-06-18"
+            },
+            {
+              "texte": "5 et 15 novembre 2027",
+              "debut": "2027-11-05",
+              "fin": "2027-11-15"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUNjJTNFE5VUJMNUVCVzA2Qk9CUkhHRFhQNS4u",
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         },
         {
           "code": "M2.2",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/linkedin-developper-son-activite-btob-et-son-image-de-marque",
-          "titre": "LinkedIn : construisez votre réputation professionnelle, créez du contenu et développez votre réseau"
+          "titre": "LinkedIn : construisez votre réputation professionnelle, créez du contenu et développez votre réseau",
+          "sessions": [
+            {
+              "texte": "22 mars 2027",
+              "debut": "2027-03-22",
+              "fin": "2027-03-22"
+            },
+            {
+              "texte": "30 juin 2027",
+              "debut": "2027-06-30",
+              "fin": "2027-06-30"
+            },
+            {
+              "texte": "8 novembre 2027",
+              "debut": "2027-11-08",
+              "fin": "2027-11-08"
+            }
+          ],
+          "tarif": 390,
+          "tarifParcours": 350,
+          "positionnement": "Questionnaire de positionnement LinkedIn",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMVVIUTVJNE1OQ1hMWkZURTZVUEVLRVg0Ty4u",
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         }
       ],
       "nom": "Stratégie réseaux pro · LinkedIn",
@@ -648,17 +1400,79 @@ window.CONTENU = {
         {
           "code": "M1 Base",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/reseaux-sociaux-creer-et-animez-votre-presence-sur-les-reseaux-sociaux",
-          "titre": "Créer et animer votre présence sur les réseaux sociaux : de la cible à votre page pro"
+          "titre": "Créer et animer votre présence sur les réseaux sociaux : de la cible à votre page pro",
+          "sessions": [
+            {
+              "texte": "29 janvier 2027",
+              "debut": "2027-01-29",
+              "fin": "2027-01-29"
+            },
+            {
+              "texte": "4 juin 2027",
+              "debut": "2027-06-04",
+              "fin": "2027-06-04"
+            },
+            {
+              "texte": "8 octobre 2027",
+              "debut": "2027-10-08",
+              "fin": "2027-10-08"
+            }
+          ],
+          "tarif": 390,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         },
         {
           "code": "M2.1",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/strategie-de-communication-sur-le-digital-et-les-reseaux-sociaux",
-          "titre": "Développez votre stratégie de communication sur le digital et les réseaux sociaux : optimiser vos publications"
+          "titre": "Développez votre stratégie de communication sur le digital et les réseaux sociaux : optimiser vos publications",
+          "sessions": [
+            {
+              "texte": "5 et 12 février 2027",
+              "debut": "2027-02-05",
+              "fin": "2027-02-12"
+            },
+            {
+              "texte": "11 et 18 juin 2027",
+              "debut": "2027-06-11",
+              "fin": "2027-06-18"
+            },
+            {
+              "texte": "5 et 15 novembre 2027",
+              "debut": "2027-11-05",
+              "fin": "2027-11-15"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUNjJTNFE5VUJMNUVCVzA2Qk9CUkhHRFhQNS4u",
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         },
         {
           "code": "M2.3",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/google-business-profile-",
-          "titre": "Développez votre visibilité locale avec Google Business Profile et le référencement local"
+          "titre": "Développez votre visibilité locale avec Google Business Profile et le référencement local",
+          "sessions": [
+            {
+              "texte": "5 février 2027",
+              "debut": "2027-02-05",
+              "fin": "2027-02-05"
+            },
+            {
+              "texte": "10 mai 2027",
+              "debut": "2027-05-10",
+              "fin": "2027-05-10"
+            },
+            {
+              "texte": "9 septembre 2027",
+              "debut": "2027-09-09",
+              "fin": "2027-09-09"
+            }
+          ],
+          "tarif": 390,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         }
       ],
       "nom": "Réseaux & ancrage local",
@@ -673,17 +1487,84 @@ window.CONTENU = {
         {
           "code": "M1 Base",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/reseaux-sociaux-creer-et-animez-votre-presence-sur-les-reseaux-sociaux",
-          "titre": "Créer et animer votre présence sur les réseaux sociaux : de la cible à votre page pro"
+          "titre": "Créer et animer votre présence sur les réseaux sociaux : de la cible à votre page pro",
+          "sessions": [
+            {
+              "texte": "29 janvier 2027",
+              "debut": "2027-01-29",
+              "fin": "2027-01-29"
+            },
+            {
+              "texte": "4 juin 2027",
+              "debut": "2027-06-04",
+              "fin": "2027-06-04"
+            },
+            {
+              "texte": "8 octobre 2027",
+              "debut": "2027-10-08",
+              "fin": "2027-10-08"
+            }
+          ],
+          "tarif": 390,
+          "tarifParcours": 350,
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         },
         {
           "code": "M2.1",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/strategie-de-communication-sur-le-digital-et-les-reseaux-sociaux",
-          "titre": "Développez votre stratégie de communication sur le digital et les réseaux sociaux : optimiser vos publications"
+          "titre": "Développez votre stratégie de communication sur le digital et les réseaux sociaux : optimiser vos publications",
+          "sessions": [
+            {
+              "texte": "5 et 12 février 2027",
+              "debut": "2027-02-05",
+              "fin": "2027-02-12"
+            },
+            {
+              "texte": "11 et 18 juin 2027",
+              "debut": "2027-06-11",
+              "fin": "2027-06-18"
+            },
+            {
+              "texte": "5 et 15 novembre 2027",
+              "debut": "2027-11-05",
+              "fin": "2027-11-15"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUNjJTNFE5VUJMNUVCVzA2Qk9CUkhHRFhQNS4u",
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         },
         {
           "code": "M3",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/filmer-et-monter-des-videos-sur-son-smartphone-realiser-des-videos-pour-le-web-et-les-reseaux-sociaux",
-          "titre": "Médiatisez-vous : filmer et monter ses vidéos sur smartphone"
+          "titre": "Médiatisez-vous : filmer et monter ses vidéos sur smartphone",
+          "sessions": [
+            {
+              "texte": "15-16 mars 2027",
+              "debut": "2027-03-15",
+              "fin": "2027-03-16"
+            },
+            {
+              "texte": "1er et 2 juin 2027",
+              "debut": "2027-06-01",
+              "fin": "2027-06-02"
+            },
+            {
+              "texte": "20-21 septembre 2027",
+              "debut": "2027-09-20",
+              "fin": "2027-09-21"
+            },
+            {
+              "texte": "2-3 décembre 2027",
+              "debut": "2027-12-02",
+              "fin": "2027-12-03"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "cpf": "Oui, dans un parcours de 2 jours minimum"
         }
       ],
       "nom": "Réseaux & vidéo",
@@ -699,7 +1580,17 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/creer-et-monter-des-videos-professionnelles-",
-          "titre": "Adobe Premiere : produisez des vidéos engageantes et professionnelles pour booster votre communication"
+          "titre": "Adobe Premiere : produisez des vidéos engageantes et professionnelles pour booster votre communication",
+          "sessions": [
+            {
+              "texte": "27-28 mai, 4 juin 2027",
+              "debut": "2027-05-27",
+              "fin": "2027-06-04"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 900,
+          "cpf": "Non"
         }
       ],
       "nom": "Adobe Premiere",
@@ -716,7 +1607,24 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/video-ia-avatar",
-          "titre": "Vidéo IA Avatar - créez des vidéos IA qui propulsent vos produits et votre marque"
+          "titre": "Vidéo IA Avatar - créez des vidéos IA qui propulsent vos produits et votre marque",
+          "sessions": [
+            {
+              "texte": "18-19 janvier 2027",
+              "debut": "2027-01-18",
+              "fin": "2027-01-19"
+            },
+            {
+              "texte": "14-15 juin 2027",
+              "debut": "2027-06-14",
+              "fin": "2027-06-15"
+            }
+          ],
+          "tarif": 890,
+          "tarifParcours": 850,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
         }
       ],
       "nom": "Vidéo IA Avatar",
@@ -733,7 +1641,18 @@ window.CONTENU = {
         {
           "code": "Formation",
           "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/creer-et-gerer-des-sites-web-avec-wordpress-tosa",
-          "titre": "Créer et gérer des sites web avec WordPress (Tosa)"
+          "titre": "Créer et gérer des sites web avec WordPress (Tosa)",
+          "sessions": [
+            {
+              "texte": "25-26 mars, 1er et 2 avril 2027",
+              "debut": "2027-03-25",
+              "fin": "2027-04-02"
+            }
+          ],
+          "tarif": 1520,
+          "positionnement": "Questionnaire de positionnement WordPress",
+          "positionnementLien": "https://forms.cloud.microsoft/Pages/ShareFormPage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdURUtJUUFHMVVYRlpETlU4SUtTTUpFTzA5Si4u&sharetoken=uV8G8J7W6ZO7B0iI4Quj",
+          "cpf": "Oui (certification Tosa)"
         }
       ],
       "nom": "WordPress",
@@ -749,7 +1668,22 @@ window.CONTENU = {
       "modules": [
         {
           "code": "Formation",
-          "titre": "GEO- SEO Référencement naturel & stratégie éditoriale : créez du contenu grâce à l'IA"
+          "titre": "GEO- SEO Référencement naturel & stratégie éditoriale : créez du contenu grâce à l'IA",
+          "sessions": [
+            {
+              "texte": "2 et 16 avril 2027",
+              "debut": "2027-04-02",
+              "fin": "2027-04-16"
+            },
+            {
+              "texte": "5 et 12 octobre 2027",
+              "debut": "2027-10-05",
+              "fin": "2027-10-12"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "cpf": "Oui, dans un parcours de 4 jours minimum"
         }
       ],
       "nom": "GEO-SEO avec l'IA",
