@@ -297,6 +297,7 @@ details.group .profiles{padding:6px 0 4px 6px}
 .pt .num{text-align:right;white-space:nowrap}
 .pt tr.st td{background:var(--blue-soft)}
 .pt tr.tt td{background:var(--green-soft);font-size:14px}
+.pt-fin{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--blue-ink);border-radius:999px;padding:2px 10px;cursor:pointer}
 .pt .exo{margin-left:10px;font-size:12px;color:var(--muted)}
 .pb-acts{display:flex;gap:8px;align-items:center;margin-top:8px}
 @media print{#propBar{display:none}}
@@ -1216,13 +1217,13 @@ function renderProp(){
   bar.hidden = false;
   const r = propCalcul(), n = r.lignes.length;
   const ligne = (l, i) => `<tr><td>${esc(l.d.nom || "")}</td><td>${esc(l.m.titre)}</td>
-    <td>${(aVenir(l.m).length ? `<select data-sess="${i}">${aVenir(l.m).map(z => `<option${z.texte === l.it.session ? " selected" : ""}>${esc(z.texte)}</option>`).join("")}</select>` : `<span class="none">Pas de date</span>`)}</td>
-    <td><select data-type="${i}"><option value="cpf"${l.it.type === "cpf" ? " selected" : ""}>CPF</option><option value="hors"${l.it.type !== "cpf" ? " selected" : ""}>Hors CPF</option></select></td>
+    <td>${l.it.session ? esc(l.it.session) : `<span class="none">Pas de date</span>`}</td>
+    <td><button type="button" class="pt-fin" data-fin="${i}" title="Cliquer pour passer en ${l.it.type === "cpf" ? "hors CPF" : "CPF"}">${l.it.type === "cpf" ? "CPF" : "Hors CPF"}</button></td>
     <td class="num">${eur(l.prix)}</td><td><button type="button" class="btn small danger" data-rmp="${i}" aria-label="Retirer">×</button></td></tr>`;
   const tot = (lab, v, cls) => `<tr class="${cls || ""}"><td colspan="4">${lab}</td><td class="num">${v}</td><td></td></tr>`;
   bar.innerHTML = `<div class="pb-row"><b>Proposition</b><span>${n} formation${n>1?"s":""}${r.jours ? ` · ${r.jours} jour${r.jours>1?"s":""}` : ""}</span>${r.totalCpf ? `<span>Dossier CPF ${eur(r.totalCpf)}</span>` : ""}<span class="pb-charge">À charge ${eur(r.charge)}</span>
       <button type="button" class="btn small" id="propOpen">${prop.ouvert ? "Masquer le détail" : "Voir le détail"}</button><button type="button" class="btn primary small" id="propWord">Générer le document Word</button></div>
-    ${prop.ouvert ? `<div id="propPanel"><table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date</th><th>Financement</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
+    ${prop.ouvert ? `<div id="propPanel"><table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date retenue</th><th>Financement</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
       ${r.lignes.map((l, i) => ligne(l, prop.items.indexOf(l.it))).join("")}
       ${r.certs.map(c => tot(esc(c.nom), eur(c.prix))).join("")}
       ${r.totalCpf ? tot(`<b>Total ${r.dossiers.length > 1 ? `des ${r.dossiers.length} dossiers CPF` : "dossier CPF"}</b>`, `<b>${eur(r.totalCpf)}</b>`, "st") + tot(`Prise en charge CPF (plafond ${eur(PLAFOND_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""})`, eur(r.priseEnCharge)) + tot(`Reste à charge CPF <small>(participation forfaitaire de ${eur(PARTICIPATION_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""} incluse)</small> <label class="exo"><input type="checkbox" id="propExo"${prop.exonere ? " checked" : ""}> exonéré(e) de la participation</label>`, eur(r.resteCpf)) : ""}
@@ -1236,6 +1237,7 @@ function renderProp(){
 document.addEventListener("click", async e => {
   if(e.target.id === "propOpen"){ prop.ouvert = !prop.ouvert; renderProp(); return; }
   if(e.target.id === "propClear"){ prop.items = []; prop.ouvert = false; propSave(); renderProp(); syncPropCtl(); return; }
+  const fin = e.target.closest("[data-fin]"); if(fin){ const it = prop.items[+fin.dataset.fin]; it.type = it.type === "cpf" ? "hors" : "cpf"; propSave(); renderProp(); return; }
   const rm = e.target.closest("[data-rmp]"); if(rm){ prop.items.splice(+rm.dataset.rmp, 1); propSave(); renderProp(); syncPropCtl(); return; }
   if(e.target.id === "propCopy"){ try{ await navigator.clipboard.writeText(propTexte()); $("propMsg").textContent = "Tableau copié : collez-le dans Word."; }catch(err){ $("propMsg").textContent = "Copie impossible ici."; } return; }
   if(e.target.id === "propWord"){ propWord(); return; }
