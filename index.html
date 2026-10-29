@@ -171,6 +171,9 @@ details.group .profiles{padding:6px 0 4px 6px}
 .fo-hic .ic{width:24px;height:24px;margin:0}
 .fo-lab{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--orange)}
 .fo-name{display:block;font-size:17px;line-height:1.25;text-wrap:balance}
+.fo-edit{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font:inherit;font-size:12px;font-weight:600;color:var(--blue-ink);background:none;border:1px solid var(--line);border-radius:6px;padding:2px 8px;cursor:pointer}
+.fo-edit .ic{width:13px;height:13px}
+.fo-edit:hover{border-color:var(--blue-ink)}
 .fo-box small{display:block;color:var(--muted);font-size:12px}
 .fo-facts{flex-direction:column;gap:6px;font-size:13px}
 .fo-fl{display:flex;gap:8px;align-items:flex-start}.fo-fl .ic{color:var(--orange);margin:2px 0 0}
@@ -374,6 +377,16 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
 .btn.danger{color:#B42318;border-color:#E9B1AA}
 .btn.small{min-height:30px;padding:3px 9px;font-size:12.5px}
 .btn.reset{align-self:flex-start;margin-top:10px}
+.rt-list{display:flex;flex-direction:column;gap:6px;margin:6px 0 10px}
+.rt-row{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--surface)}
+.rt-open{flex:1;min-width:0;text-align:left;font:inherit;background:none;border:0;padding:0;cursor:pointer;color:var(--fg)}
+.rt-open b{display:block;font-size:13.5px}.rt-open small{color:var(--muted);font-size:12px}
+.rt-open:hover b{text-decoration:underline}
+.rt-type{font-size:12px;color:var(--muted);white-space:nowrap}
+.rt-add{display:grid;grid-template-columns:auto 1fr 1.4fr;gap:8px;align-items:center;border:1px dashed var(--line);border-radius:8px;padding:8px}
+.rt-add b{font-size:13px}.rt-add #rtPq{grid-column:2 / 4}.rt-add #rtGo{grid-column:3;justify-self:end}
+@media (max-width:700px){.rt-add{grid-template-columns:1fr}.rt-add #rtPq,.rt-add #rtGo{grid-column:auto}}
+
 .form{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:14px}
 .form h2{margin:0;font-size:18px}
 .fgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 14px}
@@ -486,6 +499,7 @@ window.SUPABASE_CONFIG = { url: "https://epwghwvqdeirtnigyajj.supabase.co", key:
    Collections : domaines, formations (= parcours), profils.
    ===================================================================== */
 const ICONS = {
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
   why: '<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/>',
   besoin: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
   profil: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
@@ -741,7 +755,7 @@ function renderDetail(){
   const facts = d.financement || d.certification;
   el.innerHTML = `
     <div class="fo-head${facts ? "" : " nofacts"}">
-      <div class="fo-box"><span class="fo-hic">${ic("profil")}</span><span><span class="fo-lab">Profil</span><b class="fo-name">${esc(p.nom)}</b><small>${esc(p.categorie)}</small></span></div>
+      <div class="fo-box"><span class="fo-hic">${ic("profil")}</span><span><span class="fo-lab">Profil</span><b class="fo-name">${esc(p.nom)}</b><small>${esc(p.categorie)}</small>${canAdmin ? `<button type="button" class="fo-edit" data-editp="${esc(p.id)}" data-dom="${esc(d.id)}">${ic("edit")}Modifier</button>` : ""}</span></div>
       <div class="fo-box"><span class="fo-hic">${ic("besoin")}</span><span><span class="fo-lab">Besoin</span>${esc(p.besoin)}</span></div>
       ${facts ? `<div class="fo-box fo-facts">${d.financement ? `<span class="fo-fl">${ic("euro")}<span><span class="fo-lab">Financement</span>${esc(d.financement)}</span></span>` : ""}${d.certification ? `<span class="fo-fl">${ic("certif")}<span><span class="fo-lab">Certification</span>${esc(d.certification)}</span></span>` : ""}</div>` : ""}
     </div>
@@ -802,6 +816,12 @@ $("groups").addEventListener("toggle", e => {
 }, true);
 $("q").addEventListener("input", e => { state.q = e.target.value; renderList(); renderDetail(); });
 $("catSel").addEventListener("change", e => { state.cat = e.target.value; renderList(); renderDetail(); });
+/* « Modifier » sur la fiche affichée : ouvre directement ce sous-profil dans la Gestion */
+$("detail").addEventListener("click", e => {
+  const b = e.target.closest("[data-editp]"); if(!b || !canAdmin) return;
+  adm.dom = b.dataset.dom; adm.tab = "profils"; adm.sel = b.dataset.editp;
+  document.querySelector('.vbtn[data-view="admin"]').click();
+});
 $("resetBtn").addEventListener("click", () => {
   state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; ouvertes.clear();
   $("q").value = ""; renderConsult(); $("groups").scrollTop = 0;
@@ -942,8 +962,9 @@ function formFormation(el, d){
     <div class="fsec"><h3>Modules</h3><p class="fhint">Formation seule : un seul module, avec le code « Formation ». Parcours : un module par code (M1, M2, M2.3…). Ouvrez « Dates, tarifs, positionnement, CPF » sous chaque module pour les compléter. Ces informations sont reportées automatiquement dans les autres parcours qui contiennent le même module (même titre).</p>
       <div id="modLines">${mods.map(modLine).join("")}</div>
       <div><button type="button" class="btn add small" id="addMod">+ Ajouter un module</button></div></div>
-    ${!isNew ? `<p class="ro-note">Proposé dans ${used.length} profil${used.length>1?"s":""}.</p>` : ""}
+    ${!isNew ? rattachHtml(adm.sel, domCur) : ""}
     ${formActions(!isNew)}</div>`;
+  if(!isNew) rattachBind(adm.sel, domCur, r.nom);
   $("addMod").onclick = () => $("modLines").insertAdjacentHTML("beforeend", modLine({ code: "", titre: "" }));
   $("modLines").addEventListener("click", e => { if(e.target.closest("[data-rm]")) e.target.closest(".modline").remove(); });
   el.querySelector(".actions").addEventListener("click", async e => {
@@ -1003,6 +1024,72 @@ function formFormation(el, d){
     }, "Enregistré", () => { ok = true; adm.sel = id; if(change){ adm.dom = cible; } });
     if(ok && reportes) toast(`Enregistré · reporté dans ${reportes} autre${reportes>1?"s":""} parcours`);
     if(ok && change && used.length) toast(`Enregistré · retiré de ${used.length} profil${used.length>1?"s":""} de l'ancien domaine`);
+  });
+}
+/* ----- Fiche formation : sous-profils qui la proposent, rattachement par famille ou par sous-profil ----- */
+function rattachListe(fid){
+  return (RAW.profils || []).map(rp => {
+    const i = (rp.parcours || []).findIndex(x => x.formation === fid), c = (rp.complements || []).some(x => x.formation === fid);
+    return i >= 0 ? { rp, type: "parcours", rang: i + 1 } : c ? { rp, type: "complément" } : null;
+  }).filter(Boolean);
+}
+const famillesDe = rp => (Array.isArray(rp.categories) && rp.categories.length ? rp.categories : [rp.categorie]).filter(Boolean);
+const nomDom = id => (DOMAINES.find(x => x.id === id) || {}).nom || id;
+function rattachHtml(fid, domF){
+  const l = rattachListe(fid);
+  const fams = [...new Set((RAW.profils || []).flatMap(famillesDe))].sort((x, y) => rangF(x) - rangF(y) || x.localeCompare(y));
+  return `<div class="fsec" id="rattach"><h3>Sous-profils qui la proposent (${l.length})</h3>
+    <p class="fhint">Un sous-profil du domaine « ${esc(nomDom(domF))} » la reçoit comme parcours (placé en dernier : changez son rang dans la fiche du sous-profil). Un sous-profil d'un autre domaine la reçoit comme formation complémentaire.</p>
+    <div class="rt-list">${l.length ? l.sort((a, b) => a.rp.domaine === b.rp.domaine ? (a.rp.nom || "").localeCompare(b.rp.nom || "") : nomDom(a.rp.domaine).localeCompare(nomDom(b.rp.domaine))).map(x => `<div class="rt-row" data-pid="${esc(x.rp.id)}">
+      <button type="button" class="rt-open" data-open="1" title="Ouvrir la fiche du sous-profil"><b>${esc(x.rp.nom)}</b><small>${esc(nomDom(x.rp.domaine))} · ${esc(famillesDe(x.rp)[0] || "")}</small></button>
+      <span class="rt-type">${x.type === "parcours" ? `Parcours n°${x.rang}` : "Complément"}</span>
+      <button type="button" class="btn small danger" data-out="1">Retirer</button></div>`).join("") : `<p class="fhint">Aucun sous-profil pour l'instant.</p>`}</div>
+    <div class="rt-add"><b>Rattacher</b>
+      <select class="inp" id="rtFam" aria-label="Famille de métiers"><option value="">Famille de métiers…</option>${fams.map(f => `<option>${esc(f)}</option>`).join("")}</select>
+      <select class="inp" id="rtProf" aria-label="Sous-profil" disabled><option value="">Choisissez d'abord une famille</option></select>
+      <input class="inp" id="rtPq" placeholder="Pourquoi la proposer (phrase vue par la conseillère)" aria-label="Pourquoi la proposer">
+      <button type="button" class="btn small primary" id="rtGo">Rattacher</button></div></div>`;
+}
+/* la liste se met à jour quand la base change (sans toucher au reste du formulaire) */
+function rattachRefresh(){
+  const box = $("rattach"); if(!box || adm.tab !== "formations" || !adm.sel || adm.sel === "new") return;
+  const f = rawF(adm.sel); if(!f) return;
+  const sig = JSON.stringify(rattachListe(adm.sel).map(x => x.rp.id + x.type + (x.rang || "")));
+  if(box.dataset.sig === sig) return;
+  box.outerHTML = rattachHtml(adm.sel, f.domaine); rattachBind(adm.sel, f.domaine, f.nom);
+}
+function rattachBind(fid, domF, nomF){
+  const box = $("rattach"); if(!box) return;
+  box.dataset.sig = JSON.stringify(rattachListe(fid).map(x => x.rp.id + x.type + (x.rang || "")));
+  const deja = rp => (rp.parcours || []).some(x => x.formation === fid) || (rp.complements || []).some(x => x.formation === fid);
+  $("rtFam").onchange = () => {
+    const f = $("rtFam").value, sel = $("rtProf");
+    if(!f){ sel.disabled = true; sel.innerHTML = `<option value="">Choisissez d'abord une famille</option>`; return; }
+    const l = (RAW.profils || []).filter(rp => famillesDe(rp).includes(f) && !deja(rp)).sort((a, b) => nomDom(a.domaine).localeCompare(nomDom(b.domaine)) || (a.nom || "").localeCompare(b.nom || ""));
+    sel.disabled = !l.length;
+    sel.innerHTML = l.length ? `<option value="*">Tous les sous-profils de la famille (${l.length})</option>` + l.map(rp => `<option value="${esc(rp.id)}">${esc(rp.nom)} · ${esc(nomDom(rp.domaine))}</option>`).join("") : `<option value="">Tous les sous-profils de cette famille la proposent déjà</option>`;
+  };
+  box.addEventListener("click", async e => {
+    const row = e.target.closest(".rt-row"), rp = row && rawP(row.dataset.pid);
+    if(rp && e.target.closest("[data-open]")){ adm.dom = rp.domaine; adm.tab = "profils"; adm.sel = rp.id; renderAdmin(true); return; }
+    if(rp && e.target.closest("[data-out]")){
+      if((rp.parcours || []).length === 1 && rp.parcours[0].formation === fid) return setMsg(`« ${rp.nom} » n'a que ce parcours : ajoutez-lui d'abord un autre parcours.`);
+      return write(() => db.doc("profils/" + rp.id).update({ parcours: (rp.parcours || []).filter(x => x.formation !== fid), complements: (rp.complements || []).filter(x => x.formation !== fid) }), "Retiré du sous-profil", () => {});
+    }
+    if(e.target.id !== "rtGo") return;
+    const f = $("rtFam").value, v = $("rtProf").value, pq = $("rtPq").value.trim();
+    if(!f || !v) return setMsg("Choisissez une famille, puis un sous-profil ou « Tous les sous-profils de la famille ».");
+    if(!pq) return setMsg("Écrivez en une phrase pourquoi la proposer.");
+    const cibles = v === "*" ? (RAW.profils || []).filter(rp => famillesDe(rp).includes(f) && !deja(rp)) : [rawP(v)].filter(Boolean);
+    if(!cibles.length) return setMsg("Rien à rattacher.");
+    const faire = async () => {
+      for(const rp of cibles){
+        if(rp.domaine === domF) await db.doc("profils/" + rp.id).update({ parcours: (rp.parcours || []).concat({ formation: fid, pourquoi: pq, reponses: {} }) });
+        else await db.doc("profils/" + rp.id).update({ complements: (rp.complements || []).concat({ formation: fid, pourquoi: pq }) });
+      }
+    }, okT = `Rattaché à ${cibles.length} sous-profil${cibles.length>1?"s":""}`;
+    if(cibles.length > 1) return askConfirm(`Rattacher « ${nomF} » aux ${cibles.length} sous-profils de la famille « ${f} » ?`, faire, "Confirmer le rattachement", okT);
+    return write(faire, okT, () => {});
   });
 }
 const modLine = m => `<div class="modline"><input class="inp mc" value="${esc(m.code)}" placeholder="Code" aria-label="Code du module"><input class="inp mtit" value="${esc(m.titre)}" placeholder="Titre du module" aria-label="Titre du module"><button type="button" class="btn small danger" data-rm="1">Retirer</button><input class="inp mlien" value="${esc(m.lien || "")}" placeholder="Lien vers la fiche (https://…)" aria-label="Lien vers la fiche du module">
@@ -1167,10 +1254,10 @@ function readRow(row){
   return { formation: row.querySelector("select.pcf").value, pourquoi: row.querySelector(".pcw").value.trim(), reponses };
 }
 
-function askConfirm(text, run){
-  $("fconfirm").innerHTML = `<div class="confirm"><span>${esc(text)}</span><button type="button" class="btn danger" id="cYes">Confirmer la suppression</button><button type="button" class="btn" id="cNo">Annuler</button></div>`;
+function askConfirm(text, run, label, okText){
+  $("fconfirm").innerHTML = `<div class="confirm"><span>${esc(text)}</span><button type="button" class="btn ${label ? "primary" : "danger"}" id="cYes">${esc(label || "Confirmer la suppression")}</button><button type="button" class="btn" id="cNo">Annuler</button></div>`;
   $("cNo").onclick = () => $("fconfirm").innerHTML = "";
-  $("cYes").onclick = () => write(run, null, () => {}).then(() => renderAdmin(true));
+  $("cYes").onclick = () => write(run, okText || null, () => {}).then(() => { if(!okText) renderAdmin(true); });
 }
 async function write(fn, okText, after){
   const btns = document.querySelectorAll("#admForm button"); btns.forEach(b => b.disabled = true);
@@ -1384,7 +1471,7 @@ async function propWord(){
 function onData(){
   if(!ready()) return;
   buildModel();
-  if(state.view === "consult") renderConsult(); else { renderAdmin(adm.tab === "categories"); }
+  if(state.view === "consult") renderConsult(); else { renderAdmin(adm.tab === "categories"); rattachRefresh(); }
   renderProp();
 }
 function useStatic(){ /* contenu lu dans contenu.js, pas de back office */
@@ -1421,7 +1508,7 @@ async function refreshAuth(){
   const session = data && data.session;
   let ok = false;
   if(session){ const r = await SB.from("editeurs").select("email").limit(1); ok = !r.error && r.data && r.data.length > 0; }
-  canAdmin = ok;
+  canAdmin = ok; renderDetail();
   $("loginBtn").textContent = session ? "Déconnexion" : "Connexion";
   $("views").hidden = !ok;
   if(session && !ok){ $("notice").textContent = "Ce compte n'a pas le droit de modifier le contenu."; $("notice").hidden = false; }
@@ -1462,7 +1549,7 @@ $("loginForm").addEventListener("submit", async e => {
     }, () => { if(!RAW[c]) RAW[c] = []; onData(); });
   });
   canAdmin = user ? await user.canEdit() : false;
-  $("views").hidden = !canAdmin;
+  $("views").hidden = !canAdmin; renderDetail();
 })();
 renderDetail();
 </script>
