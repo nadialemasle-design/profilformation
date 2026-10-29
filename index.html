@@ -1173,12 +1173,14 @@ function propCalcul(){
   const certs = []; cpf.forEach(l => { if(l.certPrix && !certs.some(c => c.key === l.certKey)) certs.push({ key: l.certKey, nom: l.certNom, prix: l.certPrix }); });
   /* un dossier CPF par certification : plafond et participation s'appliquent à chaque dossier */
   const dossiers = []; cpf.forEach(l => { let d = dossiers.find(x => x.key === l.certKey); if(!d){ d = { key: l.certKey, lignes: [], cert: certs.find(c => c.key === l.certKey) }; dossiers.push(d); } d.lignes.push(l); });
-  dossiers.forEach(d => { d.total = d.lignes.reduce((t, l) => t + l.prix, 0) + (d.cert ? d.cert.prix : 0); d.prise = Math.min(d.total, PLAFOND_CPF); d.depass = d.total - d.prise; });
-  const totalCpf = dossiers.reduce((t, d) => t + d.total, 0), priseEnCharge = dossiers.reduce((t, d) => t + d.prise, 0), depassement = totalCpf - priseEnCharge;
+  /* la participation fait partie du reste à charge : le CPF paie au plus le prix moins 150 €, et au plus 1 500 € */
+  dossiers.forEach(d => { d.total = d.lignes.reduce((t, l) => t + l.prix, 0) + (d.cert ? d.cert.prix : 0);
+    d.prise = Math.max(0, Math.min(PLAFOND_CPF, d.total - (prop.exonere ? 0 : PARTICIPATION_CPF))); d.reste = d.total - d.prise; });
+  const totalCpf = dossiers.reduce((t, d) => t + d.total, 0), priseEnCharge = dossiers.reduce((t, d) => t + d.prise, 0), resteCpf = totalCpf - priseEnCharge;
   const totalHors = hors.reduce((t, l) => t + l.prix, 0);
-  const participation = prop.exonere ? 0 : PARTICIPATION_CPF * dossiers.length;
-  const charge = totalHors + depassement + participation, jours = lignes.reduce((t, l) => t + l.jours, 0);
-  return { lignes, cpf, hors, certs, dossiers, totalCpf, priseEnCharge, depassement, totalHors, participation, charge, jours, parJour: jours ? Math.round(charge / jours) : 0 };
+  const depassement = resteCpf, participation = 0;
+  const charge = totalHors + resteCpf, jours = lignes.reduce((t, l) => t + l.jours, 0);
+  return { lignes, cpf, hors, certs, dossiers, resteCpf, totalCpf, priseEnCharge, depassement, totalHors, participation, charge, jours, parJour: jours ? Math.round(charge / jours) : 0 };
 }
 /* case « Ajouter à la proposition » sous un module */
 function propCtl(fid, code){
@@ -1223,9 +1225,8 @@ function renderProp(){
     ${prop.ouvert ? `<div id="propPanel"><table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date</th><th>Financement</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
       ${r.lignes.map((l, i) => ligne(l, prop.items.indexOf(l.it))).join("")}
       ${r.certs.map(c => tot(esc(c.nom), eur(c.prix))).join("")}
-      ${r.totalCpf ? tot(`<b>Total ${r.dossiers.length > 1 ? `des ${r.dossiers.length} dossiers CPF` : "dossier CPF"}</b>`, `<b>${eur(r.totalCpf)}</b>`, "st") + tot(`Prise en charge CPF (plafond ${eur(PLAFOND_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""})`, eur(r.priseEnCharge)) + (r.depassement ? tot("Dépassement du plafond, à votre charge", eur(r.depassement)) : "") : ""}
+      ${r.totalCpf ? tot(`<b>Total ${r.dossiers.length > 1 ? `des ${r.dossiers.length} dossiers CPF` : "dossier CPF"}</b>`, `<b>${eur(r.totalCpf)}</b>`, "st") + tot(`Prise en charge CPF (plafond ${eur(PLAFOND_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""})`, eur(r.priseEnCharge)) + tot(`Reste à charge CPF <small>(participation forfaitaire de ${eur(PARTICIPATION_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""} incluse)</small> <label class="exo"><input type="checkbox" id="propExo"${prop.exonere ? " checked" : ""}> exonéré(e) de la participation</label>`, eur(r.resteCpf)) : ""}
       ${r.totalHors ? tot("Total formation hors CPF", eur(r.totalHors), "st") : ""}
-      ${r.totalCpf ? tot(`Participation forfaitaire CPF${r.dossiers.length > 1 ? ` (${eur(PARTICIPATION_CPF)} × ${r.dossiers.length} dossiers)` : ""} <label class="exo"><input type="checkbox" id="propExo"${prop.exonere ? " checked" : ""}> exonéré(e)</label>`, prop.exonere ? "0 €" : eur(r.participation)) : ""}
       ${tot("<b>Total à votre charge</b>", `<b>${eur(r.charge)}</b>`, "tt")}
       ${r.jours ? tot("Nombre de jours · coût par jour à votre charge", `${r.jours} j · ${eur(r.parJour)}`) : ""}
       </tbody></table>
@@ -1244,9 +1245,8 @@ function propTexte(){
   r.lignes.forEach(l => L.push([l.d.nom || "", l.m.titre, l.it.session || "", l.it.type === "cpf" ? "CPF" : "Hors CPF", eur(l.prix)].join("\t")));
   r.certs.forEach(c => L.push(["", c.nom, "", "CPF", eur(c.prix)].join("\t")));
   if(r.totalCpf) L.push(["", "Total dossier CPF", "", "", eur(r.totalCpf)].join("\t"), ["", "Prise en charge CPF (plafond " + eur(PLAFOND_CPF) + ")", "", "", eur(r.priseEnCharge)].join("\t"));
-  if(r.depassement) L.push(["", "Dépassement du plafond", "", "", eur(r.depassement)].join("\t"));
+  if(r.totalCpf) L.push(["", prop.exonere ? "Reste à charge CPF (exonéré(e))" : "Reste à charge CPF (participation de 150 € incluse)", "", "", eur(r.resteCpf)].join("\t"));
   if(r.totalHors) L.push(["", "Total formation hors CPF", "", "", eur(r.totalHors)].join("\t"));
-  if(r.totalCpf) L.push(["", "Participation forfaitaire CPF" + (r.dossiers.length > 1 ? " (" + r.dossiers.length + " dossiers)" : ""), "", "", prop.exonere ? "exonéré(e)" : eur(r.participation)].join("\t"));
   L.push(["", "Total à votre charge", "", "", eur(r.charge)].join("\t"));
   if(r.jours) L.push(["", "Nombre de jours", "", "", String(r.jours)].join("\t"), ["", "Coût par jour à votre charge", "", "", eur(r.parJour)].join("\t"));
   return L.join("\n");
@@ -1293,9 +1293,9 @@ async function propWord(){
   const tots = [];
   r.certs.forEach(c => tots.push(ligneTot(c.nom + " *", eur(c.prix))));
   const nd = r.dossiers.length;
-  if(avecCpf){ tots.push(ligneTot(nd > 1 ? `Total des ${nd} dossiers CPF` : "Total dossier CPF", eur(r.totalCpf), BLEU, true), ligneTot(`Prise en charge CPF (plafond ${eur(PLAFOND_CPF)}${nd > 1 ? " par dossier" : ""}, dans la limite de vos droits)`, eur(r.priseEnCharge), VERT)); if(r.depassement) tots.push(ligneTot("Dépassement du plafond CPF, à votre charge", eur(r.depassement))); }
+  if(avecCpf){ tots.push(ligneTot(nd > 1 ? `Total des ${nd} dossiers CPF` : "Total dossier CPF", eur(r.totalCpf), BLEU, true), ligneTot(`Prise en charge CPF (plafond ${eur(PLAFOND_CPF)}${nd > 1 ? " par dossier" : ""}, dans la limite de vos droits)`, eur(r.priseEnCharge), VERT),
+      ligneTot(prop.exonere ? "Reste à charge CPF (exonéré(e) de la participation forfaitaire)" : `Reste à charge CPF, participation forfaitaire obligatoire de ${eur(PARTICIPATION_CPF)}${nd > 1 ? " par dossier" : ""} incluse **`, eur(r.resteCpf))); }
   if(avecHors) tots.push(ligneTot("Total formation hors CPF", eur(r.totalHors), BLEU_CLAIR, true));
-  if(avecCpf) tots.push(ligneTot(`Participation forfaitaire obligatoire CPF${nd > 1 ? ` (${eur(PARTICIPATION_CPF)} × ${nd} dossiers)` : ""} **`, prop.exonere ? "Exonéré(e)" : eur(r.participation)));
   tots.push(ligneTot("Total à votre charge", eur(r.charge), BLEU, true));
   if(r.jours){ tots.push(ligneTot("Nombre de jours de formation", String(r.jours), BLEU_CLAIR, true), ligneTot("Coût par jour à votre charge", eur(r.parJour))); }
   const bord = { style: BorderStyle.SINGLE, size: 6, color: "1F3864" };
@@ -1313,7 +1313,7 @@ async function propWord(){
       para(run(""), { spacing: { after: 160 } }),
       avecCpf ? note("* Pourquoi une certification ? Le CPF ne finance que des formations préparant à une certification enregistrée auprès de France Compétences. Le passage de la certification est donc une condition du financement, et non une option : c'est elle qui rend le parcours éligible.") : note(""),
       avecCpf ? note("** La participation forfaitaire obligatoire", true) : note(""),
-      avecCpf ? note("Depuis le 2 avril 2026 (décret n° 2026-234 du 30 mars 2026), toute personne qui mobilise son CPF doit verser une participation forfaitaire de 150 €, quel que soit le montant de ses droits. Elle est réglée directement sur la plateforme Mon Compte Formation au moment de la validation de l'inscription. Vous en êtes exonéré(e) si vous êtes demandeur d'emploi, ou si votre employeur complète votre financement par un abondement.") : note(""),
+      avecCpf ? note("Depuis le 2 avril 2026 (décret n° 2026-234 du 30 mars 2026), toute personne qui mobilise son CPF doit verser une participation forfaitaire de 150 €, quel que soit le montant de ses droits. Elle fait partie du reste à charge : lorsque le dépassement du plafond est supérieur à 150 €, elle y est déjà incluse et ne s'ajoute pas. Le reste à charge est réglé directement sur la plateforme Mon Compte Formation au moment de la validation de l'inscription. Vous en êtes exonéré(e) si vous êtes demandeur d'emploi, ou si votre employeur complète votre financement par un abondement.") : note(""),
       avecCpf ? note(`Plafond : pour les formations menant à une certification du Répertoire spécifique, le CPF prend en charge au maximum ${eur(PLAFOND_CPF)} (décret n° 2026-127 du 24 février 2026). Montants en vigueur en 2026, susceptibles d'évoluer.`) : note("")
     ] }] });
   const blob = await Packer.toBlob(doc), nom = "Proposition-formation-" + new Date().toISOString().slice(0, 10) + ".docx";
