@@ -196,7 +196,8 @@ details.group .profiles{padding:6px 0 4px 6px}
 .fo-why .fo-ic{flex:none;color:var(--orange);padding-right:10px;border-right:1.5px solid var(--blue);display:flex;align-items:center}
 .fo-why .fo-ic .ic{margin:0}
 .fo-why .fo-lab{color:var(--blue-ink)}
-.fo-mod{display:grid;grid-template-columns:76px minmax(0,1fr);border:1.5px solid var(--teal);background:var(--surface);overflow:hidden}
+.fo-mod{display:grid;grid-template-columns:76px minmax(0,1fr);border:1.5px solid var(--teal);background:var(--surface)}
+.fo-mod > .fo-tab{border-radius:10px 0 0 10px}
 .fo-tab{background:var(--teal);display:flex;align-items:center;justify-content:center;padding:8px 4px}
 .fo-tab .code{background:transparent;color:#fff;font-size:12.5px;white-space:normal;text-align:center;padding:0}
 .fo-mbody{padding:9px 14px;display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -262,6 +263,10 @@ details.group .profiles{padding:6px 0 4px 6px}
 .fo-det[open]{flex-basis:100%;margin-left:0}
 .fo-det .minfo{border-top:0;margin-top:2px;padding-top:0}
 /* case vide : le pointillé traverse jusqu'au module suivant */
+/* flèche du sens de lecture au bout de chaque pointillé, juste au-dessus du module suivant */
+.fo-card:not(.fo-parc)::after,.fo-gap::after{content:"";position:absolute;left:calc(50% - 6px);top:-9px;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid var(--blue)}
+.fo-gap::after{top:-1px}
+@media (max-width:900px){.fo-card:not(.fo-parc)::after{display:none}}
 .fo-gap{position:relative;min-height:10px}
 .fo-gap::before{content:"";position:absolute;left:50%;top:-10px;bottom:0;border-left:2px dashed var(--blue);opacity:.55}
 .fo-compl{margin-top:12px;padding:8px 12px;border-radius:12px}
