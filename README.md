@@ -21,6 +21,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `supabase-mise-a-jour-2027-n2.sql` | Mise à jour n°2 : parcours IA Webmaster et IA Graphiste, coût de certification (330 €). À lancer après la précédente. |
 | `supabase-mise-a-jour-2027-n3.sql` | Mise à jour n°3 : coût des certifications (parcours IA et réseaux 330 €, Tosa 89 €, ICDL 120 €). |
 | `supabase-mise-a-jour-2027-n4.sql` | Mise à jour n°4 : Excel macro VBA, 3 jours, 1 290 €. |
+| `supabase-mise-a-jour-2027-n5.sql` | Mise à jour n°5 : 11 nouveaux sous-profils, mots-clés de recherche des sous-profils et des catégories. Ne remplace rien de ce qui a été saisi dans Gestion. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 
