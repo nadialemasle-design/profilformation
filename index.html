@@ -272,6 +272,17 @@ details.group .profiles{padding:6px 0 4px 6px}
 .fo-ccard .fo-foot{margin-top:3px}
 .fo-cpf small{display:block;font-weight:500;color:var(--muted);font-size:11px}
 
+.catchecks{display:flex;flex-wrap:wrap;gap:4px 14px;margin:6px 0}
+.catchk{display:inline-flex;align-items:center;gap:5px;font-size:13.5px;font-weight:500}
+.catrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.catrow small{grid-column:1;color:var(--muted);font-size:12px}
+.catrow b{grid-column:1}
+.catrow > select,.catrow > .btn{grid-row:1 / span 2}
+.catrow > select,.catrow > [data-out]{grid-column:2}
+.catrow > [data-edit]{grid-column:3}
+.catrow > select{width:auto;max-width:220px}
+.catadd{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.catadd select{flex:1 1 240px;width:auto}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 
 /* ---------- Vues et back office ---------- */
@@ -394,7 +405,8 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
     <div class="adm-bar">
       <label for="admDom">Domaine <select id="admDom"></select></label>
       <div class="subtabs" id="admTabs">
-        <button type="button" class="stab" data-tab="profils" aria-pressed="true">Profils</button>
+        <button type="button" class="stab" data-tab="profils" aria-pressed="true">Sous-profils</button>
+        <button type="button" class="stab" data-tab="categories" aria-pressed="false">Catégories de profils</button>
         <button type="button" class="stab" data-tab="formations" aria-pressed="false">Formations &amp; parcours</button>
         <button type="button" class="stab" data-tab="domaine" aria-pressed="false">Domaine</button>
       </div>
@@ -501,7 +513,7 @@ function buildModel(){
       prix: prixParcours(f), tarifCertification: f.tarifCertification,
       liens: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).filter(m => m.lien).map(m => [m.code, m.lien])) })),
     profils: (RAW.profils || []).filter(p => p.domaine === d.id).sort(byOrdre).map(p => ({
-      id: p.id, categorie: p.categorie || "Autres profils", nom: p.nom || "", besoin: p.besoin || "", reponses: p.reponses || {},
+      id: p.id, categorie: profCats(p)[0], categories: profCats(p), nom: p.nom || "", besoin: p.besoin || "", reponses: p.reponses || {},
       parcours: Object.fromEntries((Array.isArray(p.parcours) ? p.parcours : []).map(x => [x.formation, { pourquoi: x.pourquoi || "", reponses: x.reponses || {} }])),
       complements: (Array.isArray(p.complements) ? p.complements : []).filter(c => c && c.formation) }))
   }));
@@ -514,6 +526,18 @@ function prixParcours(f){
   if(mods.length < 2 || (parseInt(f.duree, 10) || 0) < 3 || !mods.every(m => Number(m.tarifParcours) > 0)) return null;
   const parcours = mods.reduce((t, m) => t + Number(m.tarifParcours), 0), cert = Number(f.tarifCertification) || 0;
   return { parcours, cert, cpf: cert ? parcours + cert : null, separe: mods.every(m => Number(m.tarif) > 0) ? mods.reduce((t, m) => t + Number(m.tarif), 0) : null };
+}
+/* catégories d'un profil (la première est la principale) */
+function profCats(p){
+  const l = (Array.isArray(p.categories) ? p.categories : []).map(c => String(c || "").trim()).filter(Boolean);
+  if(!l.length && p.categorie) l.push(String(p.categorie).trim());
+  return l.length ? [...new Set(l)] : ["Autres profils"];
+}
+/* catégories d'un domaine, dans l'ordre choisi en Gestion, puis celles des profils qui n'y sont pas encore */
+function domCats(d){
+  const rd = (RAW.domaines || []).find(x => x.id === d.id) || {}, l = (Array.isArray(rd.categories) ? rd.categories : []).filter(Boolean);
+  d.profils.forEach(p => p.categories.forEach(c => { if(!l.includes(c)) l.push(c); }));
+  return l;
 }
 const ready = () => RAW.domaines && RAW.formations && RAW.profils;
 
@@ -533,11 +557,11 @@ function renderList(){
   const d = dom(); if(!d){ $("groups").innerHTML = ""; return; }
   const q = norm(state.q.trim()), cats = [];
   d.profils.forEach(p => {
-    const hay = norm(p.nom + " " + p.besoin + " " + p.categorie + " " + Object.keys(p.parcours).map(id => (d.formations.find(f => f.id === id)||{}).nom).join(" "));
+    const hay = norm(p.nom + " " + p.besoin + " " + p.categories.join(" ") + " " + Object.keys(p.parcours).map(id => (d.formations.find(f => f.id === id)||{}).nom).join(" "));
     if(q && !hay.includes(q)) return;
-    let c = cats.find(x => x.nom === p.categorie); if(!c){ c = {nom:p.categorie, items:[]}; cats.push(c); }
-    c.items.push(p);
+    p.categories.forEach(nom => { let c = cats.find(x => x.nom === nom); if(!c){ c = {nom, items:[]}; cats.push(c); } c.items.push(p); });
   });
+  const ordre = domCats(d); cats.sort((a, b) => ordre.indexOf(a.nom) - ordre.indexOf(b.nom));
   const sel = d.profils.find(p => p.id === state.pid);
   $("groups").innerHTML = cats.length ? cats.map(c => {
     const open = q || ouvertes.has(d.id + "|" + c.nom); /* fermées par défaut ; ouvertes pendant une recherche */
@@ -688,6 +712,13 @@ function renderAdmList(){
   const d = admDom(), el = $("admList");
   if(!d){ el.innerHTML = `<p class="none">Aucun domaine. Créez-en un avec « + Nouveau domaine ».</p>`; return; }
   if(adm.tab === "domaine"){ el.innerHTML = `<button type="button" class="adm-item" aria-pressed="true"><b>${esc(d.nom)}</b><small>${d.formations.length} parcours · ${d.profils.length} profils</small></button>`; return; }
+  if(adm.tab === "categories"){
+    el.innerHTML = `<button type="button" class="btn add" data-new="1">+ Nouvelle catégorie</button>` + domCats(d).map(c => {
+      const n = d.profils.filter(p => p.categories.includes(c)).length;
+      return `<button type="button" class="adm-item" data-sel="${esc(c)}" aria-pressed="${adm.sel===c}"><b>${esc(c)}</b><small>${n} sous-profil${n>1?"s":""}</small></button>`;
+    }).join("");
+    return;
+  }
   if(adm.tab === "formations"){
     el.innerHTML = `<button type="button" class="btn add" data-new="1">+ Nouvelle formation ou parcours</button>` + d.formations.map(f => {
       const n = d.profils.filter(p => p.parcours[f.id]).length;
@@ -695,10 +726,10 @@ function renderAdmList(){
     }).join("");
     return;
   }
-  let html = `<button type="button" class="btn add" data-new="1">+ Nouveau profil</button>`, last = null;
-  d.profils.forEach(p => {
-    if(p.categorie !== last){ html += `<div class="adm-cat">${esc(p.categorie)}</div>`; last = p.categorie; }
-    html += `<button type="button" class="adm-item" data-sel="${esc(p.id)}" aria-pressed="${adm.sel===p.id}"><b>${esc(p.nom)}</b><small>${Object.keys(p.parcours).length} parcours</small></button>`;
+  let html = `<button type="button" class="btn add" data-new="1">+ Nouveau sous-profil</button>`;
+  domCats(d).forEach(c => {
+    const l = d.profils.filter(p => p.categories.includes(c)); if(!l.length) return;
+    html += `<div class="adm-cat">${esc(c)}</div>` + l.map(p => `<button type="button" class="adm-item" data-sel="${esc(p.id)}" aria-pressed="${adm.sel===p.id}"><b>${esc(p.nom)}</b><small>${Object.keys(p.parcours).length} parcours${p.categories.length > 1 ? ` · ${p.categories.length} catégories` : ""}</small></button>`).join("");
   });
   el.innerHTML = html;
 }
@@ -719,10 +750,12 @@ const setMsg = (t, ok) => { const m = $("fmsg"); if(m){ m.textContent = t; m.cla
 
 function renderAdmForm(){
   const el = $("admForm"), d = admDom();
+  el.onclick = null; el.onchange = null;
   if(adm.tab === "domaine" || adm.sel === "new" && adm.tab === "domaine"){ return formDomaine(el); }
   if(!d){ el.innerHTML = ""; return; }
   if(!adm.sel){ el.innerHTML = `<div class="state">Choisissez un élément dans la liste, ou créez-en un nouveau.</div>`; return; }
   if(adm.tab === "formations") return formFormation(el, d);
+  if(adm.tab === "categories") return formCategorie(el, d);
   return formProfil(el, d);
 }
 
@@ -752,6 +785,7 @@ function formDomaine(el){
     const ordre = Number($("fOrdre").value) || (isNew ? (RAW.domaines.length + 1) : (r.ordre ?? 99));
     const data = { nom, financement: $("fFin").value.trim(), certification: $("fCert").value.trim(),
       ordreModules: $("fMods").value.split(",").map(s => s.trim()).filter(Boolean), ordre };
+    if(Array.isArray(r.categories)) data.categories = r.categories;
     await write(() => db.doc("domaines/" + id).set(data), "Domaine enregistré", () => { adm.dom = id; adm.sel = id; adm.tab = "domaine"; });
   });
 }
@@ -850,18 +884,71 @@ const modLine = m => `<div class="modline"><input class="inp mc" value="${esc(m.
     ${field("Éligibilité CPF", `<input class="inp mcpf" value="${esc(m.cpf || "")}" placeholder="ex. Oui (certification Tosa) ; Non ; Oui, dans un parcours de 4 jours minimum">`, true)}
   </div></details></div>`;
 
+/* ----- Formulaire catégorie de profils ----- */
+function formCategorie(el, d){
+  const isNew = adm.sel === "new", nomAct = isNew ? "" : adm.sel, toutes = domCats(d);
+  const dedans = isNew ? [] : d.profils.filter(p => p.categories.includes(nomAct)), dehors = d.profils.filter(p => !dedans.includes(p));
+  const rd = rawD(d.id) || {};
+  el.innerHTML = `<div class="form"><h2>${isNew ? "Nouvelle catégorie" : "Catégorie : " + esc(nomAct)}</h2>
+    <div class="fgrid">${field("Nom de la catégorie *", inp("fCatNom", nomAct, "ex. Commerce et artisanat"), true)}</div>
+    ${isNew ? "" : `<div class="actions" style="border:0;padding:0"><button type="button" class="btn small" data-move="-1">Monter dans la liste</button><button type="button" class="btn small" data-move="1">Descendre dans la liste</button><span class="fhint">Position ${toutes.indexOf(nomAct) + 1} sur ${toutes.length}</span></div>
+    <div class="fsec"><h3>Sous-profils de cette catégorie (${dedans.length})</h3>
+      <p class="fhint">Un sous-profil peut être dans plusieurs catégories. « Retirer » l'enlève seulement d'ici ; s'il n'est que dans cette catégorie, choisissez où le déplacer.</p>
+      ${dedans.map(p => `<div class="catrow" data-pid="${esc(p.id)}"><b>${esc(p.nom)}</b><small>${p.categories.filter(c => c !== nomAct).map(esc).join(", ") || "seulement ici"}</small>
+        ${p.categories.length > 1 ? `<button type="button" class="btn small danger" data-out="1">Retirer d'ici</button>` : `<select class="inp catmv" aria-label="Déplacer vers"><option value="">Déplacer vers…</option>${toutes.filter(c => c !== nomAct).map(c => `<option>${esc(c)}</option>`).join("")}</select>`}
+        <button type="button" class="btn small" data-edit="1">Ouvrir</button></div>`).join("") || `<p class="none">Aucun sous-profil pour l'instant.</p>`}
+      <div class="catadd"><select class="inp" id="catAddSel"><option value="">Ajouter un sous-profil existant…</option>${dehors.map(p => `<option value="${esc(p.id)}">${esc(p.nom)} (${esc(p.categories.join(", "))})</option>`).join("")}</select><button type="button" class="btn small" id="catAddBtn">Ajouter</button><button type="button" class="btn add small" id="catNewProf">+ Créer un sous-profil ici</button></div>
+    </div>`}
+    ${formActions(!isNew)}</div>`;
+  const majProfil = async (p, cats) => { await db.doc("profils/" + p.id).update({ categorie: cats[0], categories: cats }); };
+  const majOrdre = async l => { await db.doc("domaines/" + d.id).update({ categories: l }); };
+  el.onclick = async e => {
+    const mv = e.target.closest("[data-move]");
+    if(mv){ const l = toutes.slice(), i = l.indexOf(nomAct), j = i + Number(mv.dataset.move); if(j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; return write(() => majOrdre(l), "Ordre enregistré", () => {}); }
+    const row = e.target.closest(".catrow"), p = row && d.profils.find(x => x.id === row.dataset.pid);
+    if(row && e.target.closest("[data-out]")) return write(() => majProfil(p, p.categories.filter(c => c !== nomAct)), "Retiré de la catégorie", () => {});
+    if(row && e.target.closest("[data-edit]")){ adm.tab = "profils"; adm.sel = p.id; renderAdmin(true); return; }
+    if(e.target.id === "catAddBtn"){ const id = $("catAddSel").value, q = d.profils.find(x => x.id === id); if(!q) return setMsg("Choisissez un sous-profil."); return write(() => majProfil(q, q.categories.concat(nomAct)), "Sous-profil ajouté", () => {}); }
+    if(e.target.id === "catNewProf"){ adm.tab = "profils"; adm.sel = "new"; adm.cat = nomAct; renderAdmin(false); renderAdmForm(); return; }
+  };
+  el.onchange = e => {
+    const s = e.target.closest(".catmv"); if(!s || !s.value) return;
+    const p = d.profils.find(x => x.id === s.closest(".catrow").dataset.pid);
+    write(() => majProfil(p, p.categories.map(c => c === nomAct ? s.value : c).filter((c, i, a) => a.indexOf(c) === i)), "Sous-profil déplacé", () => {});
+  };
+  el.querySelectorAll(".actions").forEach(a => a.addEventListener("click", async e => {
+    const act = e.target.closest("[data-act]")?.dataset.act; if(!act) return;
+    if(act === "cancel"){ adm.sel = null; renderAdmin(true); return; }
+    if(act === "del"){
+      if(dedans.length) return setMsg("Déplacez ou retirez d'abord les sous-profils de cette catégorie.");
+      return askConfirm(`Supprimer la catégorie « ${nomAct} » ?`, async () => { await majOrdre(toutes.filter(c => c !== nomAct)); adm.sel = null; toast("Catégorie supprimée"); });
+    }
+    const nom = $("fCatNom").value.trim(); if(!nom) return setMsg("Le nom est obligatoire.");
+    if(nom !== nomAct && toutes.includes(nom)) return setMsg("Une catégorie porte déjà ce nom dans ce domaine.");
+    if(isNew) return write(() => majOrdre(toutes.concat(nom)), "Catégorie créée", () => { adm.sel = nom; });
+    if(nom === nomAct) return setMsg("Aucun changement.", true);
+    await write(async () => {
+      for(const p of dedans) await majProfil(p, p.categories.map(c => c === nomAct ? nom : c));
+      await majOrdre(toutes.map(c => c === nomAct ? nom : c));
+    }, "Catégorie renommée", () => { adm.sel = nom; });
+  }));
+}
+
 /* ----- Formulaire profil ----- */
 function formProfil(el, d){
   const isNew = adm.sel === "new";
-  const r = isNew ? { categorie: "", nom: "", besoin: "", reponses: {}, parcours: [] } : (rawP(adm.sel) || {});
-  const cats = [...new Set(d.profils.map(p => p.categorie))];
+  const r = isNew ? { categorie: adm.cat || "", nom: "", besoin: "", reponses: {}, parcours: [] } : (rawP(adm.sel) || {});
+  const cats = domCats(d), mes = isNew ? (adm.cat ? [adm.cat] : []) : profCats(r);
+  adm.cat = "";
   const pc = Array.isArray(r.parcours) ? r.parcours : [];
   el.innerHTML = `<div class="form"><h2>${isNew ? "Nouveau profil" : "Profil : " + esc(r.nom)}</h2>
     <div class="fgrid">
       ${field("Nom du profil *", inp("fNom", r.nom || "", "ex. Fleuriste"))}
-      ${field("Catégorie *", inp("fCat", r.categorie || "", "Choisir ou saisir une catégorie").replace("<input", '<input list="catList"') + `<datalist id="catList">${cats.map(c => `<option value="${esc(c)}">`).join("")}</datalist>`)}
-      ${field("Besoin", ta("fBesoin", r.besoin || ""), true)}
       ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
+      <div class="field full"><span>Catégories * <small class="fhint">— cochez toutes celles où ce sous-profil doit apparaître ; la première cochée est la principale</small></span>
+        <div class="catchecks" id="fCats">${cats.map(c => `<label class="catchk"><input type="checkbox" value="${esc(c)}"${mes.includes(c)?" checked":""}> ${esc(c)}</label>`).join("")}</div>
+        <input class="inp" id="fCatNew" placeholder="ou nouvelle catégorie : saisir son nom"></div>
+      ${field("Besoin", ta("fBesoin", r.besoin || ""), true)}
     </div>
     <div class="fsec"><h3>Arguments communs à tous ses parcours</h3>
       <p class="fhint">Utilisés dans chaque parcours qui contient le module, sauf si un argument propre est saisi plus bas. Laissez vide si l'argument change selon le parcours.</p>
@@ -897,8 +984,11 @@ function formProfil(el, d){
     const a = e.target.closest("[data-act]")?.dataset.act; if(!a) return;
     if(a === "cancel"){ adm.sel = null; renderAdmin(true); return; }
     if(a === "del") return askConfirm(`Supprimer le profil « ${r.nom} » ?`, async () => { await db.doc("profils/" + adm.sel).delete(); adm.sel = null; toast("Profil supprimé"); });
-    const nom = $("fNom").value.trim(), categorie = $("fCat").value.trim();
-    if(!nom || !categorie) return setMsg("Le nom et la catégorie sont obligatoires.");
+    const nom = $("fNom").value.trim();
+    const categories = [...document.querySelectorAll("#fCats input:checked")].map(x => x.value);
+    const nouv = $("fCatNew").value.trim(); if(nouv && !categories.includes(nouv)) categories.push(nouv);
+    const categorie = categories[0] || "";
+    if(!nom || !categorie) return setMsg("Le nom et au moins une catégorie sont obligatoires.");
     const reponses = {};
     document.querySelectorAll("textarea.com").forEach(t => { if(t.value.trim()) reponses[t.dataset.m] = t.value.trim(); });
     const parcours = [...document.querySelectorAll("#pcRows .pcrow")].map(readRow);
@@ -913,7 +1003,7 @@ function formProfil(el, d){
     const id = isNew ? d.id + "-" + slug(nom) : adm.sel;
     if(isNew && rawP(id)) return setMsg("Un profil porte déjà ce nom dans ce domaine.");
     const maxOrdre = Math.max(0, ...d.profils.map(p => (rawP(p.id) || {}).ordre || 0));
-    const data = { domaine: d.id, categorie, nom, besoin: $("fBesoin").value.trim(), reponses, parcours, complements,
+    const data = { domaine: d.id, categorie, categories, nom, besoin: $("fBesoin").value.trim(), reponses, parcours, complements,
       ordre: Number($("fOrdre").value) || (isNew ? maxOrdre + 1 : (r.ordre ?? 99)) };
     await write(() => db.doc("profils/" + id).set(data), "Profil enregistré", () => { adm.sel = id; });
   });
@@ -958,7 +1048,7 @@ async function write(fn, okText, after){
 function onData(){
   if(!ready()) return;
   buildModel();
-  if(state.view === "consult") renderConsult(); else { renderAdmin(false); }
+  if(state.view === "consult") renderConsult(); else { renderAdmin(adm.tab === "categories"); }
 }
 function useStatic(){ /* contenu lu dans contenu.js, pas de back office */
   canAdmin = false; $("views").hidden = true; $("admin").hidden = true;
