@@ -279,6 +279,7 @@ details.group .profiles{padding:6px 0 4px 6px}
 
 .sidebox{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:10px;padding:8px 10px 10px;background:var(--surface)}
 .sidetit{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--orange)}
+.domtit{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:14px 2px 6px}.domtit:first-child{margin-top:2px}
 .scope{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .scopelab{font-size:12.5px;color:var(--muted);margin-right:2px}
 .scbtn{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--blue-ink);border-radius:999px;padding:3px 10px;cursor:pointer}
@@ -593,12 +594,13 @@ const ready = () => RAW.domaines && RAW.formations && RAW.profils;
 /* ---------- Consultation ---------- */
 let state = { dom: "rs", pid: "rs-006", q: "", view: "consult" };
 try{ Object.assign(state, JSON.parse(localStorage.getItem("assistant-profils-v4") || "{}")); }catch(e){}
-state.view = "consult";
+state.view = "consult"; state.tous = true; /* par défaut : la liste montre tous les domaines */
 const save = () => { try{ localStorage.setItem("assistant-profils-v4", JSON.stringify({dom:state.dom,pid:state.pid})); }catch(e){} };
 const dom = () => DOMAINES.find(d => d.id === state.dom) || DOMAINES[0];
 
 function renderDomains(){
-  $("domSel").innerHTML = DOMAINES.map(d => `<option value="${esc(d.id)}"${state.dom===d.id?" selected":""}>${esc(d.nom)}</option>`).join("");
+  $("domSel").innerHTML = `<option value="*"${state.tous?" selected":""}>Tous les domaines</option>` + DOMAINES.map(d => `<option value="${esc(d.id)}"${!state.tous && state.dom===d.id?" selected":""}>${esc(d.nom)}</option>`).join("");
+  const sc = $("scope"); if(sc) sc.style.display = state.tous ? "none" : ""; /* « chercher dans » n'a de sens que pour un domaine choisi */
 }
 
 const ouvertes = new Set(); /* catégories que la conseillère a dépliées */
@@ -612,13 +614,14 @@ function hayOf(p, d){
 const matchQ = (hay, q) => q.split(/[\s,;]+/).filter(Boolean).every(w => hay.includes(w));
 function renderCatSel(){
   const d = dom(), el = $("catSel"); if(!d || !el) return;
-  const l = domCats(d); if(state.cat && !l.includes(state.cat)) state.cat = "";
+  const l = state.tous ? [...new Set(DOMAINES.flatMap(domCats))] : domCats(d); if(state.cat && !l.includes(state.cat)) state.cat = "";
   el.innerHTML = `<option value="">Toutes les catégories</option>` + l.map(c => `<option${c===state.cat?" selected":""}>${esc(c)}</option>`).join("");
   document.querySelectorAll(".scbtn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.scope === (state.scope || "tous"))));
 }
 function renderList(){
   const d = dom(); if(!d){ $("groups").innerHTML = ""; return; }
   renderCatSel();
+  if(state.tous) return renderListTous();
   const q = norm(state.q.trim()), cats = [];
   d.profils.forEach(p => {
     if(state.cat && !p.categories.includes(state.cat)) return;
@@ -644,6 +647,29 @@ function renderList(){
   }
 }
 
+/* liste « Tous les domaines » : chaque domaine, puis ses catégories, repliées par défaut */
+function renderListTous(){
+  const q = norm(state.q.trim());
+  const blocs = DOMAINES.map(d => {
+    const cats = [];
+    d.profils.forEach(p => {
+      if(state.cat && !p.categories.includes(state.cat)) return;
+      if(q && !matchQ(hayOf(p, d), q)) return;
+      p.categories.filter(nom => !state.cat || nom === state.cat).forEach(nom => { let c = cats.find(x => x.nom === nom); if(!c){ c = {nom, items:[]}; cats.push(c); } c.items.push(p); });
+    });
+    if(!cats.length) return "";
+    const ordre = domCats(d); cats.sort((a, b) => ordre.indexOf(a.nom) - ordre.indexOf(b.nom));
+    return `<div class="domtit">${esc(d.nom)}</div>` + cats.map(c => {
+      const open = q || ouvertes.has(d.id + "|" + c.nom);
+      return `<details class="group" data-cat="${esc(c.nom)}" data-dom="${esc(d.id)}"${open?" open":""}><summary><span class="sum">${esc(c.nom)}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="profiles">${c.items.map(p => {
+        const n = Object.keys(p.parcours).length;
+        return `<button type="button" class="prof" data-pid="${esc(p.id)}" data-dom="${esc(d.id)}" aria-pressed="${state.dom===d.id && state.pid===p.id}"><span>${esc(p.nom)}</span><span class="count" title="${n} parcours possible${n>1?"s":""}">${n}</span></button>`;
+      }).join("")}</div></details>`;
+    }).join("");
+  }).join("");
+  $("groups").innerHTML = blocs || `<p class="none">${q ? `Rien pour « ${esc(state.q)} »${state.cat ? ` (catégorie « ${esc(state.cat)} »)` : ""}. Essayez un autre mot.` : "Aucun sous-profil dans cette catégorie."}</p>`;
+}
+
 function renderDetail(){
   const el = $("detail");
   if(!db){ el.innerHTML = `<div class="state">Les données ne sont pas disponibles dans cet affichage. Ouvrez l'application depuis son lien Claude, en étant connecté(e).</div>`; return; }
@@ -654,6 +680,11 @@ function renderDetail(){
   if(!p){ el.innerHTML = `<div class="state">Choisissez un profil dans la liste.</div>`; return; }
   /* la fiche affichée doit correspondre à la recherche et à la catégorie choisies ; sinon, un message */
   const qq = norm(state.q.trim()), okP = x => (!state.cat || x.categories.includes(state.cat)) && (!qq || matchQ(hayOf(x, d), qq));
+  if(!okP(p) && state.tous){
+    const n = DOMAINES.reduce((t, x) => t + x.profils.filter(y => (!state.cat || y.categories.includes(state.cat)) && (!qq || matchQ(hayOf(y, x), qq))).length, 0);
+    el.innerHTML = `<div class="state">${n ? `${n} sous-profil${n>1?"s":""} trouvé${n>1?"s":""}${qq ? ` pour « ${esc(state.q.trim())} »` : ""}. Choisissez-en un dans la liste à gauche.` : `<b>Aucun résultat${qq ? ` pour « ${esc(state.q.trim())} »` : ""}.</b><br>Essayez un autre mot, ou ajoutez-le en mot-clé dans Gestion.`}</div>`;
+    return;
+  }
   if(!okP(p)){
     const nDom = d.profils.filter(okP).length;
     const nAut = qq && (state.scope || "tous") === "tous" && !state.cat ? DOMAINES.filter(x => x.id !== d.id).reduce((t, x) => t + x.profils.filter(y => matchQ(hayOf(y, x), qq)).length, 0) : 0;
@@ -750,18 +781,19 @@ function fixSelection(){
 function renderConsult(){ fixSelection(); renderDomains(); renderList(); renderDetail(); }
 
 $("domSel").addEventListener("change", e => {
-  state.dom = e.target.value; state.pid = ""; state.cat = ""; fixSelection(); save(); renderConsult();
+  if(e.target.value === "*"){ state.tous = true; state.cat = ""; renderConsult(); return; }
+  state.tous = false; state.dom = e.target.value; state.pid = ""; state.cat = ""; fixSelection(); save(); renderConsult();
 });
 $("groups").addEventListener("click", e => {
   const b = e.target.closest(".prof"); if(!b) return;
-  if(b.dataset.dom && b.dataset.dom !== state.dom){ state.dom = b.dataset.dom; state.cat = ""; renderDomains(); }
+  if(b.dataset.dom && b.dataset.dom !== state.dom){ state.dom = b.dataset.dom; if(!state.tous) state.cat = ""; renderDomains(); }
   state.pid = b.dataset.pid; save(); renderList(); renderDetail();
   document.querySelector(`.prof[data-pid="${CSS.escape(state.pid)}"]`)?.focus();
   if(window.matchMedia("(max-width:900px)").matches) $("detail").scrollIntoView({behavior:"smooth", block:"start"});
 });
 $("groups").addEventListener("toggle", e => {
   const el = e.target; if(!el.matches || !el.matches("details.group") || state.q.trim()) return;
-  const k = state.dom + "|" + el.dataset.cat; el.open ? ouvertes.add(k) : ouvertes.delete(k);
+  const k = (el.dataset.dom || state.dom) + "|" + el.dataset.cat; el.open ? ouvertes.add(k) : ouvertes.delete(k);
 }, true);
 $("q").addEventListener("input", e => { state.q = e.target.value; renderList(); renderDetail(); });
 $("catSel").addEventListener("change", e => { state.cat = e.target.value; renderList(); renderDetail(); });
