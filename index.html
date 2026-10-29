@@ -159,6 +159,119 @@ details.group .profiles{padding:6px 0 4px 6px}
 .mextra summary{cursor:pointer;font-size:12.5px;color:var(--blue-ink);font-weight:600}
 .mextra .fgrid{margin-top:8px}
 .mextra textarea.inp{min-height:70px}
+/* ===== Front office (trame) : en-tête en 3 zones, colonnes de parcours, modules alignés ===== */
+:root{--teal:#3F8F7D;--teal-soft:#E6F3EF}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--teal:#6FBFAE;--teal-soft:#16302B}}
+:root[data-theme="dark"]{--teal:#6FBFAE;--teal-soft:#16302B}
+.fo-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr);gap:10px}
+.fo-head.nofacts{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr)}
+.fo-box{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1.5px solid var(--orange);border-radius:14px;padding:10px 14px;min-width:0;line-height:1.4}
+.fo-box > span:last-child{min-width:0}
+.fo-hic{flex:none;padding-right:10px;border-right:1.5px solid var(--orange);color:var(--orange);align-self:stretch;display:flex;align-items:center}
+.fo-hic .ic{width:24px;height:24px;margin:0}
+.fo-lab{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--orange)}
+.fo-name{display:block;font-size:17px;line-height:1.25;text-wrap:balance}
+.fo-box small{display:block;color:var(--muted);font-size:12px}
+.fo-facts{flex-direction:column;gap:6px;font-size:13px}
+.fo-fl{display:flex;gap:8px;align-items:flex-start}.fo-fl .ic{color:var(--orange);margin:2px 0 0}
+.fo-count{flex-wrap:wrap;margin:14px 0 8px;font-size:15px;font-weight:700;color:var(--blue-ink);display:flex;align-items:baseline;gap:6px}
+.fo-count .num{font-size:26px;line-height:1;color:var(--green-mid);background:var(--blue);border-radius:8px;padding:2px 10px}
+.fo-count small{font-weight:500;color:var(--muted);font-size:13px}
+.fo-grid{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:14px 12px;align-items:stretch}
+.fo-card{position:relative;border-radius:14px;min-width:0}
+/* pointillés reliant les zones d'un même parcours */
+.fo-card:not(.fo-parc)::before{content:"";position:absolute;left:50%;top:-14px;height:14px;border-left:2px dashed var(--blue);opacity:.55}
+.fo-parc{background:var(--blue);color:var(--on-blue);padding:12px 14px;display:flex;flex-direction:column;gap:8px;justify-content:space-between}
+.fo-parc h3{margin:0;font-size:16px;line-height:1.25}
+.fo-parc p{margin:3px 0 0;font-size:12.5px;opacity:.9;line-height:1.35}
+.fo-best{display:inline-flex;align-items:center;font-size:11.5px;font-weight:700;background:var(--green-mid);color:#10260A;border-radius:999px;padding:1px 9px;margin-bottom:5px}
+.fo-best .ic{width:14px;height:14px;margin-right:4px}
+.fo-tags{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:12px;font-weight:600}
+.fo-tags .ic{width:15px;height:15px;vertical-align:-3px;margin-right:4px}
+.fo-tarifs{align-self:flex-end;background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-size:12px}
+.fo-tarifs b{font-size:15px;color:var(--blue-ink)}
+.fo-tarifs small{color:var(--muted)}
+.fo-cpf{flex-basis:100%;text-align:right;font-weight:700;color:var(--green)}
+.fo-why{background:var(--blue-soft);border:1.5px solid var(--blue);display:flex;gap:10px;padding:10px 14px;font-weight:600}
+.fo-why .fo-ic{flex:none;color:var(--orange);padding-right:10px;border-right:1.5px solid var(--blue);display:flex;align-items:center}
+.fo-why .fo-ic .ic{margin:0}
+.fo-why .fo-lab{color:var(--blue-ink)}
+.fo-mod{display:grid;grid-template-columns:76px minmax(0,1fr);border:1.5px solid var(--teal);background:var(--surface);overflow:hidden}
+.fo-tab{background:var(--teal);display:flex;align-items:center;justify-content:center;padding:8px 4px}
+.fo-tab .code{background:transparent;color:#fff;font-size:12.5px;white-space:normal;text-align:center;padding:0}
+.fo-mbody{padding:9px 14px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.fo-mlab{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--teal)}
+.fo-mlab .ic{width:15px;height:15px;vertical-align:-3px;margin-right:4px}
+.fo-mt{font-size:12.5px;color:var(--teal);font-weight:600;line-height:1.35}
+.fo-mt .mlink{color:inherit}
+.fo-arg{font-size:14px}
+.fo-commun{background:var(--teal-soft)}
+.fo-abs{border:1.5px dashed var(--line);background:var(--absent);color:var(--muted);font-size:12.5px;display:flex;align-items:center;gap:8px;padding:8px 12px}
+.fo-abs .code{background:var(--muted)}
+.fo-compl{margin-top:16px;border:1.5px solid var(--orange);border-radius:14px;background:var(--surface);padding:10px 14px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}
+.fo-compl h3{margin:0;font-size:11.5px;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:var(--orange);display:flex;align-items:center}
+.fo-ccards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.fo-ccard{border:1.5px solid var(--orange);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;font-size:13px;min-width:0}
+.fo-ccard .cmeta{font-size:12px;color:var(--muted)}
+.fo-ccard .cmeta .ic{width:13px;height:13px;vertical-align:-2px;margin-right:3px}
+.fo-ccard .minfo{margin-top:4px}
+@media (max-width:900px){
+  .fo-head,.fo-head.nofacts{grid-template-columns:minmax(0,1fr)}
+  .fo-grid{display:flex;flex-direction:column}
+  .fo-grid > .fo-card{order:var(--o)}
+  .fo-compl{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:900px){.fo-card:not(.fo-parc)::before{display:none}}
+.fo-abs{align-self:start}
+.fo-grid[style*="--n:3"] .fo-mod,.fo-grid[style*="--n:4"] .fo-mod{grid-template-columns:56px minmax(0,1fr)}
+.fo-grid[style*="--n:3"] .fo-commun,.fo-grid[style*="--n:4"] .fo-commun{grid-template-columns:76px minmax(0,1fr)}
+@media (max-width:900px){.fo-abs{display:none}.fo-mod,.fo-grid .fo-mod{grid-template-columns:52px minmax(0,1fr)}}
+
+/* --- version compacte --- */
+.fo-head{gap:8px}
+.fo-box{padding:6px 12px;border-radius:12px;gap:8px;font-size:13px;line-height:1.35}
+.fo-hic{padding-right:8px}.fo-hic .ic{width:20px;height:20px}
+.fo-name{font-size:15.5px;display:inline}
+.fo-box small{display:inline;margin-left:6px}
+.fo-box .fo-lab{font-size:10.5px}
+.fo-facts{gap:2px;font-size:12px}
+.fo-facts .fo-lab{display:inline;margin-right:4px}
+.fo-count{margin:10px 0 6px;font-size:14px}.fo-count .num{font-size:20px;padding:1px 8px}
+.fo-grid{gap:10px}
+.fo-card:not(.fo-parc)::before{top:-10px;height:10px}
+.fo-parc{padding:9px 12px;gap:6px;border-radius:12px}
+.fo-parc h3{font-size:15px}
+.fo-parc p{font-size:12px;margin-top:1px}
+.fo-tags{margin-top:4px}
+.fo-pfoot{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.fo-parc .fo-why{display:flex;gap:6px;align-items:flex-start;background:rgba(255,255,255,.14);border:0;border-radius:8px;padding:5px 8px;font-size:12.5px;font-weight:500;line-height:1.35}
+.fo-parc .fo-why .ic{width:16px;height:16px;margin:1px 0 0;color:var(--green-mid);flex:none}
+.fo-parc .fo-why b{font-weight:700}
+.fo-tarifs{flex:none;padding:4px 12px}
+.fo-mod{border-radius:12px}
+.fo-mbody{padding:7px 12px;gap:2px}
+.fo-arg{font-size:13.5px;line-height:1.4}
+.fo-foot{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin-top:4px;padding-top:4px;border-top:1px dashed var(--line);font-size:12px;color:var(--muted)}
+.fo-next{display:flex;gap:4px;align-items:flex-start}.fo-next .ic{width:15px;height:15px;margin:1px 2px 0 0}
+.fo-next b{color:var(--fg);font-weight:600}
+.fo-next.none{font-style:italic}
+.fo-det{margin-left:auto}
+.fo-det summary{cursor:pointer;color:var(--blue-ink);font-weight:600;list-style:none;white-space:nowrap}
+.fo-det summary::-webkit-details-marker{display:none}
+.fo-det summary::after{content:" ▾"}.fo-det[open] summary::after{content:" ▴"}
+.fo-det[open]{flex-basis:100%;margin-left:0}
+.fo-det .minfo{border-top:0;margin-top:2px;padding-top:0}
+/* case vide : le pointillé traverse jusqu'au module suivant */
+.fo-gap{position:relative;min-height:10px}
+.fo-gap::before{content:"";position:absolute;left:50%;top:-10px;bottom:0;border-left:2px dashed var(--blue);opacity:.55}
+.fo-compl{margin-top:12px;padding:8px 12px;border-radius:12px}
+.fo-ccard{padding:6px 10px}
+@media (max-width:900px){.fo-gap{display:none}.fo-pfoot{flex-direction:column;align-items:stretch}.fo-tarifs{align-self:flex-end}}
+.fo-grid[style*="--n:3"] .fo-pfoot,.fo-grid[style*="--n:4"] .fo-pfoot{flex-direction:column;align-items:stretch}
+.fo-grid[style*="--n:3"] .fo-tarifs,.fo-grid[style*="--n:4"] .fo-tarifs{align-self:flex-end}
+.fo-ccard .fo-foot{margin-top:3px}
+.fo-cpf small{display:block;font-weight:500;color:var(--muted);font-size:11px}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 
 /* ---------- Vues et back office ---------- */
@@ -345,7 +458,8 @@ function infoHtml(m, opts){
   if(!m) return "";
   const o = opts || {}, out = [], s = aVenir(m), has = Array.isArray(m.sessions) && m.sessions.length;
   if(has) out.push(`<span class="ml">${ic("cal")}<span>${s.length ? `<b>Prochaines dates :</b> <span class="dates">${s.slice(0, o.max || 99).map(x => esc(x.texte)).join(" · ")}${o.max && s.length > o.max ? " …" : ""}</span>` : `<span class="none">Aucune date à venir</span>`}</span></span>`);
-  if(m.tarif) out.push(`<span class="ml">${ic("euro")}<span><b>${eur(m.tarif)}</b>${o.parcours && m.tarifParcours ? ` · ${eur(m.tarifParcours)} dans ce parcours` : ""}</span></span>`);
+  if(m.tarif && !o.sansTarif) out.push(`<span class="ml">${ic("euro")}<span><b>${eur(m.tarif)}</b>${o.parcours && m.tarifParcours ? ` · ${eur(m.tarifParcours)} dans ce parcours` : ""}</span></span>`);
+  if(o.cert) out.push(`<span class="ml">${ic("certif")}<span><b>Certification ${esc(o.cert.nom)} :</b> ${eur(o.cert.prix)}${o.cert.total ? ` · <b>Total CPF ${eur(o.cert.total)}</b>` : ""}</span></span>`);
   /* le positionnement n'est demandé que si la personne fait le niveau 2 sans le niveau 1 */
   if((m.positionnement || m.positionnementLien) && !o.avecM1){
     const u = safeUrl(m.positionnementLien), n = esc(m.positionnement || "Questionnaire de positionnement");
@@ -384,7 +498,7 @@ function buildModel(){
       id: f.id, nom: f.nom || f.id, intitule: f.intitule || "", duree: f.duree || "", certification: f.certification || "",
       modules: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).map(m => [m.code, m.titre])),
       infos: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).map(m => [m.code, m])),
-      prix: prixParcours(f),
+      prix: prixParcours(f), tarifCertification: f.tarifCertification,
       liens: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).filter(m => m.lien).map(m => [m.code, m.lien])) })),
     profils: (RAW.profils || []).filter(p => p.domaine === d.id).sort(byOrdre).map(p => ({
       id: p.id, categorie: p.categorie || "Autres profils", nom: p.nom || "", besoin: p.besoin || "", reponses: p.reponses || {},
@@ -444,48 +558,72 @@ function renderDetail(){
   if(!p){ el.innerHTML = `<div class="state">Choisissez un profil dans la liste.</div>`; return; }
   const cols = Object.keys(p.parcours).map(id => d.formations.find(f => f.id === id)).filter(Boolean);
   if(!cols.length){ el.innerHTML = `<div class="state">Ce profil n'est relié à aucun parcours.</div>`; return; }
+  const n = cols.length, seul = cols.every(f => Object.keys(f.modules).length < 2);
   const rows = d.ordreModules.filter(m => cols.some(f => f.modules[m]));
-  const commun = m => cols.every(f => f.modules[m]);
   const txtOf = (f, m) => ((p.parcours[f.id].reponses||{})[m]) || (p.reponses||{})[m] || "";
-  const titre = (f, m, pre) => { const t = (pre||"") + esc(f.modules[m]); const u = safeUrl((f.liens||{})[m]); return u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener" title="${esc(f.modules[m])} (ouvrir la fiche)">${t}${ic("ext")}</a>` : `<span title="${esc(f.modules[m])}">${t}</span>`; };
-  const cell = (f, m) => {
-    if(!f.modules[m]) return `<td class="abs">${ic("moins")}Non inclus</td>`;
-    const spec = cols.length > 1 && !commun(m);
-    return `<td${spec?' class="spec"':""}><span class="mt">${titre(f, m, spec?ic("plus"):"")}</span>${esc(txtOf(f, m))}${infoHtml(f.infos[m], ctxF(f))}</td>`;
+  const titre = (f, m) => { const t = esc(f.modules[m]); const u = safeUrl((f.liens||{})[m]); return u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir la fiche">${t}${ic("ext")}</a>` : t; };
+  /* placement : chaque élément connaît sa ligne et sa colonne ; sur téléphone, on empile parcours par parcours pour l'en-tête et le pourquoi */
+  const at = (r, c, span) => `style="grid-row:${r};grid-column:${c}${span?" / span "+span:""};--o:${r < 2 ? c*10 + r : 100 + r*10 + c}"`;
+  const tarifs = f => {
+    if(Object.keys(f.modules).length > 1){
+      const x = f.prix; if(!x) return "";
+      return `<span class="fo-tarifs" title="${x.separe ? `${eur(x.separe)} si les modules sont pris séparément` : ""}"><b>${eur(x.parcours)}</b><small>le parcours</small>${x.cpf ? `<span class="fo-cpf">Total CPF ${eur(x.cpf)} <small>dont certification ${eur(x.cert)}</small></span>` : ""}</span>`;
+    }
+    const m = f.infos[Object.keys(f.modules)[0]] || {};
+    const c = certInfo(f, m);
+    return m.tarif ? `<span class="fo-tarifs"><b>${eur(m.tarif)}</b><small>la formation</small>${c ? `<span class="fo-cpf">${c.total ? `Total CPF ${eur(c.total)} <small>dont certification ${esc(c.nom)} ${eur(c.prix)}</small>` : `<small>Certification ${esc(c.nom)} : ${eur(c.prix)}</small>`}</span>` : ""}</span>` : "";
   };
+  const cards = [];
+  cols.forEach((f, i) => {
+    const nm = Object.keys(f.modules).length;
+    cards.push(`<div class="fo-card fo-parc" ${at(1, i+1)}>
+      <div class="fo-ptxt">${i === 0 && n > 1 ? `<span class="fo-best">${ic("star")}Le plus adapté</span>` : ""}<h3>${esc(f.nom)}</h3>${f.intitule && f.intitule !== f.nom ? `<p>${esc(f.intitule)}</p>` : ""}
+        <span class="fo-tags">${f.duree ? `<span>${ic("duree")}${esc(f.duree)}</span>` : ""}${nm > 1 ? `<span>${ic("modules")}${nm} modules</span>` : ""}${f.certification ? `<span>${ic("certif")}${esc(f.certification)}</span>` : ""}</span></div>
+      <div class="fo-pfoot">${p.parcours[f.id].pourquoi ? `<span class="fo-why">${ic("why")}<span><b>Pourquoi :</b> ${esc(p.parcours[f.id].pourquoi)}</span></span>` : "<span></span>"}${tarifs(f)}</div></div>`);
+  });
+  rows.forEach((m, k) => {
+    const r = k + 2, has = cols.map(f => !!f.modules[m]);
+    const txts = cols.map(f => f.modules[m] ? txtOf(f, m) : null);
+    const commun = n > 1 && has.every(Boolean) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]);
+    const mod = (f, extra, lab) => `<div class="fo-tab"><span class="code">${esc(m)}</span></div><div class="fo-mbody">${lab ? `<span class="fo-mlab">${lab}</span>` : ""}<span class="fo-mt">${titre(f, m)}</span>${txtOf(f, m) ? `<span class="fo-arg">${esc(txtOf(f, m))}</span>` : ""}${pied(f.infos[m], Object.assign(ctxF(f), extra))}</div>`;
+    if(commun){ cards.push(`<div class="fo-card fo-mod fo-commun" ${at(r, 1, n)}>${mod(cols[0], {}, `${ic("commun")}Commun à tous les parcours`)}</div>`); return; }
+    cols.forEach((f, i) => {
+      if(!f.modules[m]){ cards.push(`<div class="fo-gap" ${at(r, i+1)} aria-hidden="true"></div>`); return; }
+      const single = Object.keys(f.modules).length < 2;
+      cards.push(`<div class="fo-card fo-mod" ${at(r, i+1)}>${mod(f, single ? { sansTarif: true } : {}, n > 1 && !seul ? esc(f.nom) : "")}</div>`);
+    });
+  });
+  const facts = d.financement || d.certification;
   el.innerHTML = `
-    <div class="head">
-      <div class="who"><div class="lab">${ic("profil")}Profil</div><div class="name">${esc(p.nom)}</div><div class="need">${ic("besoin")}<span><span class="nlab">Besoin :</span> ${esc(p.besoin)}</span></div></div>
-      <dl class="facts">
-        ${d.financement?`<div><dt>${ic("euro")}Financement</dt><dd>${esc(d.financement)}</dd></div>`:""}
-        ${d.certification?`<div><dt>${ic("certif")}Certification</dt><dd>${esc(d.certification)}</dd></div>`:""}
-      </dl>
+    <div class="fo-head${facts ? "" : " nofacts"}">
+      <div class="fo-box"><span class="fo-hic">${ic("profil")}</span><span><span class="fo-lab">Profil</span><b class="fo-name">${esc(p.nom)}</b><small>${esc(p.categorie)}</small></span></div>
+      <div class="fo-box"><span class="fo-hic">${ic("besoin")}</span><span><span class="fo-lab">Besoin</span>${esc(p.besoin)}</span></div>
+      ${facts ? `<div class="fo-box fo-facts">${d.financement ? `<span class="fo-fl">${ic("euro")}<span><span class="fo-lab">Financement</span>${esc(d.financement)}</span></span>` : ""}${d.certification ? `<span class="fo-fl">${ic("certif")}<span><span class="fo-lab">Certification</span>${esc(d.certification)}</span></span>` : ""}</div>` : ""}
     </div>
-    <div class="tablebox">
-      <table class="cmp" style="min-width:${92 + cols.length*200}px">
-        <colgroup><col class="rowh">${cols.map(() => `<col>`).join("")}</colgroup>
-        <thead><tr><th scope="col" class="cnt"><span class="num">${cols.length}</span><span class="cl">${cols.every(f => Object.keys(f.modules).length < 2) ? "formation" : "parcours"} possible${cols.length>1?"s":""}</span></th>${cols.map((f,i) =>
-          `<th scope="col" title="${esc(f.intitule)}"><span class="pname">${esc(f.nom)}</span>${cols.length<4?`<span class="pint">${esc(f.intitule)}</span>`:""}<span class="tags">${i===0 && cols.length>1?`<span class="pill best">${ic("star")}Le plus adapté</span>`:""}${f.duree?`<span class="pill">${ic("duree")}${esc(f.duree)}</span>`:""}${Object.keys(f.modules).length>1?`<span class="pill">${ic("modules")}${Object.keys(f.modules).length} modules</span>`:""}${f.certification?`<span class="pill">${ic("certif")}${esc(f.certification)}</span>`:""}${f.prix?`<span class="pill tp" title="Tarif préférentiel du parcours${f.prix.separe?` (${eur(f.prix.separe)} si les modules sont pris séparément)`:""}">${ic("euro")}${eur(f.prix.parcours)} le parcours</span>${f.prix.cpf?`<span class="pill tp" title="Parcours ${eur(f.prix.parcours)} + certification ${eur(f.prix.cert)}">${ic("certif")}Total CPF ${eur(f.prix.cpf)}</span>`:""}`:""}</span></th>`).join("")}</tr></thead>
-        <tbody>
-          <tr class="whyrow"><th scope="row"><span class="rh">${ic("why")}Pourquoi</span></th>${cols.map(f => `<td class="why">${esc(p.parcours[f.id].pourquoi)}</td>`).join("")}</tr>
-          ${rows.map(m => {
-            const txts = cols.map(f => f.modules[m] ? txtOf(f, m) : null);
-            const same = cols.length > 1 && commun(m) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]);
-            return `<tr><th scope="row"><span class="code">${esc(m)}</span></th>${same
-              ? `<td class="all" colspan="${cols.length}"><span class="mt">${titre(cols[0], m, ic("commun"))} · commun à tous les parcours</span>${esc(txts[0])}${infoHtml(cols[0].infos[m], ctxF(cols[0]))}</td>`
-              : cols.map(f => cell(f, m)).join("")}</tr>`;
-          }).join("")}
-        </tbody>
-      </table>
-    </div>${complementsHtml(p, d)}`;
+    <h2 class="fo-count"><span class="num">${n}</span> ${seul ? (n > 1 ? "formations" : "formation") : "parcours"} possible${n>1?"s":""}${n > 1 ? `<small> · du plus adapté au moins adapté</small>` : ""}</h2>
+    <div class="fo-grid" style="--n:${n}">${cards.join("")}</div>
+    ${complementsHtml(p, d)}`;
+}
+/* coût de certification d'une formation seule ; total CPF si la formation est éligible */
+function certInfo(f, m){
+  const prix = Number(f.tarifCertification) || 0; if(!prix) return null;
+  const ok = /^oui/i.test(String((m && m.cpf) || "")) && Number(m && m.tarif) > 0;
+  return { nom: String(f.certification || "").replace(/\s*\(.*\)\s*$/, ""), prix, total: ok ? Number(m.tarif) + prix : null };
+}
+/* pied de module : la prochaine session, le reste (toutes les dates, tarif, CPF, positionnement) dans « Détails » */
+function pied(m, o){
+  if(!m) return "";
+  const s = aVenir(m), has = Array.isArray(m.sessions) && m.sessions.length, det = infoHtml(m, o);
+  const next = has ? (s.length ? `<span class="fo-next">${ic("cal")}<span><b>Prochaine session :</b> ${esc(s[0].texte)}${s.length > 1 ? ` <small>· ${s.length - 1} autre${s.length > 2 ? "s" : ""}</small>` : ""}</span></span>` : `<span class="fo-next none">${ic("cal")}Aucune date à venir</span>`) : "<span></span>";
+  return `<div class="fo-foot">${next}${det ? `<details class="fo-det"><summary>Détails</summary>${det}</details>` : ""}</div>`;
 }
 function complementsHtml(p, d){
   const items = (p.complements || []).map(c => ({ c, f: (RAW.formations || []).find(f => f.id === c.formation) })).filter(x => x.f);
   if(!items.length) return "";
-  return `<section class="compl" aria-label="Formations complémentaires"><h3>${ic("plus")}<span>Formations<br>complémentaires</span></h3><div class="ccards">${items.map(({c, f}) => {
+  return `<section class="fo-compl" aria-label="Formations complémentaires"><h3>${ic("plus")}<span>Formations<br>complémentaires</span></h3><div class="fo-ccards">${items.map(({c, f}) => {
     const dom = (RAW.domaines || []).find(x => x.id === f.domaine), m = (Array.isArray(f.modules) ? f.modules : [])[0] || {}, u = safeUrl(m.lien);
     const nom = u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener">${esc(f.nom)}${ic("ext")}</a>` : esc(f.nom);
-    return `<div class="ccard"><span class="cl1"><b>${nom}</b><span class="cmeta">${f.duree?`${ic("duree")}${esc(f.duree)}`:""}${f.certification?` · ${esc(f.certification)}`:""} · ${esc(dom ? dom.nom : "")}</span></span><span class="cwhy">${esc(c.pourquoi || "")}</span>${(f.modules || []).length > 1 ? prixCarte(f) : infoHtml(m, { max: 2 })}</div>`;
+    return `<div class="fo-ccard"><b>${nom}</b><span class="cmeta">${f.duree?`${ic("duree")}${esc(f.duree)}`:""}${f.certification?` · ${esc(f.certification)}`:""} · ${esc(dom ? dom.nom : "")}</span><span class="cwhy">${esc(c.pourquoi || "")}</span>${(f.modules || []).length > 1 ? prixCarte(f) : pied(m, { cert: certInfo(f, m) })}</div>`;
   }).join("")}</div></section>`;
 }
 function prixCarte(f){
