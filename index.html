@@ -211,6 +211,16 @@ details.group .profiles{padding:6px 0 4px 6px}
 .fo-why .fo-ic{flex:none;color:var(--orange);padding-right:10px;border-right:1.5px solid var(--blue);display:flex;align-items:center}
 .fo-why .fo-ic .ic{margin:0}
 .fo-why .fo-lab{color:var(--blue-ink)}
+.ff-res{margin-bottom:6px}.ff-item .ic{width:16px;height:16px;color:var(--blue);vertical-align:-3px}
+.prof[aria-pressed="true"] .pdom{color:rgba(255,255,255,.85)}.ff-item[aria-pressed="true"] .ic{color:#fff}
+.ff{display:flex;flex-direction:column;gap:12px}.ff-top{display:flex}
+.ff-mods{display:flex;flex-direction:column;gap:8px}
+.ff-mod{display:flex;gap:0;border:1.5px solid var(--green-mid,#5aa86a);border-radius:12px;overflow:hidden;background:var(--surface)}
+.ff-mod .code{flex:none;width:64px;display:flex;align-items:center;justify-content:center;background:var(--green-mid,#5aa86a);color:#fff;font-weight:700;font-size:13px}
+.ff-mbody{flex:1;min-width:0;padding:8px 12px;display:flex;flex-direction:column;gap:4px;font-size:13.5px}
+.ff-who{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--surface)}.ff-who h3{margin:0 0 6px;font-size:15px;color:var(--blue-ink)}
+.ff-sub{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:8px 0 4px}
+.ff-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px}
 .fo-more{margin-top:4px;font-weight:400}
 .fo-more summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--blue-ink);list-style:none;display:inline-flex;align-items:center;gap:3px}
 .fo-more summary::-webkit-details-marker{display:none}
@@ -704,6 +714,7 @@ function renderList(){
       return `<button type="button" class="prof" data-pid="${esc(p.id)}" aria-pressed="${state.pid===p.id}"><span>${esc(p.nom)}</span><span class="count" title="${n} parcours possible${n>1?"s":""}">${n}</span></button>`;
     }).join("")}</div></details>`;
   }).join("") : `<p class="none">${!d.profils.length ? "Aucun profil dans ce domaine pour l'instant." : q ? `Rien dans ce domaine pour « ${esc(state.q)} »${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}.` : "Aucun sous-profil dans cette famille."}</p>`;
+  if(q) $("groups").insertAdjacentHTML("afterbegin", formationsHtml(q));
   /* recherche dans tous les domaines : les résultats des autres domaines viennent ensuite */
   if(q && (state.scope || "tous") === "tous" && !state.cat){
     const autres = [];
@@ -715,6 +726,19 @@ function renderList(){
 }
 
 /* liste « Tous les domaines » : chaque domaine, puis ses catégories, repliées par défaut */
+/* recherche par formation : section en tête des résultats */
+function formationsTrouvees(q){
+  if(!q) return [];
+  return (RAW.formations || []).filter(f => matchQ(norm([f.nom, f.intitule, ...(f.modules || []).map(m => m.titre)].join(" ")), q)) /* titres seulement */
+    .sort((a, b) => (a.nom || "").localeCompare(b.nom || ""));
+}
+function formationsHtml(q){
+  const l = formationsTrouvees(q); if(!l.length) return "";
+  return `<div class="ff-res"><div class="domtit">Formations (${l.length})</div>${l.map(f => {
+    const d = (RAW.domaines || []).find(x => x.id === f.domaine);
+    return `<button type="button" class="prof ff-item" data-fid="${esc(f.id)}" aria-pressed="${state.fid===f.id}"><span>${ic("modules")}${esc(f.nom)}<small class="pdom">${esc(d ? d.nom : "")}${f.duree ? " · " + esc(f.duree) : ""}</small></span></button>`;
+  }).join("")}</div>`;
+}
 function renderListTous(){
   const q = norm(state.q.trim());
   const blocs = DOMAINES.map(d => {
@@ -734,11 +758,12 @@ function renderListTous(){
       }).join("")}</div></details>`;
     }).join("");
   }).join("");
-  $("groups").innerHTML = blocs || `<p class="none">${q ? `Rien pour « ${esc(state.q)} »${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}. Essayez un autre mot.` : "Aucun sous-profil dans cette famille."}</p>`;
+  $("groups").innerHTML = formationsHtml(q) + (blocs || (formationsTrouvees(q).length ? "" : `<p class="none">${q ? `Rien pour « ${esc(state.q)} »${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}. Essayez un autre mot.` : "Aucun sous-profil dans cette famille."}</p>`));
 }
 
 function renderDetail(){
   const el = $("detail");
+  if(state.fid && ready() && (RAW.formations || []).some(f => f.id === state.fid)) return renderFormationDetail(el);
   if(!db){ el.innerHTML = `<div class="state">Les données ne sont pas disponibles dans cet affichage. Ouvrez l'application depuis son lien Claude, en étant connecté(e).</div>`; return; }
   if(!ready()){ el.innerHTML = `<div class="state">Chargement des profils…</div>`; return; }
   const d = dom();
@@ -830,6 +855,34 @@ function besoinDetailHtml(b){
   const l = [["Situation", b.situation], ["Difficulté", b.difficulte], ["Attente", b.attente]].filter(x => x[1]);
   return l.length ? `<details class="fo-more"><summary>Argumentaire détaillé</summary><span class="fo-sda">${l.map(([k, v]) => `<span><b>${k} :</b> ${esc(v)}</span>`).join("")}</span></details>` : "";
 }
+/* fiche formation (recherche par formation) */
+function renderFormationDetail(el){
+  const f = (RAW.formations || []).find(x => x.id === state.fid), dm = (RAW.domaines || []).find(x => x.id === f.domaine) || {};
+  const mods = Array.isArray(f.modules) ? f.modules : [], parcours = mods.length > 1;
+  const avecM1 = parcours && mods.some(m => /^M1\b/i.test(m.code));
+  const enParcours = (RAW.profils || []).filter(p => (p.parcours || []).some(x => x.formation === f.id));
+  const enCompl = (RAW.profils || []).filter(p => (p.complements || []).some(x => x.formation === f.id));
+  const nomD = id => ((RAW.domaines || []).find(x => x.id === id) || {}).nom || "";
+  const lien = (p, why) => `<button type="button" class="prof" data-gopid="${esc(p.id)}" data-dom="${esc(p.domaine)}"><span>${esc(p.nom)}<small class="pdom">${esc(nomD(p.domaine))}${why ? " · " + esc(why) : ""}</small></span></button>`;
+  const facts = [dm.financement ? `<span><b class="fo-lab">Financement</b> ${esc(dm.financement)}</span>` : "", f.certification ? `<span><b class="fo-lab">Certification</b> ${esc(f.certification)}${dm.certification && parcours ? " — " + esc(dm.certification) : ""}</span>` : (parcours && dm.certification ? `<span><b class="fo-lab">Certification</b> ${esc(dm.certification)}</span>` : "")].filter(Boolean).join("");
+  el.innerHTML = `<div class="ff">
+    <div class="ff-top"><button type="button" class="btn small" id="ffBack">← Retour</button></div>
+    <div class="fo-head${facts ? "" : " nofacts"}">
+      <div class="fo-box"><span class="fo-hic">${ic("modules")}</span><span><span class="fo-lab">${parcours ? "Parcours" : "Formation"}</span><b class="fo-name">${esc(f.nom)}</b><small>${esc(dm.nom || "")}${f.duree ? " · " + esc(f.duree) : ""}</small></span></div>
+      <div class="fo-box"><span class="fo-hic">${ic("besoin")}</span><span><span class="fo-lab">Objectif</span>${esc(f.intitule || "")}</span></div>
+      ${facts ? `<div class="fo-box fo-facts">${facts}</div>` : ""}
+    </div>
+    ${parcours ? prixCarte(f) : ""}
+    <div class="ff-mods">${mods.map(m => {
+      const u = safeUrl(m.lien), t = u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener">${esc(m.titre)}${ic("ext")}</a>` : esc(m.titre);
+      return `<div class="ff-mod">${parcours ? `<span class="code">${esc(m.code)}</span>` : ""}<div class="ff-mbody"><b>${t}</b>${pied(m, { fid: f.id, parcours, avecM1, cert: parcours ? null : certInfo(f, m) })}${propCtl(f.id, m.code)}</div></div>`;
+    }).join("")}</div>
+    <section class="ff-who"><h3>Proposée à</h3>
+      ${enParcours.length ? `<div class="ff-sub">En parcours (${enParcours.length})</div><div class="ff-list">${enParcours.map(p => lien(p, ((p.parcours || []).findIndex(x => x.formation === f.id) === 0) ? "le plus adapté" : "")).join("")}</div>` : ""}
+      ${enCompl.length ? `<div class="ff-sub">En complément (${enCompl.length})</div><div class="ff-list">${enCompl.map(p => lien(p, "")).join("")}</div>` : ""}
+      ${!enParcours.length && !enCompl.length ? `<p class="none">Aucun sous-profil pour l'instant.</p>` : ""}
+    </section></div>`;
+}
 function complementsHtml(p, d){
   const items = (p.complements || []).map(c => ({ c, f: (RAW.formations || []).find(f => f.id === c.formation) })).filter(x => x.f);
   if(!items.length) return "";
@@ -858,7 +911,10 @@ $("domSel").addEventListener("change", e => {
   state.tous = false; state.dom = e.target.value; state.pid = ""; state.cat = ""; fixSelection(); save(); renderConsult();
 });
 $("groups").addEventListener("click", e => {
+  const fb = e.target.closest("[data-fid]");
+  if(fb){ state.fid = fb.dataset.fid; renderList(); renderDetail(); if(window.matchMedia("(max-width:900px)").matches) $("detail").scrollIntoView({behavior:"smooth", block:"start"}); return; }
   const b = e.target.closest(".prof"); if(!b) return;
+  state.fid = "";
   if(b.dataset.dom && b.dataset.dom !== state.dom){ state.dom = b.dataset.dom; if(!state.tous) state.cat = ""; renderDomains(); }
   state.pid = b.dataset.pid; save(); renderList(); renderDetail();
   document.querySelector(`.prof[data-pid="${CSS.escape(state.pid)}"]`)?.focus();
@@ -868,8 +924,21 @@ $("groups").addEventListener("toggle", e => {
   const el = e.target; if(!el.matches || !el.matches("details.group") || state.q.trim()) return;
   const k = (el.dataset.dom || state.dom) + "|" + el.dataset.cat; el.open ? ouvertes.add(k) : ouvertes.delete(k);
 }, true);
-$("q").addEventListener("input", e => { state.q = e.target.value; renderList(); renderDetail(); });
+$("q").addEventListener("input", e => {
+  state.q = e.target.value;
+  /* un seul titre de formation correspond : sa fiche s'ouvre directement */
+  const l = formationsTrouvees(norm(state.q.trim()));
+  if(l.length === 1) state.fid = l[0].id; else if(state.fid && !l.some(f => f.id === state.fid)) state.fid = "";
+  renderList(); renderDetail();
+});
 $("catSel").addEventListener("change", e => { state.cat = e.target.value; renderList(); renderDetail(); });
+/* fiche formation : retour, et ouverture d'un sous-profil qui la propose */
+$("detail").addEventListener("click", e => {
+  if(e.target.closest("#ffBack")){ state.fid = ""; renderList(); renderDetail(); return; }
+  const b = e.target.closest("[data-gopid]"); if(!b) return;
+  state.fid = ""; state.dom = b.dataset.dom; state.pid = b.dataset.gopid; save();
+  renderDomains(); renderList(); renderDetail(); $("detail").scrollIntoView({behavior:"smooth", block:"start"});
+});
 /* « Modifier » sur la fiche affichée : ouvre directement ce sous-profil dans la Gestion */
 $("detail").addEventListener("click", e => {
   const b = e.target.closest("[data-editp]"); if(!b || !canAdmin) return;
@@ -877,7 +946,7 @@ $("detail").addEventListener("click", e => {
   document.querySelector('.vbtn[data-view="admin"]').click();
 });
 $("resetBtn").addEventListener("click", () => {
-  state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; ouvertes.clear();
+  state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; ouvertes.clear();
   $("q").value = ""; renderConsult(); $("groups").scrollTop = 0;
 });
 $("scope").addEventListener("click", e => { const b = e.target.closest("[data-scope]"); if(!b) return; state.scope = b.dataset.scope; renderList(); renderDetail(); });
