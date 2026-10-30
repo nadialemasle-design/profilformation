@@ -942,7 +942,17 @@ function renderAdmList(){
 }
 
 $("admDom").addEventListener("change", e => { adm.dom = e.target.value; adm.sel = null; renderAdmin(true); });
-$("admTabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if(!b) return; adm.tab = b.dataset.tab; adm.sel = adm.tab === "domaine" ? adm.dom : null; if(adm.tab === "comptes") chargerComptes(); renderAdmin(true); });
+/* chaque onglet garde l'élément choisi : en revenant sur « Sous-profils », on retrouve la fiche ouverte */
+const selParOnglet = {};
+$("admTabs").addEventListener("click", e => {
+  const b = e.target.closest("[data-tab]"); if(!b || b.dataset.tab === adm.tab) return;
+  if(adm.sel && adm.sel !== "new") selParOnglet[adm.tab] = { dom: adm.dom, sel: adm.sel };
+  adm.tab = b.dataset.tab;
+  const m = selParOnglet[adm.tab], global = adm.tab === "questionnaires" || adm.tab === "comptes";
+  adm.sel = adm.tab === "domaine" ? adm.dom : (m && (global || m.dom === adm.dom) ? m.sel : null);
+  if(adm.tab === "comptes") chargerComptes();
+  renderAdmin(true);
+});
 $("admNewDom").addEventListener("click", () => { adm.tab = "domaine"; adm.sel = "new"; renderAdmin(false); renderAdmForm(); });
 $("admList").addEventListener("click", e => {
   const n = e.target.closest("[data-new]"); if(n){ adm.sel = "new"; renderAdmList(); renderAdmForm(); return; }
