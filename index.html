@@ -547,7 +547,8 @@ function infoHtml(m, opts){
   if(m.tarif && !o.sansTarif) out.push(`<span class="ml">${ic("euro")}<span><b>${eur(m.tarif)}</b>${o.parcours && m.tarifParcours ? ` · ${eur(m.tarifParcours)} dans ce parcours` : ""}</span></span>`);
   if(o.cert) out.push(`<span class="ml">${ic("certif")}<span><b>Certification ${esc(o.cert.nom)} :</b> ${eur(o.cert.prix)}${o.cert.total ? ` · <b>Total CPF ${eur(o.cert.total)}</b>` : ""}</span></span>`);
   /* le positionnement n'est demandé que si la personne fait le niveau 2 sans le niveau 1 */
-  if(aQuestionnaire(m) && !o.avecM1) out.push(`<span class="ml pos">${ic("pos")}<span><b>${o.parcours ? "Positionnement si pas de niveau 1" : "Positionnement"} :</b> ${qLigne(m, o.fid)}</span></span>`);
+  /* dans un parcours qui contient un M1 : le questionnaire n'est à faire que si la personne ne suit pas le M1 */
+  if(aQuestionnaire(m)) out.push(`<span class="ml pos">${ic("pos")}<span><b>${o.avecM1 ? "Positionnement si le M1 n'est pas suivi" : o.parcours ? "Positionnement si pas de niveau 1" : "Positionnement"} :</b> ${qLigne(m, o.fid)}</span></span>`);
   if(m.cpf) out.push(`<span class="ml">${ic("certif")}<span><b>CPF :</b> ${esc(m.cpf)}</span></span>`);
   return out.length ? `<span class="minfo">${out.join("")}</span>` : "";
 }
@@ -1188,7 +1189,7 @@ function qFields(m, fid){
       ${field("Type de document", `<input class="inp mqt" list="qTypes" value="${esc(m.questionnaireType || "")}" placeholder="ex. Formulaire Excel, Formulaire PDF">`)}
       ${field("Lien (URL) — visible seulement par les personnes connectées", `<input class="inp mposl" value="${esc((d && d.lien) || "")}" placeholder="https://… (SharePoint, Teams, Forms)">`, true)}
       ${field("Ou document déposé dans la base", `<span class="qfile">${d && d.fichier ? `<span class="qcur">${esc(d.fichier.nom || "document")} <button type="button" class="btn small danger mqrm">Retirer</button></span>` : ""}<input type="file" class="inp mqf" accept=".pdf,.xlsx,.xls,.xlsm,.docx,.doc"></span>`, true)}
-      <p class="fhint fwide">Dans un parcours, le questionnaire n'est affiché que si le parcours ne contient pas de module de niveau 1 (M1).</p>
+      <p class="fhint fwide">Dans un parcours qui contient un M1, la fiche indique « Positionnement si le M1 n'est pas suivi ».</p>
     </div></div>`;
 }
 /* ----- Formulaire catégorie de profils ----- */
