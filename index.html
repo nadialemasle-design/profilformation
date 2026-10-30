@@ -942,14 +942,27 @@ function renderAdmList(){
 }
 
 $("admDom").addEventListener("change", e => { adm.dom = e.target.value; adm.sel = null; renderAdmin(true); });
+/* formations concernées par la fiche ouverte (formation, ou parcours et compléments du sous-profil) */
+function qContexte(){
+  if(!adm.sel || adm.sel === "new") return [];
+  if(adm.tab === "formations") return [adm.sel];
+  if(adm.tab === "profils"){ const rp = rawP(adm.sel); return rp ? (rp.parcours || []).map(x => x.formation) : []; }
+  return [];
+}
 /* chaque onglet garde l'élément choisi : en revenant sur « Sous-profils », on retrouve la fiche ouverte */
 const selParOnglet = {};
 $("admTabs").addEventListener("click", e => {
   const b = e.target.closest("[data-tab]"); if(!b || b.dataset.tab === adm.tab) return;
   if(adm.sel && adm.sel !== "new") selParOnglet[adm.tab] = { dom: adm.dom, sel: adm.sel };
+  const ctx = qContexte();
   adm.tab = b.dataset.tab;
   const m = selParOnglet[adm.tab], global = adm.tab === "questionnaires" || adm.tab === "comptes";
   adm.sel = adm.tab === "domaine" ? adm.dom : (m && (global || m.dom === adm.dom) ? m.sel : null);
+  /* depuis une formation ou un sous-profil ouvert : l'onglet Questionnaires ouvre directement le bon questionnaire */
+  if(adm.tab === "questionnaires" && ctx.length){
+    const l = qModules(), hit = ctx.map(fid => l.find(x => x.f.id === fid)).find(Boolean);
+    if(hit) adm.sel = hit.k; else { adm.sel = "new"; adm.qPre = ctx[0]; }
+  }
   if(adm.tab === "comptes") chargerComptes();
   renderAdmin(true);
 });
@@ -998,10 +1011,11 @@ function listQuestionnaires(el){
 function formQuestionnaire(el){
   if(!adm.sel){ el.innerHTML = `<div class="state">Choisissez un questionnaire dans la liste pour y déposer le document ou le lien, ou ajoutez-en un.</div>`; return; }
   if(adm.sel === "new"){
-    const opts = DOMAINES.map(d => `<optgroup label="${esc(d.nom)}">${(RAW.formations || []).filter(f => f.domaine === d.id).flatMap(f => (f.modules || []).filter(m => !aQuestionnaire(m)).map(m => `<option value="${esc(f.id + "|" + m.code)}">${esc(f.nom)}${(f.modules || []).length > 1 ? " · " + esc(m.code) : ""}</option>`)).join("")}</optgroup>`).join("");
+    const opts = DOMAINES.map(d => `<optgroup label="${esc(d.nom)}">${(RAW.formations || []).filter(f => f.domaine === d.id).flatMap(f => (f.modules || []).filter(m => !aQuestionnaire(m)).map(m => `<option value="${esc(f.id + "|" + m.code)}"${adm.qPre === f.id ? " selected" : ""}>${esc(f.nom)}${(f.modules || []).length > 1 ? " · " + esc(m.code) : ""}</option>`)).join("")}</optgroup>`).join("");
     el.innerHTML = `<div class="form"><h2>Ajouter un questionnaire de positionnement</h2><div class="fgrid">
       ${field("Formation ou module *", `<select class="inp" id="qfm"><option value="">Choisir…</option>${opts}</select>`, true)}</div>
-      <p class="fhint">Ensuite, vous pourrez déposer le document ou indiquer le lien.</p>${formActions(false)}</div>`;
+      <p class="fhint">${adm.qPre ? "Cette formation n'a pas encore de questionnaire : enregistrez pour l'ajouter, puis déposez le document." : "Ensuite, vous pourrez déposer le document ou indiquer le lien."}</p>${formActions(false)}</div>`;
+    adm.qPre = "";
     el.querySelector(".actions").addEventListener("click", async e => {
       const a = e.target.closest("[data-act]")?.dataset.act; if(!a) return;
       if(a === "cancel"){ adm.sel = null; renderAdmin(true); return; }
@@ -1155,9 +1169,11 @@ function formFormation(el, d){
     <div class="fsec"><h3>Modules</h3><p class="fhint">Formation seule : un seul module, avec le code « Formation ». Parcours : un module par code (M1, M2, M2.3…). Ouvrez « Dates, tarifs, positionnement, CPF » sous chaque module pour les compléter. Ces informations sont reportées automatiquement dans les autres parcours qui contiennent le même module (même titre).</p>
       <div id="modLines">${mods.map(x => modLine(x, isNew ? "" : adm.sel)).join("")}</div>
       <div><button type="button" class="btn add small" id="addMod">+ Ajouter un module</button></div></div>
+    ${!isNew ? `<div class="fsec"><h3>Questionnaire de positionnement</h3><button type="button" class="btn small" id="goQ">Déposer ou modifier le questionnaire de positionnement →</button></div>` : ""}
     ${!isNew ? rattachHtml(adm.sel, domCur) : ""}
     ${formActions(!isNew)}</div>`;
   if(!isNew) rattachBind(adm.sel, domCur, r.nom);
+  if($("goQ")) $("goQ").onclick = () => document.querySelector('.stab[data-tab="questionnaires"]').click();
   $("addMod").onclick = () => $("modLines").insertAdjacentHTML("beforeend", modLine({ code: "", titre: "" }));
   $("modLines").addEventListener("click", e => {
     if(e.target.closest("[data-rm]")) e.target.closest(".modline").remove();
