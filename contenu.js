@@ -319,7 +319,10 @@ window.CONTENU = {
           ],
           "tarif": 1680,
           "tarifParcours": 1560,
-          "cpf": "Oui (certification Tosa)"
+          "cpf": "Oui (certification Tosa)",
+          "questionnaire": true,
+          "positionnement": "Questionnaire de positionnement Excel",
+          "questionnaireType": "Formulaire Excel"
         }
       ],
       "nom": "Excel Power Tools",
@@ -351,7 +354,10 @@ window.CONTENU = {
             }
           ],
           "tarif": 1290,
-          "cpf": "Oui (certification Tosa)"
+          "cpf": "Oui (certification Tosa)",
+          "questionnaire": true,
+          "positionnement": "Questionnaire de positionnement Excel",
+          "questionnaireType": "Formulaire Excel"
         }
       ],
       "nom": "Excel macro VBA",
@@ -388,7 +394,10 @@ window.CONTENU = {
             }
           ],
           "tarif": 1650,
-          "cpf": "Oui (certification ICDL)"
+          "cpf": "Oui (certification ICDL)",
+          "questionnaire": true,
+          "positionnement": "Questionnaire de positionnement AutoCAD",
+          "questionnaireType": "Formulaire PDF"
         }
       ],
       "nom": "AutoCAD LT",
@@ -425,7 +434,10 @@ window.CONTENU = {
             }
           ],
           "tarif": 1640,
-          "cpf": "Oui (certification ICDL)"
+          "cpf": "Oui (certification ICDL)",
+          "questionnaire": true,
+          "positionnement": "Questionnaire de positionnement SketchUp Pro",
+          "questionnaireType": "Formulaire PDF"
         }
       ],
       "nom": "SketchUp Pro initiation",
@@ -462,7 +474,10 @@ window.CONTENU = {
             }
           ],
           "tarif": 1650,
-          "cpf": "Oui (certification ICDL)"
+          "cpf": "Oui (certification ICDL)",
+          "questionnaire": true,
+          "positionnement": "Questionnaire de positionnement SolidWorks",
+          "questionnaireType": "Formulaire PDF"
         }
       ],
       "nom": "SolidWorks",
@@ -686,8 +701,9 @@ window.CONTENU = {
           "tarif": 820,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement IA générative niveau 2",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
-          "cpf": "Oui, dans un parcours de 4 jours minimum"
+          "cpf": "Oui, dans un parcours de 4 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         },
         {
           "code": "M3",
@@ -713,8 +729,9 @@ window.CONTENU = {
           "tarif": 420,
           "tarifParcours": 350,
           "positionnement": "Questionnaire de positionnement IA générative niveau 2",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
-          "cpf": "Oui, dans un parcours de 4 jours minimum"
+          "cpf": "Oui, dans un parcours de 4 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "nom": "Parcours IA Administratif & commercial",
@@ -775,7 +792,10 @@ window.CONTENU = {
           ],
           "tarif": 820,
           "tarifParcours": 700,
-          "cpf": "Oui, dans un parcours de 4 jours minimum"
+          "cpf": "Oui, dans un parcours de 4 jours minimum",
+          "questionnaire": true,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "questionnaireType": "Formulaire en ligne"
         },
         {
           "code": "M3",
@@ -801,8 +821,9 @@ window.CONTENU = {
           "tarif": 420,
           "tarifParcours": 350,
           "positionnement": "Questionnaire de positionnement IA générative niveau 2",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
-          "cpf": "Oui, dans un parcours de 4 jours minimum"
+          "cpf": "Oui, dans un parcours de 4 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "nom": "Parcours IA Formation & enseignement",
@@ -864,8 +885,9 @@ window.CONTENU = {
           "tarif": 820,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement IA générative niveau 2",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
-          "cpf": "Oui, dans un parcours de 4 jours minimum"
+          "cpf": "Oui, dans un parcours de 4 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         },
         {
           "code": "M3",
@@ -891,8 +913,9 @@ window.CONTENU = {
           "tarif": 420,
           "tarifParcours": 350,
           "positionnement": "Questionnaire de positionnement IA générative niveau 2",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
-          "cpf": "Oui, dans un parcours de 4 jours minimum"
+          "cpf": "Oui, dans un parcours de 4 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "nom": "Parcours IA Ressources humaines",
@@ -966,8 +989,9 @@ window.CONTENU = {
           "tarif": 820,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement IA générative niveau 2",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
-          "cpf": "Oui, dans un parcours de 4 jours minimum"
+          "cpf": "Oui, dans un parcours de 4 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         },
         {
           "code": "M3",
@@ -988,8 +1012,9 @@ window.CONTENU = {
           "tarif": 860,
           "tarifParcours": 800,
           "positionnement": "Questionnaire de positionnement IA générative niveau 2",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
-          "cpf": "Oui, dans un parcours IA de 4 jours minimum"
+          "cpf": "Oui, dans un parcours IA de 4 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "ordre": 5
@@ -1075,8 +1100,9 @@ window.CONTENU = {
           "tarif": 420,
           "tarifParcours": 350,
           "positionnement": "Questionnaire de positionnement IA générative niveau 2",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
-          "cpf": "Oui, dans un parcours de 4 jours minimum"
+          "cpf": "Oui, dans un parcours de 4 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "ordre": 4
@@ -1217,8 +1243,9 @@ window.CONTENU = {
           "tarif": 780,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement Photoshop perfectionnement",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUQ1pETzdXMFRWUVAyWktZVDRITU1VUE5HVS4u",
-          "cpf": "Oui (certification Tosa)"
+          "cpf": "Oui (certification Tosa)",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "nom": "Photoshop perfectionnement",
@@ -1391,8 +1418,9 @@ window.CONTENU = {
           "tarif": 860,
           "tarifParcours": 800,
           "positionnement": "Questionnaire de positionnement IA générative niveau 2",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
-          "cpf": "Oui, dans un parcours IA de 4 jours minimum"
+          "cpf": "Oui, dans un parcours IA de 4 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "nom": "IA design graphique",
@@ -1547,8 +1575,9 @@ window.CONTENU = {
           "tarif": 780,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUNjJTNFE5VUJMNUVCVzA2Qk9CUkhHRFhQNS4u",
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "nom": "Stratégie réseaux · Parcours simple",
@@ -1640,8 +1669,9 @@ window.CONTENU = {
           "tarif": 780,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUNjJTNFE5VUJMNUVCVzA2Qk9CUkhHRFhQNS4u",
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "nom": "Réseaux & identité de marque",
@@ -1703,8 +1733,9 @@ window.CONTENU = {
           "tarif": 780,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUNjJTNFE5VUJMNUVCVzA2Qk9CUkhHRFhQNS4u",
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         },
         {
           "code": "M2.2",
@@ -1730,8 +1761,9 @@ window.CONTENU = {
           "tarif": 390,
           "tarifParcours": 350,
           "positionnement": "Questionnaire de positionnement LinkedIn",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMVVIUTVJNE1OQ1hMWkZURTZVUEVLRVg0Ty4u",
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "nom": "Stratégie réseaux pro · LinkedIn",
@@ -1793,8 +1825,9 @@ window.CONTENU = {
           "tarif": 780,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUNjJTNFE5VUJMNUVCVzA2Qk9CUkhHRFhQNS4u",
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         },
         {
           "code": "M2.3",
@@ -1881,8 +1914,9 @@ window.CONTENU = {
           "tarif": 780,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUNjJTNFE5VUJMNUVCVzA2Qk9CUkhHRFhQNS4u",
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         },
         {
           "code": "M3",
@@ -1972,8 +2006,9 @@ window.CONTENU = {
           "tarif": 890,
           "tarifParcours": 850,
           "positionnement": "Questionnaire de positionnement IA générative niveau 2",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdUMFg2MDlIMzM0NzROQVhGT1hSMzVNWkVGMS4u",
-          "cpf": "Oui, dans un parcours de 4 jours minimum"
+          "cpf": "Oui, dans un parcours de 4 jours minimum",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "nom": "Vidéo IA Avatar",
@@ -2000,8 +2035,9 @@ window.CONTENU = {
           ],
           "tarif": 1520,
           "positionnement": "Questionnaire de positionnement WordPress",
-          "positionnementLien": "https://forms.cloud.microsoft/Pages/ShareFormPage.aspx?id=Hz0Qv17q6UGnq4TPIjn3VuJ6PqaOIbBNo7yikl5HEwdURUtJUUFHMVVYRlpETlU4SUtTTUpFTzA5Si4u&sharetoken=uV8G8J7W6ZO7B0iI4Quj",
-          "cpf": "Oui (certification Tosa)"
+          "cpf": "Oui (certification Tosa)",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
         }
       ],
       "nom": "WordPress",

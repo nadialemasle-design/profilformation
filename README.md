@@ -23,6 +23,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `supabase-mise-a-jour-2027-n4.sql` | Mise à jour n°4 : Excel macro VBA, 3 jours, 1 290 €. |
 | `supabase-mise-a-jour-2027-n5.sql` | Mise à jour n°5 : 11 nouveaux sous-profils, mots-clés de recherche des sous-profils et des catégories. Ne remplace rien de ce qui a été saisi dans Gestion. |
 | `supabase-mise-a-jour-2027-n6.sql` | Mise à jour n°6 : les catégories de profils deviennent 13 familles de métiers communes à tous les domaines ; secteur et statut passent en mots-clés. Les sous-profils créés dans Gestion gardent leur catégorie. |
+| `supabase-mise-a-jour-2027-n7.sql` | Mise à jour n°7 : questionnaires de positionnement (case, type de document, lien ou document) et comptes « conseillère ». Les liens quittent la table publique et ne sont visibles qu'après connexion. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 
@@ -36,6 +37,8 @@ Le contenu est lu dans une base Supabase. Sur le site, le bouton **Connexion** (
 
 - Seules les adresses e-mail inscrites dans la table `editeurs` de Supabase peuvent modifier. Pour ajouter une collègue : créer son compte dans Supabase (**Authentication** › **Users** › **Add user**), puis ajouter son e-mail dans la table `editeurs` (**Table Editor**).
 - Le fichier `supabase-installation.sql` crée les tables, les règles d'accès et le contenu de départ. Attention : le relancer remet le contenu de départ à la place de vos modifications.
+- **Comptes conseillères** (voir les liens des questionnaires de positionnement, sans pouvoir modifier) : créer le compte dans **Authentication** › **Users** › **Add user** (e-mail + mot de passe, cocher *Auto Confirm User*), puis ajouter l'e-mail dans la table `conseilleres` (**Table Editor** › `conseilleres` › **Insert row**). La conseillère se connecte avec le bouton **Connexion**.
+- Les liens et documents des questionnaires sont rangés dans la table `questionnaires` et l'espace de stockage privé `questionnaires` : ils ne sont jamais publics et ne figurent pas dans les fichiers de ce dépôt.
 - Si la base ne répond pas (par exemple mise en veille), le site affiche la copie de secours `contenu.js`, en lecture seule. Pour réactiver la base : tableau de bord Supabase › projet › **Resume project**.
 - La tâche `.github/workflows/garder-supabase-actif.yml` consulte la base chaque jour pour éviter la mise en veille.
 

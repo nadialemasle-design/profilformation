@@ -158,6 +158,13 @@ details.group .profiles{padding:6px 0 4px 6px}
 .mextra{grid-column:1/-1;border:1px solid var(--line);border-radius:7px;padding:5px 9px;background:var(--sunk)}
 .mextra summary{cursor:pointer;font-size:12.5px;color:var(--blue-ink);font-weight:600}
 .mextra .fgrid{margin-top:8px}
+.qbox{border-top:1px dashed var(--line);padding-top:8px;display:flex;flex-direction:column;gap:8px}
+.qchk{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--fg)}
+.qbox{grid-column:1/-1}.qgrid .full{grid-column:1/-1}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.qgrid[hidden]{display:none}.qgrid .fwide{grid-column:1/-1}
+.qfile{display:flex;flex-direction:column;gap:6px}.qcur{font-size:13px;display:flex;align-items:center;gap:8px}
+.qbtn{display:inline-flex;align-items:center;gap:3px;font:inherit;font-size:12.5px;font-weight:600;color:var(--blue-ink);background:none;border:1px solid var(--line);border-radius:6px;padding:1px 7px;cursor:pointer;text-decoration:none;margin-left:4px}
+.qbtn .ic{width:13px;height:13px;margin:0}.qhint{color:var(--muted)}
 .mextra textarea.inp{min-height:70px}
 /* ===== Front office (trame) : en-tête en 3 zones, colonnes de parcours, modules alignés ===== */
 :root{--teal:#3F8F7D;--teal-soft:#E6F3EF}
@@ -436,6 +443,7 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
     <span class="msg" id="lMsg" role="status"></span>
   </form>
   <p class="notice" id="notice" hidden></p>
+  <datalist id="qTypes"><option>Formulaire en ligne</option><option>Formulaire Excel</option><option>Formulaire PDF</option><option>Document Word</option></datalist>
   <div id="consult">
     <div class="grid">
       <div class="side">
@@ -539,13 +547,32 @@ function infoHtml(m, opts){
   if(m.tarif && !o.sansTarif) out.push(`<span class="ml">${ic("euro")}<span><b>${eur(m.tarif)}</b>${o.parcours && m.tarifParcours ? ` · ${eur(m.tarifParcours)} dans ce parcours` : ""}</span></span>`);
   if(o.cert) out.push(`<span class="ml">${ic("certif")}<span><b>Certification ${esc(o.cert.nom)} :</b> ${eur(o.cert.prix)}${o.cert.total ? ` · <b>Total CPF ${eur(o.cert.total)}</b>` : ""}</span></span>`);
   /* le positionnement n'est demandé que si la personne fait le niveau 2 sans le niveau 1 */
-  if((m.positionnement || m.positionnementLien) && !o.avecM1){
-    const u = safeUrl(m.positionnementLien), n = esc(m.positionnement || "Questionnaire de positionnement");
-    out.push(`<span class="ml pos">${ic("pos")}<span><b>Positionnement si pas de niveau 1 :</b> ${u ? `<a href="${esc(u)}" target="_blank" rel="noopener">${n}</a>` : n}</span></span>`);
-  }
+  if(aQuestionnaire(m) && !o.avecM1) out.push(`<span class="ml pos">${ic("pos")}<span><b>${o.parcours ? "Positionnement si pas de niveau 1" : "Positionnement"} :</b> ${qLigne(m, o.fid)}</span></span>`);
   if(m.cpf) out.push(`<span class="ml">${ic("certif")}<span><b>CPF :</b> ${esc(m.cpf)}</span></span>`);
   return out.length ? `<span class="minfo">${out.join("")}</span>` : "";
 }
+const aQuestionnaire = m => !!(m && (m.questionnaire || m.positionnement || m.positionnementLien));
+/* nom, type et accès au questionnaire ; le lien n'est montré qu'aux personnes autorisées */
+function qLigne(m, fid){
+  const nom = esc(m.positionnement || "Questionnaire de positionnement"), type = m.questionnaireType ? ` <small>(${esc(m.questionnaireType)})</small>` : "";
+  const d = fid ? qDoc(fid, m.code) : null, u = d && safeUrl(d.lien), fic = d && d.fichier;
+  let acces;
+  if(!canRead) acces = `<small class="qhint">· lien visible après connexion</small>`;
+  else if(fic) acces = `<button type="button" class="qbtn" data-qf="${esc(d.id)}">${ic("ext")}Télécharger</button>${u ? ` <a class="qbtn" href="${esc(u)}" target="_blank" rel="noopener">${ic("ext")}Ouvrir le lien</a>` : ""}`;
+  else if(u) acces = `<a class="qbtn" href="${esc(u)}" target="_blank" rel="noopener">${ic("ext")}Ouvrir</a>`;
+  else acces = `<small class="qhint">· à demander au service formation</small>`;
+  return `${nom}${type} ${acces}`;
+}
+/* ouvrir un questionnaire déposé dans la base */
+async function ouvrirFichierQ(id){
+  const d = (RAW.questionnaires || []).find(x => x.id === id), f = d && d.fichier; if(!f) return;
+  try{
+    if(f.chemin && SB){ const { data, error } = await SB.storage.from("questionnaires").createSignedUrl(f.chemin, 300, { download: f.nom || true }); if(error) throw error; location.href = data.signedUrl; return; }
+    if(f.contenu){ const a = document.createElement("a"); a.href = f.contenu; a.download = f.nom || "questionnaire"; document.body.appendChild(a); a.click(); a.remove(); return; }
+    throw 0;
+  }catch(e){ toast("Téléchargement impossible pour le moment"); }
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-qf]"); if(b){ e.preventDefault(); ouvrirFichierQ(b.dataset.qf); } });
 /* Lit une session écrite en texte (ex. « 18-19 et 25-26 janvier 2027 ») pour retrouver son premier et son dernier jour. */
 const MOISN = {jan:1,janv:1,janvier:1,fev:2,fevr:2,fevrier:2,mar:3,mars:3,avr:4,avril:4,mai:5,juin:6,juil:7,juillet:7,aout:8,sep:9,sept:9,septembre:9,oct:10,octobre:10,nov:11,novembre:11,dec:12,decembre:12};
 function lireSession(t){
@@ -560,12 +587,16 @@ function lireSession(t){
   const iso = ([m, j]) => an + "-" + String(m).padStart(2,"0") + "-" + String(j).padStart(2,"0");
   return { texte: String(t).trim(), debut: iso(jours[0]), fin: iso(jours[jours.length - 1]) };
 }
-const ctxF = f => { const codes = Object.keys(f.modules || {}); return { parcours: codes.length > 1, avecM1: codes.length > 1 && codes.some(c => /^M1\b/i.test(c)) }; };
-const INFO_KEYS = ["sessions", "tarif", "tarifParcours", "positionnement", "positionnementLien", "cpf"];
+const ctxF = f => { const codes = Object.keys(f.modules || {}); return { fid: f.id, parcours: codes.length > 1, avecM1: codes.length > 1 && codes.some(c => /^M1\b/i.test(c)) }; };
+const INFO_KEYS = ["sessions", "tarif", "tarifParcours", "questionnaire", "questionnaireType", "positionnement", "cpf"];
 
 /* ---------- Données ---------- */
-let db = null, user = null, canAdmin = false;
-const RAW = { domaines: null, formations: null, profils: null };
+let db = null, user = null, canAdmin = false; /* canRead : voir les liens des questionnaires */
+const RAW = { domaines: null, formations: null, profils: null, questionnaires: [] };
+/* liens des questionnaires de positionnement : rangés à part, lisibles seulement par les personnes autorisées */
+let canRead = false;
+const qKey = (fid, code) => fid + "__" + String(code || "").replace(/[^\w-]/g, "_");
+const qDoc = (fid, code) => (RAW.questionnaires || []).find(x => x.id === qKey(fid, code)) || null;
 let DOMAINES = [];
 
 function buildModel(){
@@ -782,7 +813,7 @@ function complementsHtml(p, d){
   return `<section class="fo-compl" aria-label="Formations complémentaires"><h3>${ic("plus")}<span>Formations<br>complémentaires</span></h3><div class="fo-ccards">${items.map(({c, f}) => {
     const dom = (RAW.domaines || []).find(x => x.id === f.domaine), m = (Array.isArray(f.modules) ? f.modules : [])[0] || {}, u = safeUrl(m.lien);
     const nom = u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener">${esc(f.nom)}${ic("ext")}</a>` : esc(f.nom);
-    return `<div class="fo-ccard"><b>${nom}</b><span class="cmeta">${f.duree?`${ic("duree")}${esc(f.duree)}`:""}${f.certification?` · ${esc(f.certification)}`:""} · ${esc(dom ? dom.nom : "")}</span><span class="cwhy">${esc(c.pourquoi || "")}</span>${(f.modules || []).length > 1 ? prixCarte(f) : pied(m, { cert: certInfo(f, m) })}${(f.modules || []).length === 1 ? propCtl(f.id, m.code) : ""}</div>`;
+    return `<div class="fo-ccard"><b>${nom}</b><span class="cmeta">${f.duree?`${ic("duree")}${esc(f.duree)}`:""}${f.certification?` · ${esc(f.certification)}`:""} · ${esc(dom ? dom.nom : "")}</span><span class="cwhy">${esc(c.pourquoi || "")}</span>${(f.modules || []).length > 1 ? prixCarte(f) : pied(m, { fid: f.id, cert: certInfo(f, m) })}${(f.modules || []).length === 1 ? propCtl(f.id, m.code) : ""}</div>`;
   }).join("")}</div></section>`;
 }
 function prixCarte(f){
@@ -960,25 +991,30 @@ function formFormation(el, d){
       ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
     </div>
     <div class="fsec"><h3>Modules</h3><p class="fhint">Formation seule : un seul module, avec le code « Formation ». Parcours : un module par code (M1, M2, M2.3…). Ouvrez « Dates, tarifs, positionnement, CPF » sous chaque module pour les compléter. Ces informations sont reportées automatiquement dans les autres parcours qui contiennent le même module (même titre).</p>
-      <div id="modLines">${mods.map(modLine).join("")}</div>
+      <div id="modLines">${mods.map(x => modLine(x, isNew ? "" : adm.sel)).join("")}</div>
       <div><button type="button" class="btn add small" id="addMod">+ Ajouter un module</button></div></div>
     ${!isNew ? rattachHtml(adm.sel, domCur) : ""}
     ${formActions(!isNew)}</div>`;
   if(!isNew) rattachBind(adm.sel, domCur, r.nom);
   $("addMod").onclick = () => $("modLines").insertAdjacentHTML("beforeend", modLine({ code: "", titre: "" }));
-  $("modLines").addEventListener("click", e => { if(e.target.closest("[data-rm]")) e.target.closest(".modline").remove(); });
+  $("modLines").addEventListener("click", e => {
+    if(e.target.closest("[data-rm]")) e.target.closest(".modline").remove();
+    if(e.target.closest(".mqrm")){ const c = e.target.closest(".qcur"); c.dataset.retire = "1"; c.hidden = true; }
+  });
+  $("modLines").addEventListener("change", e => { if(e.target.matches(".mq")) e.target.closest(".qbox").querySelector(".qgrid").hidden = !e.target.checked; });
   el.querySelector(".actions").addEventListener("click", async e => {
     const a = e.target.closest("[data-act]")?.dataset.act; if(!a) return;
     if(a === "cancel"){ adm.sel = null; renderAdmin(true); return; }
     if(a === "del") return askConfirm(`Supprimer « ${r.nom} » ?${used.length ? ` Elle sera retirée de ${used.length} profil${used.length>1?"s":""}.` : ""}`, async () => {
       for(const p of used){ const rp = rawP(p.id); await db.doc("profils/" + p.id).update({ parcours: (rp.parcours || []).filter(x => x.formation !== adm.sel) }); }
       for(const rp of (RAW.profils || []).filter(x => (x.complements || []).some(c => c.formation === adm.sel))){ await db.doc("profils/" + rp.id).update({ complements: rp.complements.filter(c => c.formation !== adm.sel) }); }
+      for(const q of (RAW.questionnaires || []).filter(x => x.id.startsWith(adm.sel + "__"))) await db.doc("questionnaires/" + q.id).delete();
       await db.doc("formations/" + adm.sel).delete(); adm.sel = null; toast("Supprimé");
     });
     const nom = $("fNom").value.trim(); if(!nom) return setMsg("Le nom est obligatoire.");
     const cible = $("fDomF").value, dc = DOMAINES.find(x => x.id === cible);
     if(!dc) return setMsg("Choisissez le domaine de rattachement.");
-    const erreurs = [];
+    const erreurs = [], qSaisie = [];
     const modules = [...document.querySelectorAll("#modLines .modline")].map(l => {
       const q = c => l.querySelector(c), m = { code: q(".mc").value.trim(), titre: q(".mtit").value.trim() };
       const u = q(".mlien").value.trim(); if(u) m.lien = u;
@@ -987,9 +1023,18 @@ function formFormation(el, d){
       const tarif = Number(q(".mtar").value.replace(/[^\d.,]/g, "").replace(",", ".")), tp = Number(q(".mtp").value.replace(/[^\d.,]/g, "").replace(",", "."));
       if(tarif > 0) m.tarif = tarif;
       if(tp > 0) m.tarifParcours = tp;
-      [["positionnement", ".mpos"], ["positionnementLien", ".mposl"], ["cpf", ".mcpf"]].forEach(([k, c]) => { const v = q(c).value.trim(); if(v) m[k] = v; });
+      [["cpf", ".mcpf"]].forEach(([k, c]) => { const v = q(c).value.trim(); if(v) m[k] = v; });
+      if(q(".mq").checked){
+        m.questionnaire = true;
+        const nq = q(".mpos").value.trim(), tq = q(".mqt").value.trim(); if(nq) m.positionnement = nq; if(tq) m.questionnaireType = tq;
+        const cur = q(".qcur");
+        qSaisie.push({ code: m.code, lien: q(".mposl").value.trim(), fichier: q(".mqf").files[0] || null, retire: !!(cur && cur.dataset.retire) });
+      } else qSaisie.push({ code: m.code, off: true });
       return m;
     }).filter(m => m.code);
+    const gros = qSaisie.find(x => x.fichier && x.fichier.size > (SB ? 10e6 : 600e3));
+    if(gros) return setMsg(`Le document « ${gros.fichier.name} » est trop lourd (${SB ? "10 Mo" : "600 Ko"} au maximum). Utilisez plutôt un lien.`);
+    if(qSaisie.some(x => x.lien && !safeUrl(x.lien))) return setMsg("Le lien du questionnaire doit commencer par https://");
     if(erreurs.length) return setMsg("Date illisible : " + erreurs.slice(0, 2).join(" ; ") + ". Écrivez le jour, le mois et l'année, ex. « 18-19 et 25-26 janvier 2027 ».");
     if(!modules.length) return setMsg("Ajoutez au moins un module.");
     if(new Set(modules.map(m => m.code)).size !== modules.length) return setMsg("Deux modules ont le même code.");
@@ -1005,6 +1050,7 @@ function formFormation(el, d){
     let reportes = 0, ok = false;
     await write(async () => {
       await db.doc("formations/" + id).set(data);
+      await qEnregistrer(id, qSaisie);
       const rd = rawD(cible), om = (rd && rd.ordreModules) || [], add = modules.map(m => m.code).filter(c => !om.includes(c));
       if(add.length) await db.doc("domaines/" + cible).update({ ordreModules: om.concat(add) });
       /* changement de domaine : un parcours de profil doit rester dans le domaine du profil */
@@ -1020,6 +1066,7 @@ function formFormation(el, d){
           return om;
         });
         if(touche){ await db.doc("formations/" + o.id).update({ modules: mm }); reportes++; }
+        for(const om of o.modules){ const src = modules.find(m => m.titre && norm(m.titre) === norm(om.titre || "")); if(src) await qCopier(id, src.code, o.id, om.code); }
       }
     }, "Enregistré", () => { ok = true; adm.sel = id; if(change){ adm.dom = cible; } });
     if(ok && reportes) toast(`Enregistré · reporté dans ${reportes} autre${reportes>1?"s":""} parcours`);
@@ -1092,16 +1139,58 @@ function rattachBind(fid, domF, nomF){
     return write(faire, okT, () => {});
   });
 }
-const modLine = m => `<div class="modline"><input class="inp mc" value="${esc(m.code)}" placeholder="Code" aria-label="Code du module"><input class="inp mtit" value="${esc(m.titre)}" placeholder="Titre du module" aria-label="Titre du module"><button type="button" class="btn small danger" data-rm="1">Retirer</button><input class="inp mlien" value="${esc(m.lien || "")}" placeholder="Lien vers la fiche (https://…)" aria-label="Lien vers la fiche du module">
+/* enregistre le lien et le document de chaque module (collection « questionnaires ») */
+async function qEnregistrer(fid, saisies){
+  for(const x of saisies){
+    const k = qKey(fid, x.code), cur = (RAW.questionnaires || []).find(d => d.id === k);
+    if(x.off){ if(cur) await db.doc("questionnaires/" + k).delete(); continue; }
+    let fichier = cur && cur.fichier && !x.retire ? cur.fichier : null;
+    if(cur && cur.fichier && x.retire && cur.fichier.chemin && SB) await SB.storage.from("questionnaires").remove([cur.fichier.chemin]);
+    if(x.fichier){
+      if(SB){
+        const chemin = k + "/" + x.fichier.name.replace(/[^\w.-]/g, "_");
+        const { error } = await SB.storage.from("questionnaires").upload(chemin, x.fichier, { upsert: true, contentType: x.fichier.type || undefined });
+        if(error) throw { code: "invalid_argument" };
+        fichier = { nom: x.fichier.name, chemin };
+      } else {
+        const contenu = await new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = ko; r.readAsDataURL(x.fichier); });
+        fichier = { nom: x.fichier.name, contenu };
+      }
+    }
+    const data = {}; if(x.lien) data.lien = x.lien; if(fichier) data.fichier = fichier;
+    if(!Object.keys(data).length){ if(cur) await db.doc("questionnaires/" + k).delete(); continue; }
+    if(JSON.stringify(data) !== JSON.stringify(cur ? { lien: cur.lien, fichier: cur.fichier } : null)) await db.doc("questionnaires/" + k).set(data);
+  }
+}
+/* même module dans un autre parcours : même lien, même document */
+async function qCopier(fid, code, fid2, code2){
+  const a = qDoc(fid, code), b = qDoc(fid2, code2), k = qKey(fid2, code2);
+  const da = a ? Object.assign({}, a) : null; if(da) delete da.id;
+  const db_ = b ? Object.assign({}, b) : null; if(db_) delete db_.id;
+  if(JSON.stringify(da) === JSON.stringify(db_)) return;
+  if(da) await db.doc("questionnaires/" + k).set(da); else await db.doc("questionnaires/" + k).delete();
+}
+const modLine = (m, fid) => `<div class="modline"><input class="inp mc" value="${esc(m.code)}" placeholder="Code" aria-label="Code du module"><input class="inp mtit" value="${esc(m.titre)}" placeholder="Titre du module" aria-label="Titre du module"><button type="button" class="btn small danger" data-rm="1">Retirer</button><input class="inp mlien" value="${esc(m.lien || "")}" placeholder="Lien vers la fiche (https://…)" aria-label="Lien vers la fiche du module">
   <details class="mextra"><summary>Dates, tarifs, positionnement, CPF${(m.sessions||[]).length ? ` · ${aVenir(m).length} date${aVenir(m).length>1?"s":""} à venir` : ""}</summary><div class="fgrid">
     ${field("Dates (une session par ligne, avec l'année)", `<textarea class="inp mses" placeholder="ex. 18-19 et 25-26 janvier 2027&#10;15 avril 2027">${esc((m.sessions || []).map(x => x.texte).join("\n"))}</textarea>`, true)}
     ${field("Tarif (€)", `<input class="inp mtar" inputmode="decimal" value="${esc(m.tarif ?? "")}" placeholder="ex. 780">`)}
     ${field("Tarif dans un parcours (€) — affiché seulement dans un parcours", `<input class="inp mtp" inputmode="decimal" value="${esc(m.tarifParcours ?? "")}" placeholder="ex. 700">`)}
-    ${field("Positionnement si pas de niveau 1 (nom du questionnaire)", `<input class="inp mpos" value="${esc(m.positionnement || "")}" placeholder="Laisser vide si aucun">`)}
-    ${field("Lien du questionnaire de positionnement", `<input class="inp mposl" value="${esc(m.positionnementLien || "")}" placeholder="https://forms…">`)}
+    ${qFields(m, fid)}
     ${field("Éligibilité CPF", `<input class="inp mcpf" value="${esc(m.cpf || "")}" placeholder="ex. Oui (certification Tosa) ; Non ; Oui, dans un parcours de 4 jours minimum">`, true)}
   </div></details></div>`;
 
+/* champs « questionnaire de positionnement » d'un module (le lien et le fichier sont rangés à part, voir qKey) */
+function qFields(m, fid){
+  const d = fid && m.code ? qDoc(fid, m.code) : null, on = aQuestionnaire(m);
+  return `<div class="qbox fwide"><label class="qchk"><input type="checkbox" class="mq"${on ? " checked" : ""}> Questionnaire de positionnement</label>
+    <div class="qgrid"${on ? "" : " hidden"}>
+      ${field("Nom du questionnaire", `<input class="inp mpos" value="${esc(m.positionnement || "")}" placeholder="ex. Questionnaire de positionnement Excel">`)}
+      ${field("Type de document", `<input class="inp mqt" list="qTypes" value="${esc(m.questionnaireType || "")}" placeholder="ex. Formulaire Excel, Formulaire PDF">`)}
+      ${field("Lien (URL) — visible seulement par les personnes connectées", `<input class="inp mposl" value="${esc((d && d.lien) || "")}" placeholder="https://… (SharePoint, Teams, Forms)">`, true)}
+      ${field("Ou document déposé dans la base", `<span class="qfile">${d && d.fichier ? `<span class="qcur">${esc(d.fichier.nom || "document")} <button type="button" class="btn small danger mqrm">Retirer</button></span>` : ""}<input type="file" class="inp mqf" accept=".pdf,.xlsx,.xls,.xlsm,.docx,.doc"></span>`, true)}
+      <p class="fhint fwide">Dans un parcours, le questionnaire n'est affiché que si le parcours ne contient pas de module de niveau 1 (M1).</p>
+    </div></div>`;
+}
 /* ----- Formulaire catégorie de profils ----- */
 function formCategorie(el, d){
   const isNew = adm.sel === "new", nomAct = isNew ? "" : adm.sel, toutes = domCats(d);
@@ -1506,12 +1595,18 @@ async function bootSupabase(cfg){
 async function refreshAuth(){
   const { data } = await SB.auth.getSession();
   const session = data && data.session;
-  let ok = false;
-  if(session){ const r = await SB.from("editeurs").select("email").limit(1); ok = !r.error && r.data && r.data.length > 0; }
-  canAdmin = ok; renderDetail();
+  let ok = false, lit = false;
+  if(session){
+    const r = await SB.from("editeurs").select("email").limit(1); ok = !r.error && r.data && r.data.length > 0;
+    const c = ok ? null : await SB.from("conseilleres").select("email").limit(1); lit = ok || (!!c && !c.error && c.data && c.data.length > 0);
+  }
+  canAdmin = ok; canRead = lit;
+  if(lit){ const { data: q, error } = await SB.from("questionnaires").select("id,data").limit(5000); RAW.questionnaires = error ? [] : (q || []).map(x => Object.assign({ id: x.id }, x.data || {})); }
+  else RAW.questionnaires = [];
+  onData();
   $("loginBtn").textContent = session ? "Déconnexion" : "Connexion";
   $("views").hidden = !ok;
-  if(session && !ok){ $("notice").textContent = "Ce compte n'a pas le droit de modifier le contenu."; $("notice").hidden = false; }
+  if(session && !lit){ $("notice").textContent = "Ce compte n'est pas encore autorisé : demandez à être ajouté(e) à la liste des conseillères."; $("notice").hidden = false; }
   else if($("notice").textContent.startsWith("Ce compte")) $("notice").hidden = true;
   if(!ok && state.view === "admin") document.querySelector('.vbtn[data-view="consult"]').click();
 }
@@ -1542,11 +1637,12 @@ $("loginForm").addEventListener("submit", async e => {
   try{ db = (typeof claude !== "undefined" && claude.use) ? await claude.use("db") : null; }catch(e){ db = null; }
   try{ user = (typeof claude !== "undefined" && claude.use) ? await claude.use("user") : null; }catch(e){ user = null; }
   if(!db){ renderDetail(); return; }
-  ["domaines","formations","profils"].forEach(c => {
+  canRead = true; /* version Claude : l'application n'est ouverte qu'aux personnes avec qui elle est partagée */
+  ["domaines","formations","profils","questionnaires"].forEach(c => {
     db.collection(c).limit(1000).onSnapshot(snap => {
       RAW[c] = snap.docs.filter(x => x.exists).map(x => Object.assign({ id: x.id }, x.data()));
       onData();
-    }, () => { if(!RAW[c]) RAW[c] = []; onData(); });
+    }, () => { if(!RAW[c] || c === "questionnaires") RAW[c] = RAW[c] || []; onData(); });
   });
   canAdmin = user ? await user.canEdit() : false;
   $("views").hidden = !canAdmin; renderDetail();
