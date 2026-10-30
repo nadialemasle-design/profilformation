@@ -25,6 +25,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `supabase-mise-a-jour-2027-n6.sql` | Mise à jour n°6 : les catégories de profils deviennent 13 familles de métiers communes à tous les domaines ; secteur et statut passent en mots-clés. Les sous-profils créés dans Gestion gardent leur catégorie. |
 | `supabase-mise-a-jour-2027-n7.sql` | Mise à jour n°7 : questionnaires de positionnement (case, type de document, lien ou document) et comptes « conseillère ». Les liens quittent la table publique et ne sont visibles qu'après connexion. |
 | `supabase-mise-a-jour-2027-n8.sql` | Mise à jour n°8 : argumentaire détaillé replié (besoin Situation / Difficulté / Attente, argumentaire par parcours), M1 commun pour l'IA et les réseaux sociaux. Ne change un texte que s'il n'a pas été modifié dans Gestion. |
+| `supabase-mise-a-jour-2027-n9.sql` | Mise à jour n°9 : les éditrices gèrent la liste des conseillères depuis Gestion › Conseillères. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 
@@ -38,7 +39,8 @@ Le contenu est lu dans une base Supabase. Sur le site, le bouton **Connexion** (
 
 - Seules les adresses e-mail inscrites dans la table `editeurs` de Supabase peuvent modifier. Pour ajouter une collègue : créer son compte dans Supabase (**Authentication** › **Users** › **Add user**), puis ajouter son e-mail dans la table `editeurs` (**Table Editor**).
 - Le fichier `supabase-installation.sql` crée les tables, les règles d'accès et le contenu de départ. Attention : le relancer remet le contenu de départ à la place de vos modifications.
-- **Comptes conseillères** (voir les liens des questionnaires de positionnement, sans pouvoir modifier) : créer le compte dans **Authentication** › **Users** › **Add user** (e-mail + mot de passe, cocher *Auto Confirm User*), puis ajouter l'e-mail dans la table `conseilleres` (**Table Editor** › `conseilleres` › **Insert row**). La conseillère se connecte avec le bouton **Connexion**.
+- **Comptes conseillères** (voir les liens et documents des questionnaires, sans pouvoir modifier) : dans **Gestion › Conseillères**, ajoutez son adresse e-mail. Elle clique ensuite sur **Connexion › Première connexion : créer mon mot de passe**, confirme avec le lien reçu par e-mail, puis se connecte. Dans Supabase, **Authentication › URL Configuration** : *Site URL* = l'adresse du site GitHub Pages.
+- **Dépôt des questionnaires** : **Gestion › Questionnaires** liste tous les questionnaires de positionnement, avec leur état (Lien, Document déposé, À compléter). On y dépose un PDF, Excel ou Word (glisser-déposer) ou un lien.
 - Les liens et documents des questionnaires sont rangés dans la table `questionnaires` et l'espace de stockage privé `questionnaires` : ils ne sont jamais publics et ne figurent pas dans les fichiers de ce dépôt.
 - Si la base ne répond pas (par exemple mise en veille), le site affiche la copie de secours `contenu.js`, en lecture seule. Pour réactiver la base : tableau de bord Supabase › projet › **Resume project**.
 - La tâche `.github/workflows/garder-supabase-actif.yml` consulte la base chaque jour pour éviter la mise en veille.

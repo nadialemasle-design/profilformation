@@ -85,6 +85,19 @@ create policy "questionnaires modif" on storage.objects for update to authentica
 drop policy if exists "questionnaires suppr" on storage.objects;
 create policy "questionnaires suppr" on storage.objects for delete to authenticated using (bucket_id = 'questionnaires' and public.est_editeur());
 
+-- 2 ter. Gestion des conseillères par les éditrices
+-- Les éditrices voient, ajoutent et retirent les adresses des conseillères
+drop policy if exists "editeurs gerent conseilleres" on public.conseilleres;
+create policy "editeurs gerent conseilleres" on public.conseilleres for all to authenticated using (public.est_editeur()) with check (public.est_editeur());
+grant select, insert, delete on public.conseilleres to authenticated;
+
+-- Adresses toujours enregistrées en minuscules
+create or replace function public.conseillere_minuscules() returns trigger language plpgsql as $$
+begin new.email := lower(trim(new.email)); return new; end $$;
+drop trigger if exists conseillere_minuscules on public.conseilleres;
+create trigger conseillere_minuscules before insert or update on public.conseilleres for each row execute function public.conseillere_minuscules();
+
+
 -- 3. Éditrice autorisée (changez l'adresse si vous vous connectez avec une autre)
 insert into public.editeurs (email) values ('nadialemasle@gmail.com') on conflict (email) do nothing;
 
