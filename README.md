@@ -24,6 +24,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `supabase-mise-a-jour-2027-n5.sql` | Mise à jour n°5 : 11 nouveaux sous-profils, mots-clés de recherche des sous-profils et des catégories. Ne remplace rien de ce qui a été saisi dans Gestion. |
 | `supabase-mise-a-jour-2027-n6.sql` | Mise à jour n°6 : les catégories de profils deviennent 13 familles de métiers communes à tous les domaines ; secteur et statut passent en mots-clés. Les sous-profils créés dans Gestion gardent leur catégorie. |
 | `supabase-mise-a-jour-2027-n7.sql` | Mise à jour n°7 : questionnaires de positionnement (case, type de document, lien ou document) et comptes « conseillère ». Les liens quittent la table publique et ne sont visibles qu'après connexion. |
+| `supabase-mise-a-jour-2027-n8.sql` | Mise à jour n°8 : argumentaire détaillé replié (besoin Situation / Difficulté / Attente, argumentaire par parcours), M1 commun pour l'IA et les réseaux sociaux. Ne change un texte que s'il n'a pas été modifié dans Gestion. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 

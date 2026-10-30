@@ -206,6 +206,14 @@ details.group .profiles{padding:6px 0 4px 6px}
 .fo-why .fo-ic{flex:none;color:var(--orange);padding-right:10px;border-right:1.5px solid var(--blue);display:flex;align-items:center}
 .fo-why .fo-ic .ic{margin:0}
 .fo-why .fo-lab{color:var(--blue-ink)}
+.fo-more{margin-top:4px;font-weight:400}
+.fo-more summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--blue-ink);list-style:none;display:inline-flex;align-items:center;gap:3px}
+.fo-more summary::-webkit-details-marker{display:none}
+.fo-more summary::after{content:"▾";font-size:11px}.fo-more[open] summary::after{content:"▴"}
+.fo-sda{display:flex;flex-direction:column;gap:3px;margin-top:4px;font-size:13px;line-height:1.4}
+.fo-sda b{color:var(--orange)}
+.fo-moretxt{display:block;margin-top:4px;line-height:1.45}
+.fo-parc .fo-more summary{color:#fff;opacity:.9}
 .fo-mod{display:grid;grid-template-columns:76px minmax(0,1fr);border:1.5px solid var(--teal);background:var(--surface)}
 .fo-mod > .fo-tab{border-radius:10px 0 0 10px}
 .fo-tab{background:var(--teal);display:flex;align-items:center;justify-content:center;padding:8px 4px}
@@ -611,8 +619,8 @@ function buildModel(){
       prix: prixParcours(f), tarifCertification: f.tarifCertification,
       liens: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).filter(m => m.lien).map(m => [m.code, m.lien])) })),
     profils: (RAW.profils || []).filter(p => p.domaine === d.id).sort(byOrdre).map(p => ({
-      id: p.id, categorie: profCats(p)[0], categories: profCats(p), motsCles: p.motsCles || "", nom: p.nom || "", besoin: p.besoin || "", reponses: p.reponses || {},
-      parcours: Object.fromEntries((Array.isArray(p.parcours) ? p.parcours : []).map(x => [x.formation, { pourquoi: x.pourquoi || "", reponses: x.reponses || {} }])),
+      id: p.id, categorie: profCats(p)[0], categories: profCats(p), motsCles: p.motsCles || "", nom: p.nom || "", besoin: p.besoin || "", besoinDetail: p.besoinDetail || null, reponses: p.reponses || {},
+      parcours: Object.fromEntries((Array.isArray(p.parcours) ? p.parcours : []).map(x => [x.formation, { pourquoi: x.pourquoi || "", argumentaire: x.argumentaire || "", reponses: x.reponses || {} }])),
       complements: (Array.isArray(p.complements) ? p.complements : []).filter(c => c && c.formation) }))
   }));
   /* lignes de modules : ordre du domaine, puis modules non listés */
@@ -656,7 +664,7 @@ const ouvertes = new Set(); /* catégories que la conseillère a dépliées */
 function hayOf(p, d){
   const rd = (RAW.domaines || []).find(x => x.id === d.id) || {}, mc = rd.motsClesCategories || {};
   const fs = Object.keys(p.parcours).map(id => d.formations.find(f => f.id === id)).filter(Boolean);
-  return norm([p.nom, p.besoin, p.motsCles, d.nom, ...p.categories, ...p.categories.map(c => mc[c] || ""),
+  return norm([p.nom, p.besoin, ...Object.values(p.besoinDetail || {}), p.motsCles, d.nom, ...p.categories, ...p.categories.map(c => mc[c] || ""),
     ...fs.map(f => f.nom + " " + f.intitule + " " + Object.values(f.modules).join(" "))].join(" "));
 }
 const matchQ = (hay, q) => q.split(/[\s,;]+/).filter(Boolean).every(w => hay.includes(w));
@@ -770,7 +778,7 @@ function renderDetail(){
     cards.push(`<div class="fo-card fo-parc" ${at(1, i+1)}>
       <div class="fo-ptxt">${i === 0 && n > 1 ? `<span class="fo-best">${ic("star")}Le plus adapté</span>` : ""}<h3>${esc(f.nom)}</h3>${f.intitule && f.intitule !== f.nom ? `<p>${esc(f.intitule)}</p>` : ""}
         <span class="fo-tags">${f.duree ? `<span>${ic("duree")}${esc(f.duree)}</span>` : ""}${nm > 1 ? `<span>${ic("modules")}${nm} modules</span>` : ""}${f.certification ? `<span>${ic("certif")}${esc(f.certification)}</span>` : ""}</span></div>
-      <div class="fo-pfoot">${p.parcours[f.id].pourquoi ? `<span class="fo-why">${ic("why")}<span><b>Pourquoi :</b> ${esc(p.parcours[f.id].pourquoi)}</span></span>` : "<span></span>"}${tarifs(f)}</div></div>`);
+      <div class="fo-pfoot">${p.parcours[f.id].pourquoi ? `<span class="fo-why">${ic("why")}<span><b>Pourquoi :</b> ${esc(p.parcours[f.id].pourquoi)}${p.parcours[f.id].argumentaire ? `<details class="fo-more"><summary>Argumentaire détaillé</summary><span class="fo-moretxt">${esc(p.parcours[f.id].argumentaire)}</span></details>` : ""}</span></span>` : "<span></span>"}${tarifs(f)}</div></div>`);
   });
   rows.forEach((m, k) => {
     const r = k + 2, has = cols.map(f => !!f.modules[m]);
@@ -788,7 +796,7 @@ function renderDetail(){
   el.innerHTML = `
     <div class="fo-head${facts ? "" : " nofacts"}">
       <div class="fo-box"><span class="fo-hic">${ic("profil")}</span><span><span class="fo-lab">Profil</span><b class="fo-name">${esc(p.nom)}</b><small>${esc(p.categorie)}</small>${canAdmin ? `<button type="button" class="fo-edit" data-editp="${esc(p.id)}" data-dom="${esc(d.id)}">${ic("edit")}Modifier</button>` : ""}</span></div>
-      <div class="fo-box"><span class="fo-hic">${ic("besoin")}</span><span><span class="fo-lab">Besoin</span>${esc(p.besoin)}</span></div>
+      <div class="fo-box"><span class="fo-hic">${ic("besoin")}</span><span><span class="fo-lab">Besoin</span>${esc(p.besoin)}${besoinDetailHtml(p.besoinDetail)}</span></div>
       ${facts ? `<div class="fo-box fo-facts">${d.financement ? `<span class="fo-fl">${ic("euro")}<span><span class="fo-lab">Financement</span>${esc(d.financement)}</span></span>` : ""}${d.certification ? `<span class="fo-fl">${ic("certif")}<span><span class="fo-lab">Certification</span>${esc(d.certification)}</span></span>` : ""}</div>` : ""}
     </div>
     <h2 class="fo-count"><span class="num">${n}</span> ${seul ? (n > 1 ? "formations" : "formation") : "parcours"} possible${n>1?"s":""}${n > 1 ? `<small> · du plus adapté au moins adapté</small>` : ""}</h2>
@@ -807,6 +815,12 @@ function pied(m, o){
   const s = aVenir(m), has = Array.isArray(m.sessions) && m.sessions.length, det = infoHtml(m, o);
   const next = has ? (s.length ? `<span class="fo-next">${ic("cal")}<span><b>Prochaine session :</b> ${esc(s[0].texte)}${s.length > 1 ? ` <small>· ${s.length - 1} autre${s.length > 2 ? "s" : ""}</small>` : ""}</span></span>` : `<span class="fo-next none">${ic("cal")}Aucune date à venir</span>`) : "<span></span>";
   return `<div class="fo-foot">${next}${det ? `<details class="fo-det"><summary>Détails</summary>${det}</details>` : ""}</div>`;
+}
+/* besoin détaillé : situation, difficulté, attente — replié par défaut */
+function besoinDetailHtml(b){
+  if(!b) return "";
+  const l = [["Situation", b.situation], ["Difficulté", b.difficulte], ["Attente", b.attente]].filter(x => x[1]);
+  return l.length ? `<details class="fo-more"><summary>Argumentaire détaillé</summary><span class="fo-sda">${l.map(([k, v]) => `<span><b>${k} :</b> ${esc(v)}</span>`).join("")}</span></details>` : "";
 }
 function complementsHtml(p, d){
   const items = (p.complements || []).map(c => ({ c, f: (RAW.formations || []).find(f => f.id === c.formation) })).filter(x => x.f);
@@ -1263,7 +1277,12 @@ function formProfil(el, d){
       <div class="field full"><span>Catégories * <small class="fhint">— cochez toutes celles où ce sous-profil doit apparaître ; la première cochée est la principale</small></span>
         <div class="catchecks" id="fCats">${cats.map(c => `<label class="catchk"><input type="checkbox" value="${esc(c)}"${mes.includes(c)?" checked":""}> ${esc(c)}</label>`).join("")}</div>
         <input class="inp" id="fCatNew" placeholder="ou nouvelle catégorie : saisir son nom"></div>
-      ${field("Besoin", ta("fBesoin", r.besoin || ""), true)}
+      ${field("Besoin <small class=\"fhint\">— une phrase, affichée d'emblée</small>", ta("fBesoin", r.besoin || ""), true)}
+      <details class="mextra full"${r.besoinDetail ? "" : ""}><summary>Argumentaire détaillé du besoin (replié sur la fiche)</summary><div class="fgrid">
+        ${field("Situation", ta("fBSit", (r.besoinDetail || {}).situation || "", "ex. Gère seul(e) toute son activité…"), true)}
+        ${field("Difficulté", ta("fBDif", (r.besoinDetail || {}).difficulte || "", "ex. Manque de temps pour l'administratif…"), true)}
+        ${field("Attente", ta("fBAtt", (r.besoinDetail || {}).attente || "", "ex. Déléguer une partie de ces tâches…"), true)}
+      </div></details>
       ${field("Mots-clés pour la recherche <small class=\"fhint\">— séparés par des virgules : synonymes, métiers voisins, besoins exprimés (invisibles pour le conseiller)</small>", ta("fMotsCles", r.motsCles || "", "ex. boulanger, pâtissier, traiteur, attirer des clients"), true)}
     </div>
     <div class="fsec"><h3>Arguments communs à tous ses parcours</h3>
@@ -1294,7 +1313,7 @@ function formProfil(el, d){
   $("pcRows").addEventListener("change", e => {
     if(!e.target.matches("select.pcf")) return;
     const row = e.target.closest(".pcrow"), kept = readRow(row);
-    row.outerHTML = pcRow(d, { formation: e.target.value, pourquoi: kept.pourquoi, reponses: kept.reponses }, 0); renum();
+    row.outerHTML = pcRow(d, { formation: e.target.value, pourquoi: kept.pourquoi, argumentaire: kept.argumentaire, reponses: kept.reponses }, 0); renum();
   });
   el.querySelector(".actions").addEventListener("click", async e => {
     const a = e.target.closest("[data-act]")?.dataset.act; if(!a) return;
@@ -1321,6 +1340,7 @@ function formProfil(el, d){
     const maxOrdre = Math.max(0, ...d.profils.map(p => (rawP(p.id) || {}).ordre || 0));
     const motsCles = $("fMotsCles").value.trim();
     const data = { domaine: d.id, categorie, categories, motsCles, nom, besoin: $("fBesoin").value.trim(), reponses, parcours, complements,
+      besoinDetail: (() => { const b = { situation: $("fBSit").value.trim(), difficulte: $("fBDif").value.trim(), attente: $("fBAtt").value.trim() }; return b.situation || b.difficulte || b.attente ? b : null; })(),
       ordre: Number($("fOrdre").value) || (isNew ? maxOrdre + 1 : (r.ordre ?? 99)) };
     await write(() => db.doc("profils/" + id).set(data), "Profil enregistré", () => { adm.sel = id; });
   });
@@ -1330,7 +1350,8 @@ function pcRow(d, x, i){
   return `<div class="pcrow"><div class="pchead"><span class="rank">#${i+1}</span>
       <select class="pcf" aria-label="Parcours">${d.formations.map(o => `<option value="${esc(o.id)}"${o.id===x.formation?" selected":""}>${esc(o.nom)}</option>`).join("")}</select>
       <button type="button" class="btn small" data-up="1">Monter</button><button type="button" class="btn small" data-down="1">Descendre</button><button type="button" class="btn small danger" data-rm="1">Retirer</button></div>
-    <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Pourquoi</span><input class="inp pcw" value="${esc(x.pourquoi || "")}" placeholder="ex. Si sa clientèle est locale."></div>
+    <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Pourquoi</span><input class="inp pcw" value="${esc(x.pourquoi || "")}" placeholder="ex. Si sa clientèle est locale. (une ligne, affichée d'emblée)"></div>
+    <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Argumentaire détaillé</span><textarea class="inp pca" placeholder="Replié sur la fiche : ce que chaque module apporte, le résultat concret. Laisser vide si inutile.">${esc(x.argumentaire || "")}</textarea></div>
     ${f ? Object.keys(f.modules).map(m => `<div class="modrow"><span class="code">${esc(m)}</span><textarea class="inp pcm" data-m="${esc(m)}" placeholder="Laisser vide pour utiliser l'argument commun">${esc((x.reponses||{})[m] || "")}</textarea></div>`).join("") : ""}
   </div>`;
 }
@@ -1341,7 +1362,9 @@ function cpRow(d, c){
 function readRow(row){
   const reponses = {};
   row.querySelectorAll("textarea.pcm").forEach(t => { if(t.value.trim()) reponses[t.dataset.m] = t.value.trim(); });
-  return { formation: row.querySelector("select.pcf").value, pourquoi: row.querySelector(".pcw").value.trim(), reponses };
+  const o = { formation: row.querySelector("select.pcf").value, pourquoi: row.querySelector(".pcw").value.trim(), reponses };
+  const a = row.querySelector(".pca"); if(a && a.value.trim()) o.argumentaire = a.value.trim();
+  return o;
 }
 
 function askConfirm(text, run, label, okText){
