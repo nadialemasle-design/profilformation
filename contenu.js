@@ -91,7 +91,10 @@ window.CONTENU = {
       "nom": "PAO (graphisme et photo)",
       "ordre": 3,
       "ordreModules": [
-        "Formation"
+        "Formation",
+        "M1",
+        "M2",
+        "M3"
       ],
       "categories": [
         "Communication et marketing",
@@ -113,7 +116,9 @@ window.CONTENU = {
       "nom": "PAO & IA",
       "ordre": 4,
       "ordreModules": [
-        "Formation"
+        "Formation",
+        "M1",
+        "M2"
       ],
       "categories": [
         "Communication et marketing",
@@ -2075,6 +2080,389 @@ window.CONTENU = {
       "nom": "GEO-SEO avec l'IA",
       "ordre": 2,
       "reference": "IA M2 -SEO"
+    },
+    {
+      "id": "pao-p-ia",
+      "domaine": "pao",
+      "nom": "Parcours PAO : de Photoshop à l'IA",
+      "intitule": "De Photoshop à l'IA : révolutionnez vos créations graphiques et supports de communication",
+      "duree": "5 jours",
+      "ordre": 8,
+      "modules": [
+        {
+          "code": "M1",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/photoshop-initiation-realiser-des-retouches-et-des-compositions-dimages-avec-photoshop-tosa",
+          "titre": "Photoshop initiation - Réaliser des retouches et des compositions d'images avec Photoshop (Tosa)",
+          "sessions": [
+            {
+              "texte": "21-22 et 28 janvier 2027",
+              "debut": "2027-01-21",
+              "fin": "2027-01-28"
+            },
+            {
+              "texte": "7-8 et 14 juin 2027",
+              "debut": "2027-06-07",
+              "fin": "2027-06-14"
+            },
+            {
+              "texte": "18 au 20 octobre 2027",
+              "debut": "2027-10-18",
+              "fin": "2027-10-20"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 800,
+          "cpf": "Oui (certification Tosa Photoshop RS6959)"
+        },
+        {
+          "code": "M2",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ia-et-logiciels-adobe-aller-plus-loin-dans-ses-projets-",
+          "titre": "Adobe & IA : boostez votre productivité créative avec l'intelligence artificielle de la suite Adobe",
+          "sessions": [
+            {
+              "texte": "18-19 février 2027",
+              "debut": "2027-02-18",
+              "fin": "2027-02-19"
+            },
+            {
+              "texte": "9-10 décembre 2027",
+              "debut": "2027-12-09",
+              "fin": "2027-12-10"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "cpf": "Non (hors dossier CPF dans ce parcours)"
+        }
+      ],
+      "certification": "Tosa Photoshop RS6959",
+      "tarifCertification": 89
+    },
+    {
+      "id": "pao-p-indesign",
+      "domaine": "pao",
+      "nom": "Parcours PAO : Photoshop et InDesign",
+      "intitule": "Maîtrisez Photoshop et InDesign : créez vos publications, catalogues et supports de communication de A à Z",
+      "duree": "6 jours",
+      "ordre": 9,
+      "modules": [
+        {
+          "code": "M1",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/photoshop-initiation-realiser-des-retouches-et-des-compositions-dimages-avec-photoshop-tosa",
+          "titre": "Photoshop initiation - Réaliser des retouches et des compositions d'images avec Photoshop (Tosa)",
+          "sessions": [
+            {
+              "texte": "21-22 et 28 janvier 2027",
+              "debut": "2027-01-21",
+              "fin": "2027-01-28"
+            },
+            {
+              "texte": "7-8 et 14 juin 2027",
+              "debut": "2027-06-07",
+              "fin": "2027-06-14"
+            },
+            {
+              "texte": "18 au 20 octobre 2027",
+              "debut": "2027-10-18",
+              "fin": "2027-10-20"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 800,
+          "cpf": "Non (hors dossier CPF dans ce parcours)"
+        },
+        {
+          "code": "M2",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/indesign-initiation-concevoir-des-mises-en-page-et-des-publications-professionnelles-avec-indesign-tosa",
+          "titre": "Concevoir des mises en page et des publications professionnelles avec InDesign (Tosa)",
+          "sessions": [
+            {
+              "texte": "8-9 et 16 avril 2027",
+              "debut": "2027-04-08",
+              "fin": "2027-04-16"
+            },
+            {
+              "texte": "10-11 et 15 juin 2027",
+              "debut": "2027-06-10",
+              "fin": "2027-06-15"
+            },
+            {
+              "texte": "1er-2 et 8 juillet 2027",
+              "debut": "2027-07-01",
+              "fin": "2027-07-08"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 800,
+          "cpf": "Oui (certification Tosa InDesign RS6957)"
+        }
+      ],
+      "certification": "Tosa InDesign RS6957",
+      "tarifCertification": 89
+    },
+    {
+      "id": "pao-p-illustrator",
+      "domaine": "pao",
+      "nom": "Parcours PAO : Photoshop et Illustrator",
+      "intitule": "Concevez vos visuels print et digitaux de A à Z avec Photoshop et Illustrator",
+      "duree": "6 jours",
+      "ordre": 10,
+      "modules": [
+        {
+          "code": "M1",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/photoshop-initiation-realiser-des-retouches-et-des-compositions-dimages-avec-photoshop-tosa",
+          "titre": "Photoshop initiation - Réaliser des retouches et des compositions d'images avec Photoshop (Tosa)",
+          "sessions": [
+            {
+              "texte": "21-22 et 28 janvier 2027",
+              "debut": "2027-01-21",
+              "fin": "2027-01-28"
+            },
+            {
+              "texte": "7-8 et 14 juin 2027",
+              "debut": "2027-06-07",
+              "fin": "2027-06-14"
+            },
+            {
+              "texte": "18 au 20 octobre 2027",
+              "debut": "2027-10-18",
+              "fin": "2027-10-20"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 800,
+          "cpf": "Non (hors dossier CPF dans ce parcours)"
+        },
+        {
+          "code": "M2",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/illustrator-initiation-creer-des-illustrations-vectorielles-et-des-graphiques-avec-illustrator-tosa",
+          "titre": "Illustrator Initiation : créer des illustrations vectorielles et des graphiques avec Illustrator (Tosa)",
+          "sessions": [
+            {
+              "texte": "29-30 mars, 5 avril 2027",
+              "debut": "2027-03-29",
+              "fin": "2027-04-05"
+            },
+            {
+              "texte": "23-24 juin, 1er juillet 2027",
+              "debut": "2027-06-23",
+              "fin": "2027-07-01"
+            },
+            {
+              "texte": "26-27 octobre, 2 novembre 2027",
+              "debut": "2027-10-26",
+              "fin": "2027-11-02"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 800,
+          "cpf": "Oui (certification Tosa Illustrator RS6956)"
+        }
+      ],
+      "certification": "Tosa Illustrator RS6956",
+      "tarifCertification": 89
+    },
+    {
+      "id": "pao-p-photo",
+      "domaine": "pao",
+      "nom": "Parcours prise de vue et retouche photo",
+      "intitule": "Prise de vue et Photoshop : capturez et valorisez vos photos avec Photoshop",
+      "duree": "5 jours",
+      "ordre": 11,
+      "modules": [
+        {
+          "code": "M1",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/prise-de-vue-photo-et-video",
+          "titre": "Prise de vue photo et vidéo : de l'exposition au cadrage, les clés pour des prises de vue professionnelles",
+          "sessions": [
+            {
+              "texte": "16-17 mars 2027",
+              "debut": "2027-03-16",
+              "fin": "2027-03-17"
+            },
+            {
+              "texte": "25-26 mai 2027",
+              "debut": "2027-05-25",
+              "fin": "2027-05-26"
+            },
+            {
+              "texte": "5-6 octobre 2027",
+              "debut": "2027-10-05",
+              "fin": "2027-10-06"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "cpf": "Non (hors dossier CPF dans ce parcours)"
+        },
+        {
+          "code": "M2",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/photoshop-initiation-realiser-des-retouches-et-des-compositions-dimages-avec-photoshop-tosa",
+          "titre": "Photoshop initiation - Réaliser des retouches et des compositions d'images avec Photoshop (Tosa)",
+          "sessions": [
+            {
+              "texte": "21-22 et 28 janvier 2027",
+              "debut": "2027-01-21",
+              "fin": "2027-01-28"
+            },
+            {
+              "texte": "7-8 et 14 juin 2027",
+              "debut": "2027-06-07",
+              "fin": "2027-06-14"
+            },
+            {
+              "texte": "18 au 20 octobre 2027",
+              "debut": "2027-10-18",
+              "fin": "2027-10-20"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 800,
+          "cpf": "Oui (certification Tosa Photoshop RS6959)"
+        }
+      ],
+      "certification": "Tosa Photoshop RS6959",
+      "tarifCertification": 89
+    },
+    {
+      "id": "pao-p-photopro",
+      "domaine": "pao",
+      "nom": "Parcours Photo Pro",
+      "intitule": "Prise de vue, Lightroom, Photoshop : maîtrisez la chaîne complète, de l'appareil à l'image finalisée",
+      "duree": "6 jours",
+      "ordre": 12,
+      "modules": [
+        {
+          "code": "M1",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/prise-de-vue-photo-et-video",
+          "titre": "Prise de vue photo et vidéo : de l'exposition au cadrage, les clés pour des prises de vue professionnelles",
+          "sessions": [
+            {
+              "texte": "16-17 mars 2027",
+              "debut": "2027-03-16",
+              "fin": "2027-03-17"
+            },
+            {
+              "texte": "25-26 mai 2027",
+              "debut": "2027-05-25",
+              "fin": "2027-05-26"
+            },
+            {
+              "texte": "5-6 octobre 2027",
+              "debut": "2027-10-05",
+              "fin": "2027-10-06"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "cpf": "Non (hors dossier CPF dans ce parcours)"
+        },
+        {
+          "code": "M2",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/lightroom",
+          "titre": "Lightroom initiation : organisez et sublimez vos photos professionnelles",
+          "sessions": [
+            {
+              "texte": "18 mars 2027",
+              "debut": "2027-03-18",
+              "fin": "2027-03-18"
+            },
+            {
+              "texte": "27 mai 2027",
+              "debut": "2027-05-27",
+              "fin": "2027-05-27"
+            },
+            {
+              "texte": "7 octobre 2027",
+              "debut": "2027-10-07",
+              "fin": "2027-10-07"
+            }
+          ],
+          "tarif": 390,
+          "tarifParcours": 350,
+          "cpf": "Non (hors dossier CPF dans ce parcours)"
+        },
+        {
+          "code": "M3",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/photoshop-initiation-realiser-des-retouches-et-des-compositions-dimages-avec-photoshop-tosa",
+          "titre": "Photoshop initiation - Réaliser des retouches et des compositions d'images avec Photoshop (Tosa)",
+          "sessions": [
+            {
+              "texte": "21-22 et 28 janvier 2027",
+              "debut": "2027-01-21",
+              "fin": "2027-01-28"
+            },
+            {
+              "texte": "7-8 et 14 juin 2027",
+              "debut": "2027-06-07",
+              "fin": "2027-06-14"
+            },
+            {
+              "texte": "18 au 20 octobre 2027",
+              "debut": "2027-10-18",
+              "fin": "2027-10-20"
+            }
+          ],
+          "tarif": 990,
+          "tarifParcours": 800,
+          "cpf": "Oui (certification Tosa Photoshop RS6959)"
+        }
+      ],
+      "certification": "Tosa Photoshop RS6959",
+      "tarifCertification": 89
+    },
+    {
+      "id": "paoia-p-creation",
+      "domaine": "paoia",
+      "nom": "Parcours création visuelle et IA",
+      "intitule": "Création visuelle et IA : propulsez votre productivité avec Adobe et les solutions leaders",
+      "duree": "4 jours",
+      "ordre": 3,
+      "modules": [
+        {
+          "code": "M1",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/ia-et-logiciels-adobe-aller-plus-loin-dans-ses-projets-",
+          "titre": "Adobe & IA : boostez votre productivité créative avec l'intelligence artificielle de la suite Adobe",
+          "sessions": [
+            {
+              "texte": "18-19 février 2027",
+              "debut": "2027-02-18",
+              "fin": "2027-02-19"
+            },
+            {
+              "texte": "9-10 décembre 2027",
+              "debut": "2027-12-09",
+              "fin": "2027-12-10"
+            }
+          ],
+          "tarif": 780,
+          "tarifParcours": 700,
+          "cpf": "Non (parcours non certifiant)"
+        },
+        {
+          "code": "M2",
+          "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/developper-sa-creativite-graphique-avec-lia-midjourney-et-ideogram",
+          "titre": "IA design graphique : créez des visuels percutants grâce aux solutions IA leaders du design graphique",
+          "sessions": [
+            {
+              "texte": "22-23 février 2027",
+              "debut": "2027-02-22",
+              "fin": "2027-02-23"
+            },
+            {
+              "texte": "13-14 décembre 2027",
+              "debut": "2027-12-13",
+              "fin": "2027-12-14"
+            }
+          ],
+          "tarif": 860,
+          "tarifParcours": 800,
+          "positionnement": "Questionnaire de positionnement IA générative niveau 2",
+          "cpf": "Non (parcours non certifiant)",
+          "questionnaire": true,
+          "questionnaireType": "Formulaire en ligne"
+        }
+      ]
     }
   ],
   "profils": [

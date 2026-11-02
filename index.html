@@ -649,7 +649,10 @@ function prixParcours(f){
   const mods = Array.isArray(f.modules) ? f.modules : [];
   if(mods.length < 2 || (parseInt(f.duree, 10) || 0) < 3 || !mods.every(m => Number(m.tarifParcours) > 0)) return null;
   const parcours = mods.reduce((t, m) => t + Number(m.tarifParcours), 0), cert = Number(f.tarifCertification) || 0;
-  return { parcours, cert, cpf: cert ? parcours + cert : null, separe: mods.every(m => Number(m.tarif) > 0) ? mods.reduce((t, m) => t + Number(m.tarif), 0) : null };
+  /* parcours dont seuls certains modules passent en CPF (ex. PAO : le module certifiant) : les autres sont « Non » */
+  const oui = m => /^oui/i.test(String(m.cpf || "")), non = m => /^non/i.test(String(m.cpf || ""));
+  const partiel = mods.some(oui) && mods.some(non), base = partiel ? mods.filter(oui).reduce((t, m) => t + Number(m.tarifParcours), 0) : parcours;
+  return { parcours, cert, partiel, cpf: cert ? base + cert : null, separe: mods.every(m => Number(m.tarif) > 0) ? mods.reduce((t, m) => t + Number(m.tarif), 0) : null };
 }
 /* catégories d'un profil (la première est la principale) */
 function profCats(p){
@@ -799,7 +802,7 @@ function renderDetail(){
   const tarifs = f => {
     if(Object.keys(f.modules).length > 1){
       const x = f.prix; if(!x) return "";
-      return `<span class="fo-tarifs" title="${x.separe ? `${eur(x.separe)} si les modules sont pris séparément` : ""}"><b>${eur(x.parcours)}</b><small>le parcours</small>${x.cpf ? `<span class="fo-cpf">Total CPF ${eur(x.cpf)} <small>dont certification ${eur(x.cert)}</small></span>` : ""}</span>`;
+      return `<span class="fo-tarifs" title="${x.separe ? `${eur(x.separe)} si les modules sont pris séparément` : ""}"><b>${eur(x.parcours)}</b><small>le parcours</small>${x.cpf ? `<span class="fo-cpf">${x.partiel ? `Dossier CPF ${eur(x.cpf)} <small>module certifiant + certification ${eur(x.cert)} · autres modules hors CPF</small>` : `Total CPF ${eur(x.cpf)} <small>dont certification ${eur(x.cert)}</small>`}</span>` : ""}</span>`;
     }
     const m = f.infos[Object.keys(f.modules)[0]] || {};
     const c = certInfo(f, m);
@@ -894,7 +897,7 @@ function complementsHtml(p, d){
 }
 function prixCarte(f){
   const x = prixParcours(f), n = (f.modules || []).length;
-  return `<span class="minfo"><span class="ml">${ic("modules")}<span>Parcours de ${n} modules${x ? ` · <b>${eur(x.parcours)}</b>${x.cpf ? ` · Total CPF ${eur(x.cpf)}` : ""}` : ""}</span></span></span>`;
+  return `<span class="minfo"><span class="ml">${ic("modules")}<span>Parcours de ${n} modules${x ? ` · <b>${eur(x.parcours)}</b>${x.cpf ? ` · ${x.partiel ? "Dossier CPF" : "Total CPF"} ${eur(x.cpf)}` : ""}` : ""}</span></span></span>`;
 }
 function safeUrl(u){ try{ const x = new URL(String(u || "")); return /^https?:$/.test(x.protocol) ? x.href : ""; }catch(e){ return ""; } }
 
@@ -1639,11 +1642,12 @@ function propLigne(it){
   const { f, m } = x, d = (RAW.domaines || []).find(y => y.id === f.domaine) || {}, parcours = (f.modules || []).length > 1;
   const sess = (m.sessions || []).find(s => s.texte === it.session) || null;
   const prixCpf = parcours && Number(m.tarifParcours) > 0 ? Number(m.tarifParcours) : Number(m.tarif) || 0;
-  const prix = it.type === "cpf" ? prixCpf : Number(m.tarif) || 0;
+  /* module « Non » d'un parcours (hors dossier CPF mais vendu au prix parcours) */
+  const prix = it.type === "cpf" || (parcours && /^non/i.test(String(m.cpf || "")) && Number(m.tarifParcours) > 0) ? prixCpf : Number(m.tarif) || 0;
   const jours = sess ? joursDe(sess.texte) : (parcours ? 0 : parseInt(f.duree, 10) || 0);
   return { it, f, m, d, parcours, sess, prix, jours,
-    certKey: parcours ? "d:" + f.domaine : "f:" + f.id,
-    certNom: parcours ? (String(d.certification || "").split(":")[0].trim() || "Certification " + (d.nom || "")) : "Certification " + String(f.certification || "").replace(/\s*\(.*\)\s*$/, ""),
+    certKey: parcours ? (f.certification ? "c:" + f.certification : "d:" + f.domaine) : "f:" + f.id,
+    certNom: parcours && f.certification ? "Certification " + f.certification : parcours ? (String(d.certification || "").split(":")[0].trim() || "Certification " + (d.nom || "")) : "Certification " + String(f.certification || "").replace(/\s*\(.*\)\s*$/, ""),
     certPrix: Number(f.tarifCertification) || 0 };
 }
 function propCalcul(){
