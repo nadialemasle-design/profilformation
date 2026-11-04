@@ -46,7 +46,7 @@ h1{font-size:22px;line-height:1.2;margin:0;font-weight:700;text-wrap:balance}
 
 .grid{display:grid;grid-template-columns:250px minmax(0,1fr);gap:16px;align-items:start}
 @media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
-.side{display:flex;flex-direction:column;gap:12px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);max-height:calc(100vh - 16px);overflow:auto;padding-right:4px}
+.side{display:flex;flex-direction:column;gap:12px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);max-height:calc(100vh - 16px - var(--barh,0px));overflow:auto;padding-right:4px}
 @media (max-width:900px){.side{position:static;max-height:none;overflow:visible}}
 .searchlab{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
 .search{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
@@ -1641,9 +1641,10 @@ function propLigne(it){
   const x = rawFm(it.fid, it.code); if(!x || !x.m) return null;
   const { f, m } = x, d = (RAW.domaines || []).find(y => y.id === f.domaine) || {}, parcours = (f.modules || []).length > 1;
   const sess = (m.sessions || []).find(s => s.texte === it.session) || null;
-  const prixCpf = parcours && Number(m.tarifParcours) > 0 ? Number(m.tarifParcours) : Number(m.tarif) || 0;
-  /* module « Non » d'un parcours (hors dossier CPF mais vendu au prix parcours) */
-  const prix = it.type === "cpf" || (parcours && /^non/i.test(String(m.cpf || "")) && Number(m.tarifParcours) > 0) ? prixCpf : Number(m.tarif) || 0;
+  /* tarif préférentiel (« en parcours ») : module d'un parcours, ou dès que la proposition compte au moins 2 formations ou modules,
+     même hors parcours (ex. une formation complémentaire ajoutée) ; CPF ou hors CPF */
+  const pref = Number(m.tarifParcours) > 0 && (parcours || prop.items.length >= 2);
+  const prix = pref ? Number(m.tarifParcours) : Number(m.tarif) || 0;
   const jours = sess ? joursDe(sess.texte) : (parcours ? 0 : parseInt(f.duree, 10) || 0);
   return { it, f, m, d, parcours, sess, prix, jours,
     certKey: parcours ? (f.certification ? "c:" + f.certification : "d:" + f.domaine) : "f:" + f.id,
@@ -1695,7 +1696,7 @@ document.addEventListener("change", e => {
 function renderProp(){
   let bar = $("propBar");
   if(!bar){ bar = document.createElement("div"); bar.id = "propBar"; document.body.appendChild(bar); }
-  if(!prop.items.length || state.view !== "consult"){ bar.hidden = true; document.body.style.paddingBottom = ""; return; }
+  if(!prop.items.length || state.view !== "consult"){ bar.hidden = true; document.body.style.paddingBottom = ""; document.documentElement.style.setProperty("--barh", "0px"); return; }
   bar.hidden = false;
   const r = propCalcul(), n = r.lignes.length;
   const ligne = (l, i) => `<tr><td>${esc(l.d.nom || "")}</td><td>${esc(l.m.titre)}</td>
@@ -1714,7 +1715,7 @@ function renderProp(){
       ${r.jours ? tot("Nombre de jours · coût par jour à votre charge", `${r.jours} j · ${eur(r.parJour)}`) : ""}
       </tbody></table>
       <div class="pb-acts"><button type="button" class="btn small" id="propCopy">Copier le tableau</button><span class="msg" id="propMsg" role="status"></span></div></div>` : ""}`;
-  document.body.style.paddingBottom = (bar.offsetHeight + 16) + "px"; /* le contenu n'est jamais caché sous la barre */
+  document.body.style.paddingBottom = (bar.offsetHeight + 16) + "px"; document.documentElement.style.setProperty("--barh", bar.offsetHeight + "px"); /* le contenu n'est jamais caché sous la barre */
 }
 document.addEventListener("click", async e => {
   if(e.target.id === "propOpen"){ prop.ouvert = !prop.ouvert; renderProp(); return; }
