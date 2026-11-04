@@ -348,6 +348,9 @@ details.group .profiles{padding:6px 0 4px 6px}
 .pl-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}.pl-grid.large{grid-template-columns:1fr}.pl-grid.large .pl-side{display:grid;grid-template-columns:1fr 1fr;align-items:start}@media (max-width:900px){.pl-grid.large .pl-side{grid-template-columns:1fr}}.pl-dt{min-width:110px}.cpfb{display:inline-flex;align-items:center;gap:4px;margin-left:8px;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:800;letter-spacing:.02em;vertical-align:middle;text-decoration:none;white-space:nowrap}
 .cpfb.ok{background:#1f8a4c;color:#fff}.cpfb.ok small{font-weight:600;opacity:.9}.cpfb.soon{background:#fff3cd;color:#7a5a00;border:1px solid #f0d27a}
 .pt-fin.non{display:inline-block;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:2px 8px;font-size:12px;cursor:not-allowed}
+.ml-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;margin-top:10px}@media (max-width:800px){.ml-grid{grid-template-columns:1fr}}
+.ml-opts label,.ml-txt label{display:block;font-size:12px;color:var(--muted);margin-bottom:8px}.ml-opts input:not([type=checkbox]),.ml-opts textarea,.ml-txt input,.ml-txt textarea{display:block;width:100%;margin-top:3px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:13px;color:var(--ink)}
+.ml-txt textarea{font-size:13px;line-height:1.45}.ml-opts fieldset{border:1px solid var(--line);border-radius:8px;padding:4px 8px 6px;margin:0 0 8px}.ml-opts legend{font-size:12px;font-weight:700;color:var(--blue-ink)}.ml-opts label.ck{display:flex;gap:6px;align-items:center;color:var(--ink);font-size:13px;margin:3px 0}
 .pt-prix{width:80px;padding:3px 5px;border:1px solid var(--line);border-radius:5px;text-align:right;font:inherit}.pt-raz{border:none;background:none;cursor:pointer;color:var(--blue);font-size:15px;padding:0 4px}.pt-rem{color:#c00000;font-weight:700;white-space:nowrap}.pt-sc{margin-left:8px;font-size:11.5px}.pl-t-tab td.n{white-space:nowrap}@media (max-width:1000px){.pl-grid{grid-template-columns:1fr}}
 .pc{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.pc-h{font-size:11px;font-weight:700;color:var(--muted);text-align:center;text-transform:uppercase}
 .pc-d{min-height:96px;border:1px solid var(--line);border-radius:8px;padding:4px;background:var(--surface);font-size:11.5px;min-width:0}.pc-d.we{background:#f4f6f9}.pc-d.out{opacity:.4}.pc-d.today{outline:2px solid #e8590c}
@@ -1686,7 +1689,7 @@ async function write(fn, okText, after){
    PROPOSITION : cases à cocher sur les modules, récapitulatif chiffré, document Word
    ===================================================================== */
 const PLAFOND_CPF = 1500, PARTICIPATION_CPF = 150;
-const prop = { items: [], exonere: false, ouvert: false };
+const prop = { items: [], exonere: false, ouvert: false, mail: false };
 /* la proposition dure le temps de l'onglet (sessionStorage) : on repart d'une page vide à chaque ouverture */
 try{ localStorage.removeItem("proposition-v1"); }catch(e){}
 try{ const x = JSON.parse(sessionStorage.getItem("proposition-v1") || "null"); if(x && Array.isArray(x.items)){ prop.items = x.items; prop.exonere = !!x.exonere; } }catch(e){}
@@ -1797,7 +1800,8 @@ function renderProp(){
     <td><button type="button" class="btn small danger" data-rmp="${i}" aria-label="Retirer">×</button></td></tr>`;
   const tot = (lab, v, cls) => `<tr class="${cls || ""}"><td colspan="5">${lab}</td><td class="num">${v}</td><td></td></tr>`;
   bar.innerHTML = `<div class="pb-row"><b>Proposition</b><span>${n} formation${n>1?"s":""}${r.jours ? ` · ${r.jours} jour${r.jours>1?"s":""}` : ""}</span>${r.totalCpf ? `<span>Dossier CPF ${eur(r.totalCpf)}</span>` : ""}<span class="pb-charge">À charge ${eur(r.charge)}</span>
-      <button type="button" class="btn small" id="propOpen">${prop.ouvert ? "Masquer le détail" : "Voir le détail"}</button><button type="button" class="btn small danger" id="propReset">Réinitialiser</button><button type="button" class="btn primary small" id="propWord">Générer le document Word</button></div>
+      <button type="button" class="btn small" id="propOpen">${prop.ouvert ? "Masquer le détail" : "Voir le détail"}</button><button type="button" class="btn small danger" id="propReset">Réinitialiser</button><button type="button" class="btn small" id="propMail">${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}</button><button type="button" class="btn primary small" id="propWord">Générer le document Word</button></div>
+    ${prop.mail ? mailHtml() : ""}
     ${prop.ouvert ? `<div id="propPanel"><table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date retenue</th><th>Financement</th><th class="num">Remise</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
       ${r.lignes.map((l, i) => ligne(l, prop.items.indexOf(l.it))).join("")}
       ${r.certs.map(c => tot(`${esc(c.nom)} <button type="button" class="btn small pt-sc" data-sanscert="${esc(c.key)}" title="Passe les modules de ce parcours en hors CPF : la certification n'est plus facturée">Retirer (pas de financement CPF)</button>`, eur(c.prix))).join("")}
@@ -1810,7 +1814,8 @@ function renderProp(){
   document.body.style.paddingBottom = (bar.offsetHeight + 16) + "px"; document.documentElement.style.setProperty("--barh", bar.offsetHeight + "px"); /* le contenu n'est jamais caché sous la barre */
 }
 document.addEventListener("click", async e => {
-  if(e.target.id === "propOpen"){ prop.ouvert = !prop.ouvert; renderProp(); return; }
+  if(e.target.id === "propOpen"){ prop.ouvert = !prop.ouvert; if(prop.ouvert) prop.mail = false; renderProp(); return; }
+  if(e.target.id === "propMail"){ prop.mail = !prop.mail; if(prop.mail){ prop.ouvert = false; MAILV.texte = null; } renderProp(); return; }
   if(e.target.id === "propReset"){
     if(e.target.dataset.ok !== "1"){ e.target.dataset.ok = "1"; e.target.textContent = "Confirmer : tout vider ?"; setTimeout(() => { if(e.target.isConnected){ e.target.dataset.ok = ""; e.target.textContent = "Réinitialiser"; } }, 4000); return; }
     prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition réinitialisée"); return;
@@ -2057,6 +2062,72 @@ document.addEventListener("click", async e => {
     try{ await db.doc("pilotage/_reglages").set(reg); renderPilot(); $("pRegMsg").textContent = "Réglages enregistrés."; $("pRegMsg").className = "msg ok"; }
     catch(err){ $("pRegMsg").textContent = "Enregistrement impossible."; $("pRegMsg").className = "msg err"; }
   }
+});
+
+/* ---------- E-mail prêt à l'emploi (à partir de la proposition) ---------- */
+const MAILP = (() => { try{ return JSON.parse(localStorage.getItem("mail-prefs-v1") || "{}"); }catch(e){ return {}; } })();
+const mailSave = () => { try{ localStorage.setItem("mail-prefs-v1", JSON.stringify({ signature: MAILP.signature || "" })); }catch(e){} };
+const MAILV = { prenom: "", lien: "", bulletin: true, devis: false, programme: true, texte: null };
+function mailTexte(){
+  const r = propCalcul(), L = [], nomL = l => { if((l.f.modules || []).length < 2) return l.f.nom; const a = String(l.m.titre).split(":")[0].split(" - ")[0].trim(); return /^réseaux sociaux$/i.test(a) ? String(l.m.titre).trim() : a; };
+  const ligneF = l => `– ${nomL(l)}${l.it.session ? " – " + l.it.session : ""}`;
+  const p = (RAW.profils || []).find(x => x.id === state.pid), noms = [...new Set(r.lignes.map(l => (l.f.modules || []).length > 1 ? l.f.nom : l.f.nom))];
+  const objet = "Votre proposition de formation – " + (noms.length <= 2 ? noms.join(" et ") : noms.slice(0, 2).join(", ") + "…");
+  L.push(`Bonjour${MAILV.prenom ? " " + MAILV.prenom : ""},`, "");
+  const besoin = p && p.besoin && r.lignes.some(l => l.f.domaine === p.domaine) ? " : " + p.besoin.replace(/^./, c => c.toLowerCase()).replace(/\.$/, "") : "";
+  L.push(`Suite à notre échange, je vous adresse la proposition de formation adaptée à votre besoin${besoin}.`, "");
+  if(r.cpf.length){
+    L.push(r.hors.length ? "Formations financées par votre CPF :" : `Votre parcours${r.jours ? ` (${r.jours} jour${r.jours > 1 ? "s" : ""})` : ""} :`);
+    r.cpf.forEach(l => L.push(ligneF(l))); r.certs.forEach(c => L.push("– " + (/^certification/i.test(c.nom) ? c.nom : "Certification " + c.nom))); L.push("");
+  }
+  if(r.hors.length){ L.push(r.cpf.length ? "Formations hors CPF :" : `Votre programme de formation${r.jours ? ` (${r.jours} jour${r.jours > 1 ? "s" : ""})` : ""} :`); r.hors.forEach(l => L.push(ligneF(l))); L.push(""); }
+  L.push("Financement :");
+  if(r.cpf.length) L.push(`Total ${r.dossiers.length > 1 ? "des dossiers" : "du dossier"} CPF : ${eur(r.totalCpf)} · prise en charge CPF : ${eur(r.priseEnCharge)} · reste à votre charge : ${eur(r.resteCpf)}${prop.exonere ? "" : ` (dont la participation forfaitaire de ${eur(PARTICIPATION_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""})`}.`);
+  if(r.hors.length) L.push(`Formations hors CPF : ${eur(r.totalHors)}.`);
+  if(r.cpf.length && r.hors.length) L.push(`Total à votre charge : ${eur(r.charge)}.`);
+  L.push("", "Vous trouverez le détail dans la proposition jointe.", "");
+  if(r.cpf.length){
+    L.push("La procédure est la suivante :", "",
+      `1. Suivez le lien vers Mon Compte Formation${MAILV.lien ? " : " + MAILV.lien : ""}`,
+      "2. Cliquez sur « Demander un devis » (zone en bas à droite de la page web)",
+      "3. Connectez-vous à votre compte CPF à l'aide de « FranceConnect+ »",
+      "4. Suivez les indications données jusqu'à l'étape d'envoi à l'organisme de formation.", "",
+      "Une fois cette dernière action effectuée, ce sera à moi d'accepter votre demande.", "");
+  }
+  if(r.hors.length){
+    const pj = [MAILV.bulletin ? "le bulletin d'inscription" : "", MAILV.devis ? "le devis" : ""].filter(Boolean);
+    if(pj.length || MAILV.programme) L.push(`Vous trouverez ci-joint ${pj.length ? pj.join(" et ") : ""}${MAILV.programme ? (pj.length ? ", ainsi que le programme" : "le programme") : ""}${r.cpf.length ? " pour les formations hors CPF" : ""}.`, "");
+  }
+  L.push("Je reste à votre disposition pour toute question.", "", "Bien cordialement,", MAILP.signature || "");
+  return { objet, corps: L.join("\n").replace(/\n{3,}/g, "\n\n").trim() };
+}
+function mailHtml(){
+  const r = propCalcul(), t = mailTexte();
+  return `<div id="mailPanel"><div class="ml-grid"><div class="ml-opts">
+    <label>Prénom du client<input id="mlPrenom" value="${esc(MAILV.prenom)}" placeholder="ex. Marie"></label>
+    ${r.cpf.length ? `<label>Lien Mon Compte Formation<input id="mlLien" value="${esc(MAILV.lien)}" placeholder="https://www.moncompteformation.gouv.fr/…"></label>` : ""}
+    ${r.hors.length ? `<fieldset><legend>Pièces jointes (hors CPF)</legend><label class="ck"><input type="checkbox" id="mlBul"${MAILV.bulletin ? " checked" : ""}> Bulletin d'inscription</label><label class="ck"><input type="checkbox" id="mlDev"${MAILV.devis ? " checked" : ""}> Devis</label><label class="ck"><input type="checkbox" id="mlProg"${MAILV.programme ? " checked" : ""}> Programme</label></fieldset>` : ""}
+    <label>Ma signature (gardée sur cet ordinateur)<textarea id="mlSig" rows="4" placeholder="Prénom Nom&#10;Conseiller(ère) formation&#10;Téléphone · agence">${esc(MAILP.signature || "")}</textarea></label>
+    <p class="pl-note">Le texte est modifiable à droite. Pensez à joindre le document Word avant d'envoyer.</p></div>
+    <div class="ml-txt"><label>Objet<input id="mlObjet" value="${esc(t.objet)}"></label><label>Message<textarea id="mlCorps" rows="18">${esc(MAILV.texte != null ? MAILV.texte : t.corps)}</textarea></label>
+    <div class="pb-acts"><button type="button" class="btn small primary" id="mlCopy">Copier le message</button><button type="button" class="btn small" id="mlOpen">Ouvrir dans ma messagerie</button><button type="button" class="btn small" id="mlRegen" title="Refaire le texte à partir des options (vos modifications seront perdues)">Régénérer le texte</button><span class="msg" id="mlMsg" role="status"></span></div></div></div></div>`;
+}
+document.addEventListener("input", e => {
+  const id = e.target.id;
+  if(!["mlPrenom", "mlLien", "mlSig", "mlBul", "mlDev", "mlProg", "mlCorps"].includes(id)) return;
+  if(id === "mlCorps"){ MAILV.texte = e.target.value; return; }
+  if(id === "mlPrenom") MAILV.prenom = e.target.value.trim(); else if(id === "mlLien") MAILV.lien = e.target.value.trim();
+  else if(id === "mlSig"){ MAILP.signature = e.target.value; mailSave(); }
+  else if(id === "mlBul") MAILV.bulletin = e.target.checked; else if(id === "mlDev") MAILV.devis = e.target.checked; else if(id === "mlProg") MAILV.programme = e.target.checked;
+  if(MAILV.texte == null){ const t = mailTexte(); $("mlCorps").value = t.corps; $("mlObjet").value = t.objet; } /* tant que le texte n'a pas été retouché, il suit les options */
+});
+document.addEventListener("click", async e => {
+  const id = e.target.id; if(!/^ml(Copy|Open|Regen)$/.test(id)) return;
+  const objet = $("mlObjet").value, corps = $("mlCorps").value;
+  if(id === "mlRegen"){ MAILV.texte = null; const t = mailTexte(); $("mlCorps").value = t.corps; $("mlObjet").value = t.objet; $("mlMsg").textContent = "Texte refait."; return; }
+  if(id === "mlCopy"){ try{ await navigator.clipboard.writeText("Objet : " + objet + "\n\n" + corps); $("mlMsg").textContent = "Message copié : collez-le dans votre messagerie."; }catch(err){ $("mlCorps").select(); $("mlMsg").textContent = "Copie automatique impossible : faites Ctrl + C."; } return; }
+  if(id === "mlOpen"){ const href = "mailto:?subject=" + encodeURIComponent(objet) + "&body=" + encodeURIComponent(corps);
+    if(href.length > 1900) $("mlMsg").textContent = "Message long : s'il est coupé, utilisez « Copier le message »."; window.location.href = href; }
 });
 
 /* ---------- Démarrage ---------- */
