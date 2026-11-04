@@ -851,9 +851,16 @@ function renderDetail(){
   rows.forEach((m, k) => {
     const r = k + 2, has = cols.map(f => !!f.modules[m]);
     const txts = cols.map(f => f.modules[m] ? txtOf(f, m) : null);
-    const commun = n > 1 && has.every(Boolean) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]) && cols.every(f => String((f.infos[m] || {}).cpf || "") === String((cols[0].infos[m] || {}).cpf || "")); /* même module mais CPF différent selon le parcours : affiché par parcours */
+    const commun = n > 1 && has.every(Boolean) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]);
     const mod = (f, extra, lab) => `<div class="fo-tab"><span class="code">${esc(m)}</span></div><div class="fo-mbody">${lab ? `<span class="fo-mlab">${lab}</span>` : ""}<span class="fo-mt">${titre(f, m)}${cpfBadge((f.infos[m] || {}).cpf)}</span>${txtOf(f, m) ? `<span class="fo-arg">${esc(txtOf(f, m))}</span>` : ""}${pied(f.infos[m], Object.assign(ctxF(f), extra))}${propCtl(f.id, m)}</div>`;
-    if(commun){ cards.push(`<div class="fo-card fo-mod fo-commun" ${at(r, 1, n)}>${mod(cols[0], {}, `${ic("commun")}Commun à tous les parcours`)}</div>`); return; }
+    if(commun){
+      const cpfs = cols.map(f => String((f.infos[m] || {}).cpf || "")), varie = cpfs.some(c => c !== cpfs[0]);
+      let html = mod(cols[0], {}, `${ic("commun")}Commun à tous les parcours`);
+      if(varie){ /* éligible CPF dans certains parcours seulement : la pastille le dit */
+        const ok = cols.filter((f, i) => cpfOk(cpfs[i])).map(f => "« " + f.nom.replace(/^Parcours\s+(PAO\s*:\s*)?/i, "").replace(/^./, c => c.toUpperCase()) + " »");
+        html = html.replace(cpfBadge(cpfs[0]), "").replace(/(<span class="fo-mt">[\s\S]*?)(<\/span>)/, `$1${ok.length ? `<span class="cpfb ok" title="${esc(cols.map((f, i) => f.nom + " : " + (cpfs[i] || "—")).join(" · "))}">€ CPF <small>dans ${esc(ok.join(", "))}</small></span>` : ""}$2`);
+      }
+      cards.push(`<div class="fo-card fo-mod fo-commun" ${at(r, 1, n)}>${html}</div>`); return; }
     cols.forEach((f, i) => {
       if(!f.modules[m]){ cards.push(`<div class="fo-gap" ${at(r, i+1)} aria-hidden="true"></div>`); return; }
       const single = Object.keys(f.modules).length < 2;
@@ -1686,10 +1693,26 @@ function joursDe(t){
   return n;
 }
 /* une ligne de la proposition, avec son prix selon CPF ou hors CPF */
+/* Un même module (ex. Photoshop) peut figurer dans plusieurs parcours avec des règles CPF différentes :
+   on retient le parcours qui contient le plus d'autres modules de la proposition ; seul, on retient la formation seule si elle existe. */
+function propContexte(it){
+  const x = rawFm(it.fid, it.code); if(!x || !x.m) return x;
+  const k = propKey(x.m), autres = prop.items.filter(o => o !== it).map(o => { const y = rawFm(o.fid, o.code); return y && y.m ? propKey(y.m) : ""; });
+  let best = null, bs = -1;
+  (RAW.formations || []).forEach(f => {
+    const mm = (f.modules || []).find(y => propKey(y) === k); if(!mm) return;
+    const keys = (f.modules || []).map(propKey), sc = autres.filter(a => keys.includes(a)).length;
+    const bonus = f.id === it.fid ? 0.5 : (sc === 0 && (f.modules || []).length === 1 ? 0.6 : 0);
+    if(sc + bonus > bs){ bs = sc + bonus; best = { f, m: mm }; }
+  });
+  return best || x;
+}
 function propLigne(it){
-  const x = rawFm(it.fid, it.code); if(!x || !x.m) return null;
+  const x = propContexte(it); if(!x || !x.m) return null;
   const { f, m } = x, d = (RAW.domaines || []).find(y => y.id === f.domaine) || {}, parcours = (f.modules || []).length > 1;
-  if(it.type === "cpf" && !cpfOk(m.cpf)) it.type = "hors"; /* jamais de CPF pour un module non éligible */
+  /* financement par défaut selon le parcours retenu (tant que la conseillère ne l'a pas changé à la main) ; jamais de CPF si non éligible */
+  if(!it.manuel) it.type = cpfOk(m.cpf) ? "cpf" : "hors";
+  if(it.type === "cpf" && !cpfOk(m.cpf)) it.type = "hors";
   const sess = (m.sessions || []).find(s => s.texte === it.session) || null;
   /* tarif préférentiel (« en parcours ») : seulement quand la proposition compte au moins 2 formations ou modules
      (parcours ou non) ; une seule case cochée = tarif plein, même pour un module de parcours */
@@ -1783,8 +1806,8 @@ document.addEventListener("click", async e => {
   if(e.target.id === "propClear"){ prop.items = []; prop.ouvert = false; propSave(); renderProp(); syncPropCtl(); return; }
   const rz = e.target.closest("[data-pprixr]"); if(rz){ const it = prop.items[+rz.dataset.pprixr]; if(it){ delete it.prix; propSave(); renderProp(); } return; }
   const sc = e.target.closest("[data-sanscert]");
-  if(sc){ prop.items.forEach(it => { const l = propLigne(it); if(l && it.type === "cpf" && l.certKey === sc.dataset.sanscert) it.type = "hors"; }); propSave(); renderProp(); toast("Certification retirée : modules passés hors CPF"); return; }
-  const fin = e.target.closest("[data-fin]"); if(fin){ const it = prop.items[+fin.dataset.fin]; { const l = it && propLigne(it); if(l && !cpfOk(l.m.cpf)){ it.type = "hors"; propSave(); renderProp(); return; } } it.type = it.type === "cpf" ? "hors" : "cpf"; propSave(); renderProp(); return; }
+  if(sc){ prop.items.forEach(it => { const l = propLigne(it); if(l && it.type === "cpf" && l.certKey === sc.dataset.sanscert){ it.type = "hors"; it.manuel = true; } }); propSave(); renderProp(); toast("Certification retirée : modules passés hors CPF"); return; }
+  const fin = e.target.closest("[data-fin]"); if(fin){ const it = prop.items[+fin.dataset.fin]; { const l = it && propLigne(it); if(l && !cpfOk(l.m.cpf)){ it.type = "hors"; propSave(); renderProp(); return; } } if(it) it.manuel = true; it.type = it.type === "cpf" ? "hors" : "cpf"; propSave(); renderProp(); return; }
   const rm = e.target.closest("[data-rmp]"); if(rm){ prop.items.splice(+rm.dataset.rmp, 1); propSave(); renderProp(); syncPropCtl(); return; }
   if(e.target.id === "propCopy"){ try{ await navigator.clipboard.writeText(propTexte()); $("propMsg").textContent = "Tableau copié : collez-le dans Word."; }catch(err){ $("propMsg").textContent = "Copie impossible ici."; } return; }
   if(e.target.id === "propWord"){ propWord(); return; }
