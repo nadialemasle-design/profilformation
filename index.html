@@ -345,7 +345,10 @@ details.group .profiles{padding:6px 0 4px 6px}
 .pl-top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-bottom:12px}.pl-top h2{margin:0;font-size:18px;color:var(--blue-ink)}
 .pl-beta{font-size:11px;font-weight:700;background:#fff3cd;color:#7a5a00;border:1px solid #f0d27a;border-radius:6px;padding:2px 8px;margin-left:6px;vertical-align:middle}
 .pl-nav{display:flex;align-items:center;gap:8px}.pl-nav b{min-width:140px;text-align:center;text-transform:capitalize}.pl-vues{display:flex;gap:6px;margin-left:auto}
-.pl-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}.pl-grid.large{grid-template-columns:1fr}.pl-grid.large .pl-side{display:grid;grid-template-columns:1fr 1fr;align-items:start}@media (max-width:900px){.pl-grid.large .pl-side{grid-template-columns:1fr}}.pl-dt{min-width:110px}.pt-prix{width:80px;padding:3px 5px;border:1px solid var(--line);border-radius:5px;text-align:right;font:inherit}.pt-raz{border:none;background:none;cursor:pointer;color:var(--blue);font-size:15px;padding:0 4px}.pt-rem{color:#c00000;font-weight:700;white-space:nowrap}.pt-sc{margin-left:8px;font-size:11.5px}.pl-t-tab td.n{white-space:nowrap}@media (max-width:1000px){.pl-grid{grid-template-columns:1fr}}
+.pl-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}.pl-grid.large{grid-template-columns:1fr}.pl-grid.large .pl-side{display:grid;grid-template-columns:1fr 1fr;align-items:start}@media (max-width:900px){.pl-grid.large .pl-side{grid-template-columns:1fr}}.pl-dt{min-width:110px}.cpfb{display:inline-flex;align-items:center;gap:4px;margin-left:8px;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:800;letter-spacing:.02em;vertical-align:middle;text-decoration:none;white-space:nowrap}
+.cpfb.ok{background:#1f8a4c;color:#fff}.cpfb.ok small{font-weight:600;opacity:.9}.cpfb.soon{background:#fff3cd;color:#7a5a00;border:1px solid #f0d27a}
+.pt-fin.non{display:inline-block;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:2px 8px;font-size:12px;cursor:not-allowed}
+.pt-prix{width:80px;padding:3px 5px;border:1px solid var(--line);border-radius:5px;text-align:right;font:inherit}.pt-raz{border:none;background:none;cursor:pointer;color:var(--blue);font-size:15px;padding:0 4px}.pt-rem{color:#c00000;font-weight:700;white-space:nowrap}.pt-sc{margin-left:8px;font-size:11.5px}.pl-t-tab td.n{white-space:nowrap}@media (max-width:1000px){.pl-grid{grid-template-columns:1fr}}
 .pc{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.pc-h{font-size:11px;font-weight:700;color:var(--muted);text-align:center;text-transform:uppercase}
 .pc-d{min-height:96px;border:1px solid var(--line);border-radius:8px;padding:4px;background:var(--surface);font-size:11.5px;min-width:0}.pc-d.we{background:#f4f6f9}.pc-d.out{opacity:.4}.pc-d.today{outline:2px solid #e8590c}
 .pc-d b{display:block;font-size:12px;margin-bottom:2px}
@@ -848,8 +851,8 @@ function renderDetail(){
   rows.forEach((m, k) => {
     const r = k + 2, has = cols.map(f => !!f.modules[m]);
     const txts = cols.map(f => f.modules[m] ? txtOf(f, m) : null);
-    const commun = n > 1 && has.every(Boolean) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]);
-    const mod = (f, extra, lab) => `<div class="fo-tab"><span class="code">${esc(m)}</span></div><div class="fo-mbody">${lab ? `<span class="fo-mlab">${lab}</span>` : ""}<span class="fo-mt">${titre(f, m)}</span>${txtOf(f, m) ? `<span class="fo-arg">${esc(txtOf(f, m))}</span>` : ""}${pied(f.infos[m], Object.assign(ctxF(f), extra))}${propCtl(f.id, m)}</div>`;
+    const commun = n > 1 && has.every(Boolean) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]) && cols.every(f => String((f.infos[m] || {}).cpf || "") === String((cols[0].infos[m] || {}).cpf || "")); /* même module mais CPF différent selon le parcours : affiché par parcours */
+    const mod = (f, extra, lab) => `<div class="fo-tab"><span class="code">${esc(m)}</span></div><div class="fo-mbody">${lab ? `<span class="fo-mlab">${lab}</span>` : ""}<span class="fo-mt">${titre(f, m)}${cpfBadge((f.infos[m] || {}).cpf)}</span>${txtOf(f, m) ? `<span class="fo-arg">${esc(txtOf(f, m))}</span>` : ""}${pied(f.infos[m], Object.assign(ctxF(f), extra))}${propCtl(f.id, m)}</div>`;
     if(commun){ cards.push(`<div class="fo-card fo-mod fo-commun" ${at(r, 1, n)}>${mod(cols[0], {}, `${ic("commun")}Commun à tous les parcours`)}</div>`); return; }
     cols.forEach((f, i) => {
       if(!f.modules[m]){ cards.push(`<div class="fo-gap" ${at(r, i+1)} aria-hidden="true"></div>`); return; }
@@ -907,7 +910,7 @@ function renderFormationDetail(el){
     ${parcours ? prixCarte(f) : ""}
     <div class="ff-mods">${mods.map(m => {
       const u = safeUrl(m.lien), t = u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener">${esc(m.titre)}${ic("ext")}</a>` : esc(m.titre);
-      return `<div class="ff-mod">${parcours ? `<span class="code">${esc(m.code)}</span>` : ""}<div class="ff-mbody"><b>${t}</b>${pied(m, { fid: f.id, parcours, avecM1, cert: parcours ? null : certInfo(f, m) })}${propCtl(f.id, m.code)}</div></div>`;
+      return `<div class="ff-mod">${parcours ? `<span class="code">${esc(m.code)}</span>` : ""}<div class="ff-mbody"><b>${t}${cpfBadge(m.cpf)}</b>${pied(m, { fid: f.id, parcours, avecM1, cert: parcours ? null : certInfo(f, m) })}${propCtl(f.id, m.code)}</div></div>`;
     }).join("")}</div>
     <section class="ff-who"><h3>Proposée à</h3>
       ${enParcours.length ? `<div class="ff-sub">En parcours (${enParcours.length})</div><div class="ff-list">${enParcours.map(p => lien(p, ((p.parcours || []).findIndex(x => x.formation === f.id) === 0) ? "le plus adapté" : "")).join("")}</div>` : ""}
@@ -915,13 +918,22 @@ function renderFormationDetail(el){
       ${!enParcours.length && !enCompl.length ? `<p class="none">Aucun sous-profil pour l'instant.</p>` : ""}
     </section></div>`;
 }
+/* pastille CPF à côté du titre d'un module */
+const cpfOk = c => /^oui/i.test(String(c || ""));
+function cpfBadge(c){
+  const t = String(c || "");
+  if(cpfOk(t)){ const pm = t.match(/parcours[^0-9]*(\d+)\s*jours?/i);
+    return `<span class="cpfb ok" title="${esc(t)}">€ CPF${pm ? ` <small>en parcours ${pm[1]} j min.</small>` : ""}</span>`; }
+  if(/venir/i.test(t)) return `<span class="cpfb soon" title="${esc(t)}">CPF à venir</span>`;
+  return "";
+}
 function complementsHtml(p, d){
   const items = (p.complements || []).map(c => ({ c, f: (RAW.formations || []).find(f => f.id === c.formation) })).filter(x => x.f);
   if(!items.length) return "";
   return `<section class="fo-compl" aria-label="Formations complémentaires"><h3>${ic("plus")}<span>Formations<br>complémentaires</span></h3><div class="fo-ccards">${items.map(({c, f}) => {
     const dom = (RAW.domaines || []).find(x => x.id === f.domaine), m = (Array.isArray(f.modules) ? f.modules : [])[0] || {}, u = safeUrl(m.lien);
     const nom = u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener">${esc(f.nom)}${ic("ext")}</a>` : esc(f.nom);
-    return `<div class="fo-ccard"><b>${nom}</b><span class="cmeta">${f.duree?`${ic("duree")}${esc(f.duree)}`:""}${f.certification?` · ${esc(f.certification)}`:""} · ${esc(dom ? dom.nom : "")}</span><span class="cwhy">${esc(c.pourquoi || "")}</span>${(f.modules || []).length > 1 ? prixCarte(f) : pied(m, { fid: f.id, cert: certInfo(f, m) })}${(f.modules || []).length === 1 ? propCtl(f.id, m.code) : ""}</div>`;
+    return `<div class="fo-ccard"><b>${nom}${cpfBadge(m.cpf)}</b><span class="cmeta">${f.duree?`${ic("duree")}${esc(f.duree)}`:""}${f.certification?` · ${esc(f.certification)}`:""} · ${esc(dom ? dom.nom : "")}</span><span class="cwhy">${esc(c.pourquoi || "")}</span>${(f.modules || []).length > 1 ? prixCarte(f) : pied(m, { fid: f.id, cert: certInfo(f, m) })}${(f.modules || []).length === 1 ? propCtl(f.id, m.code) : ""}</div>`;
   }).join("")}</div></section>`;
 }
 function prixCarte(f){
@@ -1677,6 +1689,7 @@ function joursDe(t){
 function propLigne(it){
   const x = rawFm(it.fid, it.code); if(!x || !x.m) return null;
   const { f, m } = x, d = (RAW.domaines || []).find(y => y.id === f.domaine) || {}, parcours = (f.modules || []).length > 1;
+  if(it.type === "cpf" && !cpfOk(m.cpf)) it.type = "hors"; /* jamais de CPF pour un module non éligible */
   const sess = (m.sessions || []).find(s => s.texte === it.session) || null;
   /* tarif préférentiel (« en parcours ») : seulement quand la proposition compte au moins 2 formations ou modules
      (parcours ou non) ; une seule case cochée = tarif plein, même pour un module de parcours */
@@ -1743,7 +1756,7 @@ function renderProp(){
   const r = propCalcul(), n = r.lignes.length;
   const ligne = (l, i) => `<tr><td>${esc(l.d.nom || "")}</td><td>${esc(l.m.titre)}</td>
     <td>${l.it.session ? esc(l.it.session) : `<span class="none">Pas de date</span>`}</td>
-    <td><button type="button" class="pt-fin" data-fin="${i}" title="Cliquer pour passer en ${l.it.type === "cpf" ? "hors CPF" : "CPF"}">${l.it.type === "cpf" ? "CPF" : "Hors CPF"}</button></td>
+    <td>${cpfOk(l.m.cpf) ? `<button type="button" class="pt-fin" data-fin="${i}" title="Cliquer pour passer en ${l.it.type === "cpf" ? "hors CPF" : "CPF"}">${l.it.type === "cpf" ? "CPF" : "Hors CPF"}</button>` : `<span class="pt-fin non" title="Module non éligible au CPF${l.m.cpf ? " : " + esc(l.m.cpf) : ""}">Hors CPF</span>`}</td>
     <td class="num pt-rem" title="${l.base ? "Tarif plein : " + eur(l.base) : ""}">${l.remise ? "−" + l.remise + " %" : ""}</td>
     <td class="num"><input type="number" min="0" step="10" class="pt-prix" data-pprix="${i}" value="${l.prix}" aria-label="Tarif de ${esc(l.m.titre)}"> €${l.perso ? `<button type="button" class="pt-raz" data-pprixr="${i}" title="Revenir au tarif calculé (${eur(l.auto)})">↺</button>` : ""}</td>
     <td><button type="button" class="btn small danger" data-rmp="${i}" aria-label="Retirer">×</button></td></tr>`;
@@ -1771,7 +1784,7 @@ document.addEventListener("click", async e => {
   const rz = e.target.closest("[data-pprixr]"); if(rz){ const it = prop.items[+rz.dataset.pprixr]; if(it){ delete it.prix; propSave(); renderProp(); } return; }
   const sc = e.target.closest("[data-sanscert]");
   if(sc){ prop.items.forEach(it => { const l = propLigne(it); if(l && it.type === "cpf" && l.certKey === sc.dataset.sanscert) it.type = "hors"; }); propSave(); renderProp(); toast("Certification retirée : modules passés hors CPF"); return; }
-  const fin = e.target.closest("[data-fin]"); if(fin){ const it = prop.items[+fin.dataset.fin]; it.type = it.type === "cpf" ? "hors" : "cpf"; propSave(); renderProp(); return; }
+  const fin = e.target.closest("[data-fin]"); if(fin){ const it = prop.items[+fin.dataset.fin]; { const l = it && propLigne(it); if(l && !cpfOk(l.m.cpf)){ it.type = "hors"; propSave(); renderProp(); return; } } it.type = it.type === "cpf" ? "hors" : "cpf"; propSave(); renderProp(); return; }
   const rm = e.target.closest("[data-rmp]"); if(rm){ prop.items.splice(+rm.dataset.rmp, 1); propSave(); renderProp(); syncPropCtl(); return; }
   if(e.target.id === "propCopy"){ try{ await navigator.clipboard.writeText(propTexte()); $("propMsg").textContent = "Tableau copié : collez-le dans Word."; }catch(err){ $("propMsg").textContent = "Copie impossible ici."; } return; }
   if(e.target.id === "propWord"){ propWord(); return; }
