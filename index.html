@@ -856,18 +856,11 @@ function renderDetail(){
     const txts = cols.map(f => f.modules[m] ? txtOf(f, m) : null);
     const commun = n > 1 && has.every(Boolean) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]);
     const mod = (f, extra, lab) => `<div class="fo-tab"><span class="code">${esc(m)}</span></div><div class="fo-mbody">${lab ? `<span class="fo-mlab">${lab}</span>` : ""}<span class="fo-mt">${titre(f, m)}${cpfBadge(cpfTexte(f.modules[m], (f.infos[m] || {}).cpf))}</span>${txtOf(f, m) ? `<span class="fo-arg">${esc(txtOf(f, m))}</span>` : ""}${pied(f.infos[m], Object.assign(ctxF(f), extra))}${propCtl(f.id, m)}</div>`;
-    if(commun){
-      const cpfs = cols.map(f => String(cpfTexte(f.modules[m], (f.infos[m] || {}).cpf) || "")), varie = cpfs.some(c => cpfOk(c) !== cpfOk(cpfs[0]));
-      let html = mod(cols[0], {}, `${ic("commun")}Commun à tous les parcours`);
-      if(varie){ /* éligible CPF dans certains parcours seulement : la pastille le dit */
-        const ok = cols.filter((f, i) => cpfOk(cpfs[i])).map(f => "« " + f.nom.replace(/^Parcours\s+(PAO\s*:\s*)?/i, "").replace(/^./, c => c.toUpperCase()) + " »");
-        html = html.replace(cpfBadge(cpfs[0]), "").replace(/(<span class="fo-mt">[\s\S]*?)(<\/span>)/, `$1${ok.length ? `<span class="cpfb ok" title="${esc(cols.map((f, i) => f.nom + " : " + (cpfs[i] || "—")).join(" · "))}">€ CPF <small>dans ${esc(ok.join(", "))}</small></span>` : ""}$2`);
-      }
-      cards.push(`<div class="fo-card fo-mod fo-commun" ${at(r, 1, n)}>${html}</div>`); return; }
+    /* module commun à tous les parcours : affiché dans chaque parcours (case à cocher propre à chacun) */
     cols.forEach((f, i) => {
       if(!f.modules[m]){ cards.push(`<div class="fo-gap" ${at(r, i+1)} aria-hidden="true"></div>`); return; }
       const single = Object.keys(f.modules).length < 2;
-      cards.push(`<div class="fo-card fo-mod" ${at(r, i+1)}>${mod(f, single ? { sansTarif: true } : {}, "")}</div>`); /* pas de nom du parcours au-dessus du module : la colonne et la flèche suffisent */
+      cards.push(`<div class="fo-card fo-mod${commun ? " fo-partage" : ""}" ${at(r, i+1)}>${mod(f, single ? { sansTarif: true } : {}, commun ? `${ic("commun")}Commun à tous les parcours` : "")}</div>`); /* pas de nom du parcours au-dessus du module : la colonne et la flèche suffisent */
     });
   });
   const facts = d.financement || d.certification;
@@ -1696,6 +1689,7 @@ try{ const x = JSON.parse(sessionStorage.getItem("proposition-v1") || "null"); i
 const propSave = () => { try{ sessionStorage.setItem("proposition-v1", JSON.stringify({ items: prop.items, exonere: prop.exonere })); }catch(e){} };
 const rawFm = (fid, code) => { const f = (RAW.formations || []).find(x => x.id === fid); return f ? { f, m: (f.modules || []).find(y => y.code === code) } : null; };
 const propKey = m => norm(m.titre || "");
+const itemKey = (fid, code) => fid + "|" + code; /* une case = un module dans une formation ou un parcours précis */
 /* nombre de jours d'une session écrite en texte */
 function joursDe(t){
   const s = norm(t || "").replace(/(\d+)\s*(?:er)?\s*au\s*(\d+)/g, (x, a, b) => { const r = []; for(let i = +a; i <= +b && r.length < 31; i++) r.push(i); return r.join(" "); })
@@ -1707,18 +1701,7 @@ function joursDe(t){
 /* une ligne de la proposition, avec son prix selon CPF ou hors CPF */
 /* Un même module (ex. Photoshop) peut figurer dans plusieurs parcours avec des règles CPF différentes :
    on retient le parcours qui contient le plus d'autres modules de la proposition ; seul, on retient la formation seule si elle existe. */
-function propContexte(it){
-  const x = rawFm(it.fid, it.code); if(!x || !x.m) return x;
-  const k = propKey(x.m), autres = prop.items.filter(o => o !== it).map(o => { const y = rawFm(o.fid, o.code); return y && y.m ? propKey(y.m) : ""; });
-  let best = null, bs = -1;
-  (RAW.formations || []).forEach(f => {
-    const mm = (f.modules || []).find(y => propKey(y) === k); if(!mm) return;
-    const keys = (f.modules || []).map(propKey), sc = autres.filter(a => keys.includes(a)).length;
-    const bonus = f.id === it.fid ? 0.5 : (sc === 0 && (f.modules || []).length === 1 ? 0.6 : 0);
-    if(sc + bonus > bs){ bs = sc + bonus; best = { f, m: mm }; }
-  });
-  return best || x;
-}
+function propContexte(it){ return rawFm(it.fid, it.code); } /* le module retenu est celui du parcours où il a été coché */
 function propLigne(it){
   const x = propContexte(it); if(!x || !x.m) return null;
   const { f, m } = x, d = (RAW.domaines || []).find(y => y.id === f.domaine) || {}, parcours = (f.modules || []).length > 1;
@@ -1760,18 +1743,18 @@ function propCalcul(){
 /* case « Ajouter à la proposition » sous un module */
 function propCtl(fid, code){
   const x = rawFm(fid, code); if(!x || !x.m) return "";
-  const k = propKey(x.m), it = prop.items.find(i => i.key === k), s = aVenir(x.m);
+  const k = itemKey(fid, code), it = prop.items.find(i => i.key === k), s = aVenir(x.m);
   return `<div class="fo-prop"><label><input type="checkbox" data-pf="${esc(fid)}" data-pc="${esc(code)}"${it ? " checked" : ""}> Ajouter à la proposition</label>${s.length ? `<select class="fo-psess" data-pf="${esc(fid)}" data-pc="${esc(code)}" aria-label="Session">${s.map(z => `<option${(it ? it.session === z.texte : false) ? " selected" : ""}>${esc(z.texte)}</option>`).join("")}</select>` : ""}</div>`;
 }
 function propToggle(fid, code, on, session){
   const x = rawFm(fid, code); if(!x || !x.m) return;
-  const k = propKey(x.m);
+  const k = itemKey(fid, code);
   prop.items = prop.items.filter(i => i.key !== k);
   if(on) prop.items.push({ key: k, fid, code, session: session || ((aVenir(x.m)[0] || {}).texte || ""), type: /^oui/i.test(String(x.m.cpf || "")) ? "cpf" : "hors" });
   propSave(); renderProp(); syncPropCtl();
 }
 function syncPropCtl(){
-  document.querySelectorAll("input[data-pf]").forEach(c => { const x = rawFm(c.dataset.pf, c.dataset.pc); c.checked = !!(x && x.m && prop.items.some(i => i.key === propKey(x.m))); });
+  document.querySelectorAll("input[data-pf]").forEach(c => { const x = rawFm(c.dataset.pf, c.dataset.pc); c.checked = !!(x && x.m && prop.items.some(i => i.key === itemKey(c.dataset.pf, c.dataset.pc))); });
 }
 document.addEventListener("change", e => {
   const pp = e.target.closest("#propPanel input[data-pprix]");
@@ -1779,7 +1762,7 @@ document.addEventListener("change", e => {
   const c = e.target.closest("input[data-pf]");
   if(c){ const sel = c.closest(".fo-prop").querySelector("select"); return propToggle(c.dataset.pf, c.dataset.pc, c.checked, sel ? sel.value : ""); }
   const s = e.target.closest("select.fo-psess");
-  if(s){ const x = rawFm(s.dataset.pf, s.dataset.pc), it = x && x.m && prop.items.find(i => i.key === propKey(x.m)); if(it){ it.session = s.value; propSave(); renderProp(); } return; }
+  if(s){ const x = rawFm(s.dataset.pf, s.dataset.pc), it = x && x.m && prop.items.find(i => i.key === itemKey(s.dataset.pf, s.dataset.pc)); if(it){ it.session = s.value; propSave(); renderProp(); } return; }
   const t = e.target.closest("#propPanel select[data-type]"), ss = e.target.closest("#propPanel select[data-sess]");
   if(t){ prop.items[+t.dataset.type].type = t.value; propSave(); renderProp(); return; }
   if(ss){ prop.items[+ss.dataset.sess].session = ss.value; propSave(); renderProp(); renderDetail(); return; }
