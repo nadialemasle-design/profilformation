@@ -558,6 +558,7 @@ details.group[open] summary .chev{stroke:var(--teal)}
 .side .domtit::before,.side .sidetit::before{display:none !important}
 .ac-ttl{flex:1 1 auto}.ac-head>.fo-tarifs{flex:0 0 auto;max-width:330px}
 .ac-head .fo-tarifs .fo-cpf{white-space:normal}
+.pt-min{display:block;font-size:10.5px;font-weight:600;color:#2A6F97;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -697,7 +698,7 @@ function infoHtml(m, opts){
   /* le positionnement n'est demandé que si la personne fait le niveau 2 sans le niveau 1 */
   /* dans un parcours qui contient un M1 : le questionnaire n'est à faire que si la personne ne suit pas le M1 */
   if(aQuestionnaire(m)) out.push(`<span class="ml pos">${ic("pos")}<span><b>${o.avecM1 ? "Positionnement si le M1 n'est pas suivi" : o.parcours ? "Positionnement si pas de niveau 1" : "Positionnement"} :</b> ${qLigne(m, o.fid)}</span></span>`);
-  if(m.cpf) out.push(`<span class="ml">${ic("certif")}<span><b>CPF :</b> ${esc(m.cpf)}</span></span>`);
+  if(m.cpf) out.push(`<span class="ml">${ic("certif")}<span><b>CPF :</b> ${esc(m.cpf)}${o && o.fid && Number((rawF(o.fid) || {}).cpfMinJours) > 0 ? ` · à partir de ${Number(rawF(o.fid).cpfMinJours)} jours de formation` : ""}</span></span>`);
   return out.length ? `<span class="minfo">${out.join("")}</span>` : "";
 }
 const aQuestionnaire = m => !!(m && (m.questionnaire || m.positionnement || m.positionnementLien));
@@ -939,7 +940,7 @@ function renderDetail(){
     }
     const m = f.infos[Object.keys(f.modules)[0]] || {};
     const c = certInfo(f, m);
-    return m.tarif ? `<span class="fo-tarifs"><b>${eur(m.tarif)}</b><small>la formation</small>${c ? `<span class="fo-cpf">${c.total ? `Total CPF ${eur(c.total)} <small>dont certification ${esc(c.nom)} ${eur(c.prix)}</small>` : `<small>Certification ${esc(c.nom)} : ${eur(c.prix)}</small>`}</span>` : ""}</span>` : "";
+    return m.tarif ? `<span class="fo-tarifs"><b>${eur(m.tarif)}</b><small>la formation</small>${c ? `<span class="fo-cpf">${c.total ? `Total CPF ${eur(c.total)} <small>dont certification ${esc(c.nom)} ${eur(c.prix)}</small>` : `<small>Certification ${esc(c.nom)} : ${eur(c.prix)}</small>`}</span>` : ""}${Number((rawF(f.id) || {}).cpfMinJours) > 0 ? `<span class="fo-cpf"><small>CPF à partir de ${Number(rawF(f.id).cpfMinJours)} jours</small></span>` : ""}</span>` : "";
   };
   const cards = [];
   cols.forEach((f, i) => {
@@ -1426,6 +1427,7 @@ function formFormation(el, d){
       ${field("Durée", inp("fDuree", r.duree || "", "ex. 2 jours"))}
       ${field("Certification (facultatif)", inp("fCertF", r.certification || "", "ex. Tosa, ICDL"))}
       ${field("Coût de la certification, pour le total CPF d'un parcours (€)", inp("fCertPrix", r.tarifCertification ?? "", "ex. 330"))}
+      ${field("CPF à partir de (jours) — facultatif", inp("fCpfMin", r.cpfMinJours ?? "", "ex. 4") + `<span class="fhint">Le CPF n'apparaît dans la proposition et le devis que si le dossier CPF qui contient cette formation compte au moins ce nombre de jours. Vide = pas de minimum.</span>`)}
       ${field("Référence interne (facultatif)", inp("fRef", r.reference || "", "ex. PAO-1.2 Photo Init"))}
       ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
     </div>
@@ -1487,6 +1489,7 @@ function formFormation(el, d){
     const data = { domaine: cible, nom, intitule: $("fInt").value.trim(), duree: $("fDuree").value.trim(), certification: $("fCertF").value.trim(), modules,
       ordre: Number($("fOrdre").value) || (isNew || change ? dc.formations.length + 1 : (r.ordre ?? 99)) };
     const ref = $("fRef").value.trim(); if(ref) data.reference = ref;
+    const cmin = parseInt($("fCpfMin").value, 10); if(cmin > 0) data.cpfMinJours = cmin;
     const cp = Number($("fCertPrix").value.replace(/[^\d.,]/g, "").replace(",", ".")); if(cp > 0) data.tarifCertification = cp;
     let reportes = 0, ok = false;
     await write(async () => {
@@ -1850,15 +1853,23 @@ function propLigne(it){
   const perso = typeof it.prix === "number" && isFinite(it.prix), prix = perso ? it.prix : auto, base = Number(m.tarif) || 0;
   const remise = base > 0 && prix < base ? Math.round((base - prix) / base * 100) : 0;
   const jours = sess ? joursDe(sess.texte) : (parcours ? 0 : parseInt(f.duree, 10) || 0);
-  if(alt && it.type === "cpf") return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, eligible: true,
+  const minJ = Math.max(Number(f.cpfMinJours) || 0, alt ? Number(alt.f.cpfMinJours) || 0 : 0);
+  if(alt && it.type === "cpf") return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, minJ, eligible: true,
     certKey: "f:" + alt.f.id, certNom: "Certification " + nomCertAlt(m.titre, alt), certPrix: Number(alt.f.tarifCertification) || 0 };
-  return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, eligible: cpfOk(m.cpf) || !!alt,
+  return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, minJ, eligible: cpfOk(m.cpf) || !!alt,
     certKey: parcours ? (f.certification ? "c:" + f.certification : "d:" + f.domaine) : "f:" + f.id,
     certNom: parcours && f.certification ? "Certification " + f.certification : parcours ? (String(d.certification || "").split(":")[0].trim() || "Certification " + (d.nom || "")) : "Certification " + String(f.certification || "").replace(/\s*\(.*\)\s*$/, ""),
     certPrix: Number(f.tarifCertification) || 0 };
 }
 function propCalcul(){
   const lignes = prop.items.map(propLigne).filter(Boolean);
+  /* durée minimale pour le CPF (champ « CPF à partir de … jours » en Gestion) : vérifiée par dossier CPF (même certification) ;
+     en dessous, les modules du dossier passent hors CPF dans la proposition et le devis */
+  const jOf = l => l.jours || (() => { const v = aVenir(l.m); return v.length ? joursDe(v[0].texte) : 0; })();
+  const parCle = {}; lignes.filter(l => l.it.type === "cpf").forEach(l => { (parCle[l.certKey] = parCle[l.certKey] || []).push(l); });
+  Object.values(parCle).forEach(g => { const min = Math.max(...g.map(l => l.minJ || 0)); if(!min) return;
+    const j = g.reduce((t, l) => t + jOf(l), 0);
+    if(j < min) g.forEach(l => { l.it.type = "hors"; l.bloqueMin = { min, jours: j }; }); });
   const cpf = lignes.filter(l => l.it.type === "cpf"), hors = lignes.filter(l => l.it.type !== "cpf");
   const certs = []; cpf.forEach(l => { if(l.certPrix && !certs.some(c => c.key === l.certKey)) certs.push({ key: l.certKey, nom: l.certNom, prix: l.certPrix }); });
   /* un dossier CPF par certification : plafond et participation s'appliquent à chaque dossier */
@@ -1909,7 +1920,7 @@ function renderProp(){
   const r = propCalcul(), n = r.lignes.length;
   const ligne = (l, i) => `<tr><td>${esc(l.d.nom || "")}</td><td>${esc(l.m.titre)}</td>
     <td>${l.it.session ? esc(l.it.session) : `<span class="none">Pas de date</span>`}</td>
-    <td>${l.eligible ? `<button type="button" class="pt-fin" data-fin="${i}" title="Cliquer pour passer en ${l.it.type === "cpf" ? "hors CPF" : "CPF"}">${l.it.type === "cpf" ? "CPF" : "Hors CPF"}</button>` : `<span class="pt-fin non" title="Module non éligible au CPF${l.m.cpf ? " : " + esc(l.m.cpf) : ""}">Hors CPF</span>`}</td>
+    <td>${l.bloqueMin ? `<span class="pt-fin non" title="CPF possible à partir de ${l.bloqueMin.min} jours : ce dossier en compte ${l.bloqueMin.jours}">Hors CPF<small class="pt-min">CPF dès ${l.bloqueMin.min} j</small></span>` : l.eligible ? `<button type="button" class="pt-fin" data-fin="${i}" title="Cliquer pour passer en ${l.it.type === "cpf" ? "hors CPF" : "CPF"}">${l.it.type === "cpf" ? "CPF" : "Hors CPF"}</button>` : `<span class="pt-fin non" title="Module non éligible au CPF${l.m.cpf ? " : " + esc(l.m.cpf) : ""}">Hors CPF</span>`}</td>
     <td class="num pt-rem" title="${l.base ? "Tarif plein : " + eur(l.base) : ""}">${l.remise ? "−" + l.remise + " %" : ""}</td>
     <td class="num"><input type="number" min="0" step="10" class="pt-prix" data-pprix="${i}" value="${l.prix}" aria-label="Tarif de ${esc(l.m.titre)}"> €${l.perso ? `<button type="button" class="pt-raz" data-pprixr="${i}" title="Revenir au tarif calculé (${eur(l.auto)})">↺</button>` : ""}</td>
     <td><button type="button" class="btn small danger" data-rmp="${i}" aria-label="Retirer">×</button></td></tr>`;
