@@ -471,6 +471,70 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
 .msg.err{color:#B42318}.msg.ok{color:var(--green)}
 .confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#FDECEA;color:#7A1A12;border-radius:7px;padding:8px 10px;font-size:13.5px}
 .ro-note{font-size:12.5px;color:var(--muted)}
+
+/* ===== Thème « Boussole » : marine, bleu clair, cartes grises arrondies (sans rouge) ===== */
+:root{--bg:#FFFFFF;--surface:#FFFFFF;--sunk:#F4F5F6;--line:#E3E6EA;--fg:#12343F;--muted:#5D6B74;--blue:#12343F;--blue-ink:#12343F;--blue-soft:#E6F2FB;--on-blue:#FFFFFF;
+ --teal:#9CCBEA;--teal-soft:#EEF6FC;--orange:#2A6F97;--orange-soft:#E6F2FB;--accent:#2A6F97;--gris:#F4F5F6;--bleu-clair:#E6F2FB;--bleu-clair2:#CFE6F7;--bleu-clair3:#9CCBEA;--r:14px}
+@media (prefers-color-scheme:dark){:root{--bg:#FFFFFF;--surface:#FFFFFF;--fg:#12343F;--muted:#5D6B74;--line:#E3E6EA;color-scheme:light}}
+body{background:#fff}
+header.top{border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--accent)}h1{font-size:24px;font-weight:800;color:#12343F}
+.vbtn{border:1px solid #12343F;border-radius:10px;background:#fff;color:#12343F}.vbtn[aria-pressed="true"]{background:#12343F;color:#fff}
+.views{gap:6px;background:transparent;border:none;padding:0}
+.side{background:#fff;border-radius:18px;box-shadow:0 2px 14px rgba(18,52,63,.08);padding:14px 12px}
+.sidebox{border:none;border-bottom:1px solid var(--line);border-radius:0;padding:0 2px 12px}
+.prof{border:none;border-radius:10px;background:var(--gris)}.prof:hover{background:var(--bleu-clair)}
+.prof[aria-pressed="true"]{background:var(--bleu-clair);color:#12343F;box-shadow:inset 4px 0 0 var(--accent)}.prof[aria-pressed="true"] .pdom{color:var(--muted)}
+.prof .count,.prof[aria-pressed="true"] .count{background:#fff;color:#12343F}
+details.group summary{background:transparent;border-radius:0;border-bottom:1px solid var(--line);padding:11px 4px;font-size:14px;font-weight:600;letter-spacing:0;text-transform:none;color:#12343F}
+details.group summary:hover{background:var(--gris)}details.group[open] summary{color:var(--accent)}
+details.group .profiles{padding:6px 0 8px;display:flex;flex-direction:column;gap:4px}
+.domtit{color:#12343F}
+.fo-box{border:none;background:var(--gris);border-radius:16px}.fo-box .fo-lab,.fo-hic{color:var(--accent)}
+.btn{border-radius:10px}.btn.primary{background:#12343F;border-color:#12343F}
+#propBar{border-top:3px solid #12343F}
+.cpfb.ok{background:#12343F}
+.fo-compl{border:none;background:var(--gris);border-radius:18px}.fo-compl h3{color:var(--accent)}
+.fo-ccard{border:none;background:#fff;border-radius:14px;box-shadow:0 1px 8px rgba(18,52,63,.06)}
+.ff-mod{border:1px solid var(--line);border-radius:16px}.ff-mod .code{background:var(--bleu-clair2);color:#12343F}
+/* liste des propositions (accordéon) */
+.ac-list{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
+.ac-card{border-radius:18px;border:1px solid var(--line);background:#fff;box-shadow:0 1px 8px rgba(18,52,63,.05)}
+.ac-card.solo{padding:16px 18px}
+.ac-card.parc{background:var(--gris);overflow:hidden}.ac-card.parc[open]{background:#fff;border-color:var(--bleu-clair3);box-shadow:0 2px 14px rgba(18,52,63,.08)}
+.ac-card.parc > summary{list-style:none;cursor:pointer;padding:16px 18px 12px}.ac-card.parc > summary::-webkit-details-marker{display:none}
+.ac-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.ac-ttl{min-width:0}.ac-ttl h3{margin:2px 0;font-size:18px;font-weight:800;color:#12343F}.ac-ttl p{margin:0;color:var(--muted);font-size:13px}
+.ac-kind{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin-right:8px}
+.ac-card .fo-best{background:var(--bleu-clair2);color:#12343F;margin-right:8px}
+.ac-card .fo-tags{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;font-weight:600;margin-top:6px;color:#12343F}.ac-card .fo-tags span{display:inline-flex;align-items:center;gap:4px}
+.ac-card .fo-tarifs{flex:none;align-self:flex-start;background:#fff;border-radius:14px;box-shadow:0 1px 6px rgba(18,52,63,.1);padding:8px 14px;text-align:right}
+.ac-card .fo-tarifs .fo-cpf{color:#1f6f5c}
+.ac-why{display:flex;gap:8px;align-items:flex-start;background:var(--bleu-clair);border-radius:10px;padding:8px 10px;margin-top:10px;font-size:13px;color:#12343F}
+.ac-why .ic{flex:none;color:var(--accent);margin-top:1px}.ac-why .fo-more summary{color:var(--accent)}
+.ac-toggle{display:inline-flex;gap:6px;align-items:center;margin-top:10px;font-weight:700;color:var(--accent);font-size:13px}
+.ac-toggle i{font-style:normal;transition:transform .2s}.ac-card[open] .ac-toggle i{transform:rotate(180deg)}.ac-card[open] .ac-toggle .o,.ac-card:not([open]) .ac-toggle .c{display:none}
+.ac-mods{position:relative;padding:2px 18px 18px 46px}.ac-mods::before{content:"";position:absolute;left:45px;top:4px;bottom:34px;border-left:2px solid var(--bleu-clair3)}
+.ac-mod{display:grid;grid-template-columns:54px minmax(0,1fr);gap:12px;margin-top:10px;position:relative}
+.ac-mod.solo{display:block;margin-top:12px}
+.ac-step{z-index:1;background:var(--bleu-clair2);color:#12343F;font-weight:800;font-size:12.5px;border-radius:12px;display:flex;align-items:center;justify-content:center;min-height:44px;margin-left:-28px;width:56px;text-align:center;line-height:1.1;padding:2px}
+.ac-mb{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.ac-mod.solo .ac-mb{border:none;padding:0;background:transparent}
+.ac-mb .fo-mlab{color:var(--accent)}.ac-mb .mlink{color:#12343F;font-weight:600}
+.ac-mb .fo-prop{background:var(--gris);border-radius:10px}
+@media (max-width:700px){.ac-head{flex-direction:column}.ac-card .fo-tarifs{align-self:stretch;text-align:left}.ac-mods{padding-left:30px}.ac-mods::before{left:29px}}
+
+.ac-step{align-self:start;min-height:0;height:44px}
+details.group summary{border-left:none !important;box-shadow:none !important}details.group{border:none !important;box-shadow:none !important}
+.fo-count .num{background:#12343F;color:#fff}
+.btn.danger{color:#12343F;border-color:#9CCBEA;background:#fff}.btn.danger:hover{background:#E6F2FB;border-color:#2A6F97}
+#propReset.danger{background:#12343F;color:#fff;border-color:#12343F}
+.ff-mod{display:grid !important;grid-template-columns:56px minmax(0,1fr) !important;gap:12px !important;border:none !important;background:transparent !important;padding:0 !important;margin-top:10px;box-shadow:none !important}
+.ff-mod>.code{align-self:start;height:44px;min-height:0;width:56px;border-radius:12px;background:var(--bleu-clair2);color:#12343F;font-weight:800;font-size:12.5px;display:flex;align-items:center;justify-content:center;font-family:inherit;padding:0}
+.ff-mod>.ff-mbody{background:#fff;border:1px solid #DCE6EC;border-radius:14px;padding:12px 14px;min-width:0}
+.ff-mod>.ff-mbody:only-child{grid-column:1/-1}
+@media (max-width:700px){.ac-mod{grid-template-columns:40px minmax(0,1fr);gap:8px}.ac-step{width:40px;margin-left:-20px;font-size:11.5px}.ac-mods{padding:2px 10px 14px 22px}.ac-mods::before{left:21px}
+.ff-mod{grid-template-columns:40px minmax(0,1fr) !important;gap:8px !important}.ff-mod>.code{width:40px}}
 </style>
 </head>
 <body>
@@ -863,6 +927,26 @@ function renderDetail(){
       cards.push(`<div class="fo-card fo-mod${commun ? " fo-partage" : ""}" ${at(r, i+1)}>${mod(f, single ? { sansTarif: true } : {}, commun ? `${ic("commun")}Commun à tous les parcours` : "")}</div>`); /* pas de nom du parcours au-dessus du module : la colonne et la flèche suffisent */
     });
   });
+  /* ---------- Nouvelle présentation : une carte par proposition ; un parcours se déplie (accordéon) pour montrer ses modules ---------- */
+  if(state.accPid !== p.id){ state.accPid = p.id; state.accOuvert = ""; } /* nouvelle fiche : tout fermé */
+  const partage = m => n > 1 && cols.filter(f => f.modules[m]).length === n && cols.every(f => f.modules[m] === cols[0].modules[m]);
+  const nbParc = cols.filter(f => Object.keys(f.modules).length > 1).length;
+  const modBloc = (f, m, avecStep) => `<div class="ac-mod${avecStep ? "" : " solo"}">${avecStep ? `<span class="ac-step">${esc(m)}</span>` : ""}<div class="ac-mb">
+      ${avecStep && partage(m) ? `<span class="fo-mlab">${ic("commun")}Commun à tous les parcours</span>` : ""}
+      <span class="fo-mt">${titre(f, m)}${cpfBadge(cpfTexte(f.modules[m], (f.infos[m] || {}).cpf))}</span>
+      ${txtOf(f, m) ? `<span class="fo-arg">${esc(txtOf(f, m))}</span>` : ""}
+      ${pied(f.infos[m], Object.assign(ctxF(f), avecStep ? {} : { sansTarif: true }))}${propCtl(f.id, m)}</div></div>`;
+  const acc = cols.map((f, i) => {
+    const pc = p.parcours[f.id] || {}, codes = d.ordreModules.filter(m => f.modules[m]), nm = codes.length;
+    const head = `<div class="ac-head"><div class="ac-ttl">${i === 0 && n > 1 ? `<span class="fo-best">${ic("star")}Le plus adapté</span>` : ""}<span class="ac-kind">${nm > 1 ? `Parcours · ${nm} modules` : "Formation"}</span>
+        <h3>${esc(f.nom)}${nm < 2 ? cpfBadge(cpfTexte(f.modules[codes[0]], (f.infos[codes[0]] || {}).cpf)) : ""}</h3>${f.intitule && f.intitule !== f.nom ? `<p>${esc(f.intitule)}</p>` : ""}
+        <span class="fo-tags">${f.duree ? `<span>${ic("duree")}${esc(f.duree)}</span>` : ""}${f.certification ? `<span>${ic("certif")}${esc(f.certification)}</span>` : ""}</span></div>${tarifs(f)}</div>
+      ${pc.pourquoi ? `<div class="ac-why">${ic("why")}<span><b>Pourquoi :</b> ${esc(pc.pourquoi)}${pc.argumentaire ? `<details class="fo-more"><summary>Argumentaire détaillé</summary><span class="fo-moretxt">${esc(pc.argumentaire)}</span></details>` : ""}</span></div>` : ""}`;
+    if(nm < 2) return `<div class="ac-card solo">${head}${modBloc(f, codes[0], false)}</div>`;
+    return `<details class="ac-card parc" name="parcours" data-acc="${esc(f.id)}"${state.accOuvert === f.id ? " open" : ""}><summary>${head}
+      <span class="ac-toggle"><span class="o">Voir les ${nm} modules du parcours</span><span class="c">Masquer les modules</span><i>▾</i></span></summary>
+      <div class="ac-mods">${codes.map(m => modBloc(f, m, true)).join("")}</div></details>`;
+  }).join("");
   const facts = d.financement || d.certification;
   el.innerHTML = `
     <div class="fo-head${facts ? "" : " nofacts"}">
@@ -870,8 +954,8 @@ function renderDetail(){
       <div class="fo-box"><span class="fo-hic">${ic("besoin")}</span><span><span class="fo-lab">Besoin</span>${esc(p.besoin)}${besoinDetailHtml(p.besoinDetail)}</span></div>
       ${facts ? `<div class="fo-box fo-facts">${d.financement ? `<span class="fo-fl">${ic("euro")}<span><span class="fo-lab">Financement</span>${esc(d.financement)}</span></span>` : ""}${d.certification ? `<span class="fo-fl">${ic("certif")}<span><span class="fo-lab">Certification</span>${esc(d.certification)}</span></span>` : ""}</div>` : ""}
     </div>
-    <h2 class="fo-count"><span class="num">${n}</span> ${seul ? (n > 1 ? "formations" : "formation") : "parcours"} possible${n>1?"s":""}${n > 1 ? `<small> · du plus adapté au moins adapté</small>` : ""}</h2>
-    <div class="fo-grid" style="--n:${n}">${cards.join("")}</div>
+    <h2 class="fo-count"><span class="num">${n}</span> ${nbParc === 0 ? (n > 1 ? "formations" : "formation") : nbParc === n ? "parcours" : (n > 1 ? "propositions" : "proposition")} possible${n>1?"s":""}${n > 1 ? `<small> · du plus adapté au moins adapté</small>` : ""}</h2>
+    <div class="ac-list">${acc}</div>
     ${complementsHtml(p, d)}`;
 }
 /* coût de certification d'une formation seule ; total CPF si la formation est éligible */
@@ -995,6 +1079,12 @@ $("detail").addEventListener("click", e => {
   state.fid = ""; state.dom = b.dataset.dom; state.pid = b.dataset.gopid; save();
   renderDomains(); renderList(); renderDetail(); $("detail").scrollIntoView({behavior:"smooth", block:"start"});
 });
+/* accordéon des parcours : un seul ouvert à la fois, mémorisé tant qu'on reste sur la fiche */
+$("detail").addEventListener("toggle", e => {
+  const d = e.target; if(!d.matches || !d.matches("details.ac-card")) return;
+  if(d.open){ state.accOuvert = d.dataset.acc; document.querySelectorAll("#detail details.ac-card[open]").forEach(x => { if(x !== d) x.open = false; }); }
+  else if(state.accOuvert === d.dataset.acc) state.accOuvert = "";
+}, true);
 /* « Modifier » sur la fiche affichée : ouvre directement ce sous-profil dans la Gestion */
 $("detail").addEventListener("click", e => {
   const b = e.target.closest("[data-editp]"); if(!b || !canAdmin) return;
