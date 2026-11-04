@@ -852,9 +852,9 @@ function renderDetail(){
     const r = k + 2, has = cols.map(f => !!f.modules[m]);
     const txts = cols.map(f => f.modules[m] ? txtOf(f, m) : null);
     const commun = n > 1 && has.every(Boolean) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]);
-    const mod = (f, extra, lab) => `<div class="fo-tab"><span class="code">${esc(m)}</span></div><div class="fo-mbody">${lab ? `<span class="fo-mlab">${lab}</span>` : ""}<span class="fo-mt">${titre(f, m)}${cpfBadge((f.infos[m] || {}).cpf)}</span>${txtOf(f, m) ? `<span class="fo-arg">${esc(txtOf(f, m))}</span>` : ""}${pied(f.infos[m], Object.assign(ctxF(f), extra))}${propCtl(f.id, m)}</div>`;
+    const mod = (f, extra, lab) => `<div class="fo-tab"><span class="code">${esc(m)}</span></div><div class="fo-mbody">${lab ? `<span class="fo-mlab">${lab}</span>` : ""}<span class="fo-mt">${titre(f, m)}${cpfBadge(cpfTexte(f.modules[m], (f.infos[m] || {}).cpf))}</span>${txtOf(f, m) ? `<span class="fo-arg">${esc(txtOf(f, m))}</span>` : ""}${pied(f.infos[m], Object.assign(ctxF(f), extra))}${propCtl(f.id, m)}</div>`;
     if(commun){
-      const cpfs = cols.map(f => String((f.infos[m] || {}).cpf || "")), varie = cpfs.some(c => c !== cpfs[0]);
+      const cpfs = cols.map(f => String(cpfTexte(f.modules[m], (f.infos[m] || {}).cpf) || "")), varie = cpfs.some(c => cpfOk(c) !== cpfOk(cpfs[0]));
       let html = mod(cols[0], {}, `${ic("commun")}Commun à tous les parcours`);
       if(varie){ /* éligible CPF dans certains parcours seulement : la pastille le dit */
         const ok = cols.filter((f, i) => cpfOk(cpfs[i])).map(f => "« " + f.nom.replace(/^Parcours\s+(PAO\s*:\s*)?/i, "").replace(/^./, c => c.toUpperCase()) + " »");
@@ -917,7 +917,7 @@ function renderFormationDetail(el){
     ${parcours ? prixCarte(f) : ""}
     <div class="ff-mods">${mods.map(m => {
       const u = safeUrl(m.lien), t = u ? `<a class="mlink" href="${esc(u)}" target="_blank" rel="noopener">${esc(m.titre)}${ic("ext")}</a>` : esc(m.titre);
-      return `<div class="ff-mod">${parcours ? `<span class="code">${esc(m.code)}</span>` : ""}<div class="ff-mbody"><b>${t}${cpfBadge(m.cpf)}</b>${pied(m, { fid: f.id, parcours, avecM1, cert: parcours ? null : certInfo(f, m) })}${propCtl(f.id, m.code)}</div></div>`;
+      return `<div class="ff-mod">${parcours ? `<span class="code">${esc(m.code)}</span>` : ""}<div class="ff-mbody"><b>${t}${cpfBadge(cpfTexte(m.titre, m.cpf))}</b>${pied(m, { fid: f.id, parcours, avecM1, cert: parcours ? null : certInfo(f, m) })}${propCtl(f.id, m.code)}</div></div>`;
     }).join("")}</div>
     <section class="ff-who"><h3>Proposée à</h3>
       ${enParcours.length ? `<div class="ff-sub">En parcours (${enParcours.length})</div><div class="ff-list">${enParcours.map(p => lien(p, ((p.parcours || []).findIndex(x => x.formation === f.id) === 0) ? "le plus adapté" : "")).join("")}</div>` : ""}
@@ -927,6 +927,15 @@ function renderFormationDetail(el){
 }
 /* pastille CPF à côté du titre d'un module */
 const cpfOk = c => /^oui/i.test(String(c || ""));
+/* Module hors dossier CPF d'un parcours (ex. Photoshop dans le parcours InDesign) mais certifiable seul :
+   on retrouve la formation seule éligible qui porte le même module (sa certification sert alors pour le CPF). */
+function cpfAlt(titre){
+  const k = norm(titre || "");
+  for(const f of (RAW.formations || [])){ const mods = f.modules || [];
+    if(mods.length === 1 && norm(mods[0].titre || "") === k && cpfOk(mods[0].cpf) && f.certification && !/venir/i.test(f.certification)) return { f, m: mods[0] }; }
+  return null;
+}
+const cpfTexte = (titre, c) => cpfOk(c) ? c : (cpfAlt(titre) ? cpfAlt(titre).m.cpf : c);
 function cpfBadge(c){
   const t = String(c || "");
   if(cpfOk(t)){ const pm = t.match(/parcours[^0-9]*(\d+)\s*jours?/i);
@@ -1712,7 +1721,8 @@ function propLigne(it){
   const { f, m } = x, d = (RAW.domaines || []).find(y => y.id === f.domaine) || {}, parcours = (f.modules || []).length > 1;
   /* financement par défaut selon le parcours retenu (tant que la conseillère ne l'a pas changé à la main) ; jamais de CPF si non éligible */
   if(!it.manuel) it.type = cpfOk(m.cpf) ? "cpf" : "hors";
-  if(it.type === "cpf" && !cpfOk(m.cpf)) it.type = "hors";
+  const alt = cpfOk(m.cpf) ? null : cpfAlt(m.titre); /* éligible CPF avec sa propre certification */
+  if(it.type === "cpf" && !cpfOk(m.cpf) && !alt) it.type = "hors";
   const sess = (m.sessions || []).find(s => s.texte === it.session) || null;
   /* tarif préférentiel (« en parcours ») : seulement quand la proposition compte au moins 2 formations ou modules
      (parcours ou non) ; une seule case cochée = tarif plein, même pour un module de parcours */
@@ -1722,7 +1732,9 @@ function propLigne(it){
   const perso = typeof it.prix === "number" && isFinite(it.prix), prix = perso ? it.prix : auto, base = Number(m.tarif) || 0;
   const remise = base > 0 && prix < base ? Math.round((base - prix) / base * 100) : 0;
   const jours = sess ? joursDe(sess.texte) : (parcours ? 0 : parseInt(f.duree, 10) || 0);
-  return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours,
+  if(alt && it.type === "cpf") return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, eligible: true,
+    certKey: "f:" + alt.f.id, certNom: "Certification " + String(alt.f.certification).replace(/\s*\(.*\)\s*$/, ""), certPrix: Number(alt.f.tarifCertification) || 0 };
+  return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, eligible: cpfOk(m.cpf) || !!alt,
     certKey: parcours ? (f.certification ? "c:" + f.certification : "d:" + f.domaine) : "f:" + f.id,
     certNom: parcours && f.certification ? "Certification " + f.certification : parcours ? (String(d.certification || "").split(":")[0].trim() || "Certification " + (d.nom || "")) : "Certification " + String(f.certification || "").replace(/\s*\(.*\)\s*$/, ""),
     certPrix: Number(f.tarifCertification) || 0 };
@@ -1779,7 +1791,7 @@ function renderProp(){
   const r = propCalcul(), n = r.lignes.length;
   const ligne = (l, i) => `<tr><td>${esc(l.d.nom || "")}</td><td>${esc(l.m.titre)}</td>
     <td>${l.it.session ? esc(l.it.session) : `<span class="none">Pas de date</span>`}</td>
-    <td>${cpfOk(l.m.cpf) ? `<button type="button" class="pt-fin" data-fin="${i}" title="Cliquer pour passer en ${l.it.type === "cpf" ? "hors CPF" : "CPF"}">${l.it.type === "cpf" ? "CPF" : "Hors CPF"}</button>` : `<span class="pt-fin non" title="Module non éligible au CPF${l.m.cpf ? " : " + esc(l.m.cpf) : ""}">Hors CPF</span>`}</td>
+    <td>${l.eligible ? `<button type="button" class="pt-fin" data-fin="${i}" title="Cliquer pour passer en ${l.it.type === "cpf" ? "hors CPF" : "CPF"}">${l.it.type === "cpf" ? "CPF" : "Hors CPF"}</button>` : `<span class="pt-fin non" title="Module non éligible au CPF${l.m.cpf ? " : " + esc(l.m.cpf) : ""}">Hors CPF</span>`}</td>
     <td class="num pt-rem" title="${l.base ? "Tarif plein : " + eur(l.base) : ""}">${l.remise ? "−" + l.remise + " %" : ""}</td>
     <td class="num"><input type="number" min="0" step="10" class="pt-prix" data-pprix="${i}" value="${l.prix}" aria-label="Tarif de ${esc(l.m.titre)}"> €${l.perso ? `<button type="button" class="pt-raz" data-pprixr="${i}" title="Revenir au tarif calculé (${eur(l.auto)})">↺</button>` : ""}</td>
     <td><button type="button" class="btn small danger" data-rmp="${i}" aria-label="Retirer">×</button></td></tr>`;
@@ -1807,7 +1819,7 @@ document.addEventListener("click", async e => {
   const rz = e.target.closest("[data-pprixr]"); if(rz){ const it = prop.items[+rz.dataset.pprixr]; if(it){ delete it.prix; propSave(); renderProp(); } return; }
   const sc = e.target.closest("[data-sanscert]");
   if(sc){ prop.items.forEach(it => { const l = propLigne(it); if(l && it.type === "cpf" && l.certKey === sc.dataset.sanscert){ it.type = "hors"; it.manuel = true; } }); propSave(); renderProp(); toast("Certification retirée : modules passés hors CPF"); return; }
-  const fin = e.target.closest("[data-fin]"); if(fin){ const it = prop.items[+fin.dataset.fin]; { const l = it && propLigne(it); if(l && !cpfOk(l.m.cpf)){ it.type = "hors"; propSave(); renderProp(); return; } } if(it) it.manuel = true; it.type = it.type === "cpf" ? "hors" : "cpf"; propSave(); renderProp(); return; }
+  const fin = e.target.closest("[data-fin]"); if(fin){ const it = prop.items[+fin.dataset.fin]; { const l = it && propLigne(it); if(l && !l.eligible){ it.type = "hors"; propSave(); renderProp(); return; } } if(it) it.manuel = true; it.type = it.type === "cpf" ? "hors" : "cpf"; propSave(); renderProp(); return; }
   const rm = e.target.closest("[data-rmp]"); if(rm){ prop.items.splice(+rm.dataset.rmp, 1); propSave(); renderProp(); syncPropCtl(); return; }
   if(e.target.id === "propCopy"){ try{ await navigator.clipboard.writeText(propTexte()); $("propMsg").textContent = "Tableau copié : collez-le dans Word."; }catch(err){ $("propMsg").textContent = "Copie impossible ici."; } return; }
   if(e.target.id === "propWord"){ propWord(); return; }
