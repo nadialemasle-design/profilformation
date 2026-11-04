@@ -1861,8 +1861,7 @@ async function propWord(){
     cell([para(run("Dates", { bold: true }), { alignment: AlignmentType.CENTER }), para(run("(d'autres dates possibles sur les programmes)", { size: 16 }), { alignment: AlignmentType.CENTER })], shade(BLEU)) ]
     .concat(avecHors ? [cell(para(run("Tarifs hors CPF", { bold: true }), { alignment: AlignmentType.CENTER }), shade(BLEU))] : [])
     .concat(avecCpf ? [cell(para(run("Tarifs préférentiels CPF", { bold: true }), { alignment: AlignmentType.CENTER }), shade(BLEU))] : []) });
-  /* prix + remise par rapport au tarif plein */
-  const prixPara = l => [para(run(eur(l.prix), { bold: true }), { alignment: AlignmentType.CENTER })].concat(l.remise ? [para(run(`−${l.remise} % (au lieu de ${eur(l.base)})`, { size: 16, color: "C00000" }), { alignment: AlignmentType.CENTER })] : []);
+  const prixPara = l => [para(run(eur(l.prix)), { alignment: AlignmentType.CENTER })]; /* pas de % de remise dans le document client */
   const prixCells = l => (avecHors ? [cell(l && l.it.type !== "cpf" ? prixPara(l) : para(run("")))] : [])
     .concat(avecCpf ? [cell(l && l.it.type === "cpf" ? prixPara(l) : para(run("")), shade(VERT))] : []);
   const lignes = r.lignes.map(l => {
