@@ -825,7 +825,7 @@ function renderDetail(){
     cols.forEach((f, i) => {
       if(!f.modules[m]){ cards.push(`<div class="fo-gap" ${at(r, i+1)} aria-hidden="true"></div>`); return; }
       const single = Object.keys(f.modules).length < 2;
-      cards.push(`<div class="fo-card fo-mod" ${at(r, i+1)}>${mod(f, single ? { sansTarif: true } : {}, n > 1 && !seul ? esc(f.nom) : "")}</div>`);
+      cards.push(`<div class="fo-card fo-mod" ${at(r, i+1)}>${mod(f, single ? { sansTarif: true } : {}, "")}</div>`); /* pas de nom du parcours au-dessus du module : la colonne et la flèche suffisent */
     });
   });
   const facts = d.financement || d.certification;
