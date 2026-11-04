@@ -345,7 +345,7 @@ details.group .profiles{padding:6px 0 4px 6px}
 .pl-top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-bottom:12px}.pl-top h2{margin:0;font-size:18px;color:var(--blue-ink)}
 .pl-beta{font-size:11px;font-weight:700;background:#fff3cd;color:#7a5a00;border:1px solid #f0d27a;border-radius:6px;padding:2px 8px;margin-left:6px;vertical-align:middle}
 .pl-nav{display:flex;align-items:center;gap:8px}.pl-nav b{min-width:140px;text-align:center;text-transform:capitalize}.pl-vues{display:flex;gap:6px;margin-left:auto}
-.pl-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}.pl-grid.large{grid-template-columns:1fr}.pl-grid.large .pl-side{display:grid;grid-template-columns:1fr 1fr;align-items:start}@media (max-width:900px){.pl-grid.large .pl-side{grid-template-columns:1fr}}.pl-dt{min-width:110px}.pl-t-tab td.n{white-space:nowrap}@media (max-width:1000px){.pl-grid{grid-template-columns:1fr}}
+.pl-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}.pl-grid.large{grid-template-columns:1fr}.pl-grid.large .pl-side{display:grid;grid-template-columns:1fr 1fr;align-items:start}@media (max-width:900px){.pl-grid.large .pl-side{grid-template-columns:1fr}}.pl-dt{min-width:110px}.pt-prix{width:80px;padding:3px 5px;border:1px solid var(--line);border-radius:5px;text-align:right;font:inherit}.pt-raz{border:none;background:none;cursor:pointer;color:var(--blue);font-size:15px;padding:0 4px}.pt-rem{color:#c00000;font-weight:700;white-space:nowrap}.pt-sc{margin-left:8px;font-size:11.5px}.pl-t-tab td.n{white-space:nowrap}@media (max-width:1000px){.pl-grid{grid-template-columns:1fr}}
 .pc{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.pc-h{font-size:11px;font-weight:700;color:var(--muted);text-align:center;text-transform:uppercase}
 .pc-d{min-height:96px;border:1px solid var(--line);border-radius:8px;padding:4px;background:var(--surface);font-size:11.5px;min-width:0}.pc-d.we{background:#f4f6f9}.pc-d.out{opacity:.4}.pc-d.today{outline:2px solid #e8590c}
 .pc-d b{display:block;font-size:12px;margin-bottom:2px}
@@ -357,6 +357,7 @@ details.group .profiles{padding:6px 0 4px 6px}
 .pl-t-tab{border-collapse:collapse;width:100%;font-size:12.5px}.pl-t-tab th{background:var(--blue);color:#fff;padding:6px 5px;text-align:left;font-size:11.5px;position:sticky;top:0}
 .pl-t-tab td{border-bottom:1px solid var(--line);padding:4px 5px;vertical-align:middle}.pl-t-tab td.n{text-align:center}.pl-t-tab td.tot{font-weight:800}
 .pl-t-tab tr.certrow td:first-child{box-shadow:inset 4px 0 0 #c62828}.pl-t-tab tr.flash td{background:#fff3cd}
+.pl-edit{font:inherit;font-weight:700;color:var(--blue-ink);background:none;border:none;padding:0;text-align:left;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}.pl-edit:hover{color:var(--blue)}.pl-edit.petit{font-weight:500;font-size:11px}.pl-aussi{display:block;font-size:11px;color:var(--muted)}
 .pl-cert{display:block;color:#c62828;font-weight:700;font-size:11px}.pl-pos{font-size:11px;background:#eef7ee;color:#2e7d32;border-radius:10px;padding:1px 6px;white-space:nowrap}.pl-cpf{font-size:11px;max-width:140px}
 .pl-n{width:46px;padding:3px;border:1px solid var(--line);border-radius:5px;text-align:center;font:inherit}.pl-t{width:120px;padding:3px 5px;border:1px solid var(--line);border-radius:5px;font:inherit;font-size:12px}
 .pl-side{display:flex;flex-direction:column;gap:14px}.pl-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}.pl-card h3{margin:0 0 6px;font-size:15px;color:var(--blue-ink)}
@@ -1680,9 +1681,12 @@ function propLigne(it){
   /* tarif préférentiel (« en parcours ») : module d'un parcours, ou dès que la proposition compte au moins 2 formations ou modules,
      même hors parcours (ex. une formation complémentaire ajoutée) ; CPF ou hors CPF */
   const pref = Number(m.tarifParcours) > 0 && (parcours || prop.items.length >= 2);
-  const prix = pref ? Number(m.tarifParcours) : Number(m.tarif) || 0;
+  const auto = pref ? Number(m.tarifParcours) : Number(m.tarif) || 0;
+  /* tarif modifié à la main dans le détail de la proposition ; remise calculée par rapport au tarif plein de la formation */
+  const perso = typeof it.prix === "number" && isFinite(it.prix), prix = perso ? it.prix : auto, base = Number(m.tarif) || 0;
+  const remise = base > 0 && prix < base ? Math.round((base - prix) / base * 100) : 0;
   const jours = sess ? joursDe(sess.texte) : (parcours ? 0 : parseInt(f.duree, 10) || 0);
-  return { it, f, m, d, parcours, sess, prix, jours,
+  return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours,
     certKey: parcours ? (f.certification ? "c:" + f.certification : "d:" + f.domaine) : "f:" + f.id,
     certNom: parcours && f.certification ? "Certification " + f.certification : parcours ? (String(d.certification || "").split(":")[0].trim() || "Certification " + (d.nom || "")) : "Certification " + String(f.certification || "").replace(/\s*\(.*\)\s*$/, ""),
     certPrix: Number(f.tarifCertification) || 0 };
@@ -1719,6 +1723,8 @@ function syncPropCtl(){
   document.querySelectorAll("input[data-pf]").forEach(c => { const x = rawFm(c.dataset.pf, c.dataset.pc); c.checked = !!(x && x.m && prop.items.some(i => i.key === propKey(x.m))); });
 }
 document.addEventListener("change", e => {
+  const pp = e.target.closest("#propPanel input[data-pprix]");
+  if(pp){ const it = prop.items[+pp.dataset.pprix]; if(it){ const v = pp.value.trim(); if(v === "") delete it.prix; else it.prix = Math.max(0, Math.round(Number(v.replace(",", ".")) || 0)); propSave(); renderProp(); } return; }
   const c = e.target.closest("input[data-pf]");
   if(c){ const sel = c.closest(".fo-prop").querySelector("select"); return propToggle(c.dataset.pf, c.dataset.pc, c.checked, sel ? sel.value : ""); }
   const s = e.target.closest("select.fo-psess");
@@ -1738,13 +1744,15 @@ function renderProp(){
   const ligne = (l, i) => `<tr><td>${esc(l.d.nom || "")}</td><td>${esc(l.m.titre)}</td>
     <td>${l.it.session ? esc(l.it.session) : `<span class="none">Pas de date</span>`}</td>
     <td><button type="button" class="pt-fin" data-fin="${i}" title="Cliquer pour passer en ${l.it.type === "cpf" ? "hors CPF" : "CPF"}">${l.it.type === "cpf" ? "CPF" : "Hors CPF"}</button></td>
-    <td class="num">${eur(l.prix)}</td><td><button type="button" class="btn small danger" data-rmp="${i}" aria-label="Retirer">×</button></td></tr>`;
-  const tot = (lab, v, cls) => `<tr class="${cls || ""}"><td colspan="4">${lab}</td><td class="num">${v}</td><td></td></tr>`;
+    <td class="num pt-rem" title="${l.base ? "Tarif plein : " + eur(l.base) : ""}">${l.remise ? "−" + l.remise + " %" : ""}</td>
+    <td class="num"><input type="number" min="0" step="10" class="pt-prix" data-pprix="${i}" value="${l.prix}" aria-label="Tarif de ${esc(l.m.titre)}"> €${l.perso ? `<button type="button" class="pt-raz" data-pprixr="${i}" title="Revenir au tarif calculé (${eur(l.auto)})">↺</button>` : ""}</td>
+    <td><button type="button" class="btn small danger" data-rmp="${i}" aria-label="Retirer">×</button></td></tr>`;
+  const tot = (lab, v, cls) => `<tr class="${cls || ""}"><td colspan="5">${lab}</td><td class="num">${v}</td><td></td></tr>`;
   bar.innerHTML = `<div class="pb-row"><b>Proposition</b><span>${n} formation${n>1?"s":""}${r.jours ? ` · ${r.jours} jour${r.jours>1?"s":""}` : ""}</span>${r.totalCpf ? `<span>Dossier CPF ${eur(r.totalCpf)}</span>` : ""}<span class="pb-charge">À charge ${eur(r.charge)}</span>
       <button type="button" class="btn small" id="propOpen">${prop.ouvert ? "Masquer le détail" : "Voir le détail"}</button><button type="button" class="btn small danger" id="propReset">Réinitialiser</button><button type="button" class="btn primary small" id="propWord">Générer le document Word</button></div>
-    ${prop.ouvert ? `<div id="propPanel"><table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date retenue</th><th>Financement</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
+    ${prop.ouvert ? `<div id="propPanel"><table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date retenue</th><th>Financement</th><th class="num">Remise</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
       ${r.lignes.map((l, i) => ligne(l, prop.items.indexOf(l.it))).join("")}
-      ${r.certs.map(c => tot(esc(c.nom), eur(c.prix))).join("")}
+      ${r.certs.map(c => tot(`${esc(c.nom)} <button type="button" class="btn small pt-sc" data-sanscert="${esc(c.key)}" title="Passe les modules de ce parcours en hors CPF : la certification n'est plus facturée">Retirer (pas de financement CPF)</button>`, eur(c.prix))).join("")}
       ${r.totalCpf ? tot(`<b>Total ${r.dossiers.length > 1 ? `des ${r.dossiers.length} dossiers CPF` : "dossier CPF"}</b>`, `<b>${eur(r.totalCpf)}</b>`, "st") + tot(`Prise en charge CPF (plafond ${eur(PLAFOND_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""})`, eur(r.priseEnCharge)) + tot(`Reste à charge CPF <small>(participation forfaitaire de ${eur(PARTICIPATION_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""} incluse)</small> <label class="exo"><input type="checkbox" id="propExo"${prop.exonere ? " checked" : ""}> exonéré(e) de la participation</label>`, eur(r.resteCpf)) : ""}
       ${r.totalHors ? tot("Total formation hors CPF", eur(r.totalHors), "st") : ""}
       ${tot("<b>Total à votre charge</b>", `<b>${eur(r.charge)}</b>`, "tt")}
@@ -1760,6 +1768,9 @@ document.addEventListener("click", async e => {
     prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition réinitialisée"); return;
   }
   if(e.target.id === "propClear"){ prop.items = []; prop.ouvert = false; propSave(); renderProp(); syncPropCtl(); return; }
+  const rz = e.target.closest("[data-pprixr]"); if(rz){ const it = prop.items[+rz.dataset.pprixr]; if(it){ delete it.prix; propSave(); renderProp(); } return; }
+  const sc = e.target.closest("[data-sanscert]");
+  if(sc){ prop.items.forEach(it => { const l = propLigne(it); if(l && it.type === "cpf" && l.certKey === sc.dataset.sanscert) it.type = "hors"; }); propSave(); renderProp(); toast("Certification retirée : modules passés hors CPF"); return; }
   const fin = e.target.closest("[data-fin]"); if(fin){ const it = prop.items[+fin.dataset.fin]; it.type = it.type === "cpf" ? "hors" : "cpf"; propSave(); renderProp(); return; }
   const rm = e.target.closest("[data-rmp]"); if(rm){ prop.items.splice(+rm.dataset.rmp, 1); propSave(); renderProp(); syncPropCtl(); return; }
   if(e.target.id === "propCopy"){ try{ await navigator.clipboard.writeText(propTexte()); $("propMsg").textContent = "Tableau copié : collez-le dans Word."; }catch(err){ $("propMsg").textContent = "Copie impossible ici."; } return; }
@@ -1767,7 +1778,7 @@ document.addEventListener("click", async e => {
 });
 function propTexte(){
   const r = propCalcul(), L = [["Domaine", "Formation", "Dates", "Financement", "Tarif"].join("\t")];
-  r.lignes.forEach(l => L.push([l.d.nom || "", l.m.titre, l.it.session || "", l.it.type === "cpf" ? "CPF" : "Hors CPF", eur(l.prix)].join("\t")));
+  r.lignes.forEach(l => L.push([l.d.nom || "", l.m.titre, l.it.session || "", l.it.type === "cpf" ? "CPF" : "Hors CPF", eur(l.prix) + (l.remise ? " (−" + l.remise + " %)" : "")].join("\t")));
   r.certs.forEach(c => L.push(["", c.nom, "", "CPF", eur(c.prix)].join("\t")));
   if(r.totalCpf) L.push(["", "Total dossier CPF", "", "", eur(r.totalCpf)].join("\t"), ["", "Prise en charge CPF (plafond " + eur(PLAFOND_CPF) + ")", "", "", eur(r.priseEnCharge)].join("\t"));
   if(r.totalCpf) L.push(["", prop.exonere ? "Reste à charge CPF (exonéré(e))" : "Reste à charge CPF (participation de 150 € incluse)", "", "", eur(r.resteCpf)].join("\t"));
@@ -1802,8 +1813,10 @@ async function propWord(){
     cell([para(run("Dates", { bold: true }), { alignment: AlignmentType.CENTER }), para(run("(d'autres dates possibles sur les programmes)", { size: 16 }), { alignment: AlignmentType.CENTER })], shade(BLEU)) ]
     .concat(avecHors ? [cell(para(run("Tarifs hors CPF", { bold: true }), { alignment: AlignmentType.CENTER }), shade(BLEU))] : [])
     .concat(avecCpf ? [cell(para(run("Tarifs préférentiels CPF", { bold: true }), { alignment: AlignmentType.CENTER }), shade(BLEU))] : []) });
-  const prixCells = l => (avecHors ? [cell(para(run(l && l.it.type !== "cpf" ? eur(l.prix) : ""), { alignment: AlignmentType.CENTER }))] : [])
-    .concat(avecCpf ? [cell(para(run(l && l.it.type === "cpf" ? eur(l.prix) : ""), { alignment: AlignmentType.CENTER }), shade(VERT))] : []);
+  /* prix + remise par rapport au tarif plein */
+  const prixPara = l => [para(run(eur(l.prix), { bold: true }), { alignment: AlignmentType.CENTER })].concat(l.remise ? [para(run(`−${l.remise} % (au lieu de ${eur(l.base)})`, { size: 16, color: "C00000" }), { alignment: AlignmentType.CENTER })] : []);
+  const prixCells = l => (avecHors ? [cell(l && l.it.type !== "cpf" ? prixPara(l) : para(run("")))] : [])
+    .concat(avecCpf ? [cell(l && l.it.type === "cpf" ? prixPara(l) : para(run("")), shade(VERT))] : []);
   const lignes = r.lignes.map(l => {
     const u = safeUrl(l.m.lien);
     return new TableRow({ children: [
@@ -1884,9 +1897,9 @@ function sessionsPilotage(){
     (f.modules || []).forEach(m => (m.sessions || []).forEach(s => {
       const jours = joursSession(s.texte); if(!jours.length) return;
       const id = norm(m.titre || "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) + "__" + jours[0];
-      /* jour de certification : formation seule certifiante (hors « à venir »), dernier module M3 des parcours IA et réseaux, Vidéo IA Avatar */
+      /* jour de certification : formation seule certifiante (hors « à venir »), M3 des parcours IA, modules M2 et M3 des réseaux sociaux, Vidéo IA Avatar */
       const certSeule = !par && f.certification && !/venir/i.test(f.certification);
-      const certParc = par && /^M3$/i.test(m.code) && (f.domaine === "ia" || f.domaine === "rs");
+      const certParc = par && ((f.domaine === "ia" && /^M3$/i.test(m.code)) || (f.domaine === "rs" && /^M[23]/i.test(m.code))); /* réseaux : certification possible dès le 2e module */
       const certVid = f.id === "video-ia-avatar";
       const cnom = certSeule ? String(f.certification).replace(/\s*\(.*\)\s*$/, "") : (certParc || certVid) ? (String((doms[certVid ? "ia" : f.domaine] || {}).certification || "").split(":")[0].trim() || "Certification") : "";
       const x = map.get(id) || { id, titre: m.titre, nom: par ? nomCourt(m.titre) : f.nom, texte: s.texte, jours, debut: jours[0], fin: jours[jours.length - 1],
@@ -1894,7 +1907,8 @@ function sessionsPilotage(){
       if(cnom && !x.cert) x.cert = cnom;
       if(!x.pos && m.questionnaire) x.pos = m.questionnaireType || "Oui";
       if(!x.tp && m.tarifParcours) x.tp = m.tarifParcours;
-      x.fids.push(f.id); map.set(id, x);
+      if(par) x.fids.push(f.id); else x.fids.unshift(f.id); /* la formation seule en premier */
+      map.set(id, x);
     }));
   });
   return [...map.values()].sort((a, b) => a.debut.localeCompare(b.debut) || a.nom.localeCompare(b.nom));
@@ -1936,7 +1950,7 @@ function renderPilot(){
   const txt = (id, k, lab) => `<input type="text" class="pl-t" data-plf="${esc(id)}" data-pk="${k}" aria-label="${lab}" value="${esc(pilVal(id, k) || "")}">`;
   const rows = duMois.map(s => { const d = dateD(s.debut);
     return `<tr id="pr-${esc(s.id)}" class="${s.cert ? "certrow" : ""}"><td>${d.toLocaleDateString("fr-FR")}</td><td>${d.toLocaleDateString("fr-FR", { weekday: "short" })}</td><td class="n">${s.jours.length}</td>
-      <td><b title="${esc(s.titre)}">${esc(s.nom)}</b>${s.cert ? `<span class="pl-cert">certif ${esc(s.cert)}</span>` : ""}</td><td class="pl-dt">${esc(s.texte.replace(/\s*20\d\d$/, ""))}</td><td>${txt(s.id, "formateur", "Formateur")}</td>
+      <td><button type="button" class="pl-edit" data-pedit="${esc(s.fids[0])}" title="Modifier dans la Gestion (dates, tarif…) : ${esc(s.titre)}">${esc(s.nom)}</button>${s.cert ? `<span class="pl-cert">certif ${esc(s.cert)}</span>` : ""}${s.fids.length > 1 ? `<span class="pl-aussi">aussi dans : ${s.fids.slice(1).map(fid => { const f = (RAW.formations || []).find(x => x.id === fid) || {}; return `<button type="button" class="pl-edit petit" data-pedit="${esc(fid)}">${esc(f.nom || fid)}</button>`; }).join(", ")}</span>` : ""}</td><td class="pl-dt">${esc(s.texte.replace(/\s*20\d\d$/, ""))}</td><td>${txt(s.id, "formateur", "Formateur")}</td>
       <td class="n">${s.tarif ? eur(s.tarif) : ""}</td><td>${s.pos ? `<span class="pl-pos">Oui · ${esc(s.pos)}</span>` : ""}</td><td class="pl-cpf">${esc(cpfCourt(s.cpf))}</td><td class="n">${s.tp ? eur(s.tp) : ""}</td>
       <td>${txt(s.id, "lieu", "Lieu")}</td>${AG.map(a => `<td class="n"><input type="number" min="0" class="pl-n" data-plf="${esc(s.id)}" data-pk="${a}" aria-label="${esc(agNom(a))}" value="${pilVal(s.id, a) || ""}"></td>`).join("")}
       <td class="n tot" data-ptot="${esc(s.id)}">${pilTot(s.id)}</td><td class="n">${chk(s.id, "convoc", "Convocations envoyées")}</td>
@@ -1951,7 +1965,7 @@ function renderPilot(){
     <div class="pl-grid${PIL.vue === "liste" ? " large" : ""}"><div class="pl-main">
       ${PIL.vue === "cal" ? `<div class="pc">${cal}</div><div class="pl-leg"><span><i class="l1"></i>Jour de formation</span><span><i class="l2"></i>Dernier jour d'une formation certifiante (certification)</span><span><i class="l3"></i>Aujourd'hui</span><span>Cliquez sur une session pour la retrouver dans la liste.</span></div>`
       : `<div class="pl-wrap"><table class="pl-t-tab"><thead><tr><th>Début</th><th>Jour</th><th>J</th><th>Formation</th><th>Dates</th><th>Formateur</th><th>Tarif</th><th>Positionnement</th><th>CPF</th><th>Tarif parcours</th><th>Lieu</th>${AG.map(a => `<th title="${esc(agNom(a))}">${a}</th>`).join("")}<th>Total</th><th>Convoc OK</th><th>Salle OK</th><th>Licences OK</th><th>Certif OK</th></tr></thead>
-        <tbody>${rows || `<tr><td colspan="20" class="none">Aucune session ce mois-ci.</td></tr>`}</tbody></table></div><p class="pl-note">Les saisies sont enregistrées automatiquement.</p>`}
+        <tbody>${rows || `<tr><td colspan="20" class="none">Aucune session ce mois-ci.</td></tr>`}</tbody></table></div><p class="pl-note">Les saisies sont enregistrées automatiquement. Cliquez sur le nom d'une formation pour la modifier dans la Gestion (dates, tarif…). Une session présente aussi dans des parcours (« aussi dans ») se modifie dans chacun d'eux.</p>`}
     </div><aside class="pl-side">
       <div class="pl-card"><h3>À prévoir</h3><p class="pl-note">Aujourd'hui, ${dateD(auj).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}. Cochez « Salle OK », « Licences OK » ou « Certif OK » pour arrêter une alerte.</p>
         ${A.length ? A.map(a => `<button type="button" class="pl-al ${a.k}" data-pgo="${esc(a.s.id)}"><b>${esc(a.txt)}</b>${esc(a.s.nom)} · ${esc(a.s.texte)} · ${ins(a.s)}</button>`).join("") : `<p class="none">Rien à prévoir pour le moment.</p>`}
@@ -1984,6 +1998,9 @@ document.addEventListener("click", async e => {
   const m = e.target.closest("[data-pmois]");
   if(m){ const n = +m.dataset.pmois; if(!n) PIL.mois = isoD(new Date()).slice(0, 7); else { const [y, mo] = PIL.mois.split("-").map(Number); PIL.mois = isoD(new Date(y, mo - 1 + n, 1)).slice(0, 7); } renderPilot(); return; }
   const v = e.target.closest("[data-pvue]"); if(v){ PIL.vue = v.dataset.pvue; renderPilot(); return; }
+  const pe = e.target.closest("[data-pedit]");
+  if(pe){ const f = (RAW.formations || []).find(x => x.id === pe.dataset.pedit); if(!f) return;
+    adm.dom = f.domaine; adm.tab = "formations"; adm.sel = f.id; document.querySelector('.vbtn[data-view="admin"]').click(); window.scrollTo(0, 0); return; }
   const g = e.target.closest("[data-pgo]");
   if(g){ const s = sessionsPilotage().find(x => x.id === g.dataset.pgo); if(!s) return; PIL.vue = "liste"; PIL.mois = s.debut.slice(0, 7); renderPilot();
     const r = document.getElementById("pr-" + s.id); if(r){ r.scrollIntoView({ block: "center", behavior: "smooth" }); r.classList.add("flash"); setTimeout(() => r.classList.remove("flash"), 1600); } return; }

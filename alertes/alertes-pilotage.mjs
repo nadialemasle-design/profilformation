@@ -34,7 +34,7 @@ export function sessionsPilotage(RAW){ /* même calcul que l'onglet Pilotage de 
       const jours = joursSession(s.texte); if(!jours.length) return;
       const id = norm(m.titre || "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) + "__" + jours[0];
       const certSeule = !par && f.certification && !/venir/i.test(f.certification);
-      const certParc = par && /^M3$/i.test(m.code) && (f.domaine === "ia" || f.domaine === "rs");
+      const certParc = par && ((f.domaine === "ia" && /^M3$/i.test(m.code)) || (f.domaine === "rs" && /^M[23]/i.test(m.code))); /* réseaux : certification possible dès le 2e module */
       const certVid = f.id === "video-ia-avatar";
       const cnom = certSeule ? String(f.certification).replace(/\s*\(.*\)\s*$/, "") : (certParc || certVid) ? (String((doms[certVid ? "ia" : f.domaine] || {}).certification || "").split(":")[0].trim() || "Certification") : "";
       const x = map.get(id) || { id, titre: m.titre, nom: par ? nomCourt(m.titre) : f.nom, texte: s.texte, jours, debut: jours[0], fin: jours[jours.length - 1], cert: "" };
