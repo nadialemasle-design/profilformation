@@ -556,6 +556,8 @@ details.group[open] summary .chev{stroke:var(--teal)}
 .fo-best svg{stroke:#12343F;fill:#12343F}
 .side .sidetit,.side .domtit{display:block;background:var(--teal);color:#12343F !important;font-weight:800;border-radius:8px;padding:7px 10px;letter-spacing:.07em}
 .side .domtit::before,.side .sidetit::before{display:none !important}
+.ac-ttl{flex:1 1 auto}.ac-head>.fo-tarifs{flex:0 0 auto;max-width:330px}
+.ac-head .fo-tarifs .fo-cpf{white-space:normal}
 </style>
 </head>
 <body>
@@ -754,7 +756,7 @@ function buildModel(){
       id: f.id, nom: f.nom || f.id, intitule: f.intitule || "", duree: f.duree || "", certification: f.certification || "",
       modules: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).map(m => [m.code, m.titre])),
       infos: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).map(m => [m.code, m])),
-      prix: prixParcours(f), tarifCertification: f.tarifCertification,
+      prix: prixParcours(f), certs: certsDe(f), tarifCertification: f.tarifCertification,
       liens: Object.fromEntries((Array.isArray(f.modules) ? f.modules : []).filter(m => m.lien).map(m => [m.code, m.lien])) })),
     profils: (RAW.profils || []).filter(p => p.domaine === d.id).sort(byOrdre).map(p => ({
       id: p.id, categorie: profCats(p)[0], categories: profCats(p), motsCles: p.motsCles || "", nom: p.nom || "", besoin: p.besoin || "", besoinDetail: p.besoinDetail || null, reponses: p.reponses || {},
@@ -765,6 +767,13 @@ function buildModel(){
   DOMAINES.forEach(d => d.formations.forEach(f => Object.keys(f.modules).forEach(m => { if(!d.ordreModules.includes(m)) d.ordreModules = d.ordreModules.concat(m); })));
 }
 /* Tarif préférentiel d'un parcours de 3 jours et plus : somme des tarifs « parcours » de ses modules */
+const nomCert = c => String(c || "").replace(/\s*\(.*\)\s*$/, "");
+/* toutes les certifications d'une formation ou d'un parcours (celle du parcours + celles des modules certifiables seuls) */
+function certsDe(f){
+  const l = f.certification ? [nomCert(f.certification)] : [];
+  (Array.isArray(f.modules) ? f.modules : []).forEach(m => { if(cpfOk(m.cpf)) return; const a = cpfAlt(m.titre); if(a){ const n = nomCertAlt(m.titre, a); if(!l.includes(n)) l.push(n); } });
+  return l;
+}
 function prixParcours(f){
   const mods = Array.isArray(f.modules) ? f.modules : [];
   if(mods.length < 2 || (parseInt(f.duree, 10) || 0) < 3 || !mods.every(m => Number(m.tarifParcours) > 0)) return null;
@@ -772,7 +781,9 @@ function prixParcours(f){
   /* parcours dont seuls certains modules passent en CPF (ex. PAO : le module certifiant) : les autres sont « Non » */
   const oui = m => /^oui/i.test(String(m.cpf || "")), non = m => /^non/i.test(String(m.cpf || ""));
   const partiel = mods.some(oui) && mods.some(non), base = partiel ? mods.filter(oui).reduce((t, m) => t + Number(m.tarifParcours), 0) : parcours;
-  return { parcours, cert, partiel, cpf: cert ? base + cert : null, separe: mods.every(m => Number(m.tarif) > 0) ? mods.reduce((t, m) => t + Number(m.tarif), 0) : null };
+  /* modules « Non » dans ce parcours mais certifiables seuls (ex. Photoshop) : leur propre certification, dans un dossier CPF à part */
+  const autres = mods.filter(m => !oui(m)).map(m => { const a = cpfAlt(m.titre); return a ? { nom: nomCertAlt(m.titre, a), prix: Number(a.f.tarifCertification) || 0, cpf: Number(m.tarifParcours) + (Number(a.f.tarifCertification) || 0) } : null; }).filter(Boolean);
+  return { parcours, cert, partiel, autres, cpf: cert ? base + cert : null, separe: mods.every(m => Number(m.tarif) > 0) ? mods.reduce((t, m) => t + Number(m.tarif), 0) : null };
 }
 /* catégories d'un profil (la première est la principale) */
 function profCats(p){
@@ -924,7 +935,7 @@ function renderDetail(){
   const tarifs = f => {
     if(Object.keys(f.modules).length > 1){
       const x = f.prix; if(!x) return "";
-      return `<span class="fo-tarifs" title="${x.separe ? `${eur(x.separe)} si les modules sont pris séparément` : ""}"><b>${eur(x.parcours)}</b><small>le parcours</small>${x.cpf ? `<span class="fo-cpf">${x.partiel ? `Dossier CPF ${eur(x.cpf)} <small>module certifiant + certification ${eur(x.cert)}</small>` : `Total CPF ${eur(x.cpf)} <small>dont certification ${eur(x.cert)}</small>`}</span>` : ""}</span>`;
+      return `<span class="fo-tarifs" title="${x.separe ? `${eur(x.separe)} si les modules sont pris séparément` : ""}"><b>${eur(x.parcours)}</b><small>le parcours</small>${x.cpf ? `<span class="fo-cpf">${x.partiel ? `Dossier CPF ${x.autres.length ? esc(f.certs[0] || "") + " " : ""}${eur(x.cpf)} <small>module certifiant + certification ${eur(x.cert)}</small>` : `Total CPF ${eur(x.cpf)} <small>dont certification ${eur(x.cert)}</small>`}</span>` : ""}${(x.autres || []).map(a => `<span class="fo-cpf">Dossier CPF ${esc(a.nom)} ${eur(a.cpf)} <small>module + certification ${eur(a.prix)}</small></span>`).join("")}${x.autres && x.autres.length ? `<span class="fo-cpf"><small>${x.autres.length + 1} certifications · retirables dans la proposition</small></span>` : ""}</span>`;
     }
     const m = f.infos[Object.keys(f.modules)[0]] || {};
     const c = certInfo(f, m);
@@ -935,7 +946,7 @@ function renderDetail(){
     const nm = Object.keys(f.modules).length;
     cards.push(`<div class="fo-card fo-parc" ${at(1, i+1)}>
       <div class="fo-ptxt">${i === 0 && n > 1 ? `<span class="fo-best">${ic("star")}Le plus adapté</span>` : ""}<h3>${esc(f.nom)}</h3>${f.intitule && f.intitule !== f.nom ? `<p>${esc(f.intitule)}</p>` : ""}
-        <span class="fo-tags">${f.duree ? `<span>${ic("duree")}${esc(f.duree)}</span>` : ""}${nm > 1 ? `<span>${ic("modules")}${nm} modules</span>` : ""}${f.certification ? `<span>${ic("certif")}${esc(f.certification)}</span>` : ""}</span></div>
+        <span class="fo-tags">${f.duree ? `<span>${ic("duree")}${esc(f.duree)}</span>` : ""}${nm > 1 ? `<span>${ic("modules")}${nm} modules</span>` : ""}${(f.certs || []).map(c => `<span>${ic("certif")}${esc(c)}</span>`).join("")}</span></div>
       <div class="fo-pfoot">${p.parcours[f.id].pourquoi ? `<span class="fo-why">${ic("why")}<span><b>Pourquoi :</b> ${esc(p.parcours[f.id].pourquoi)}${p.parcours[f.id].argumentaire ? `<details class="fo-more"><summary>Argumentaire détaillé</summary><span class="fo-moretxt">${esc(p.parcours[f.id].argumentaire)}</span></details>` : ""}</span></span>` : "<span></span>"}${tarifs(f)}</div></div>`);
   });
   rows.forEach((m, k) => {
@@ -963,7 +974,7 @@ function renderDetail(){
     const pc = p.parcours[f.id] || {}, codes = d.ordreModules.filter(m => f.modules[m]), nm = codes.length;
     const head = `<div class="ac-head"><div class="ac-ttl">${i === 0 && n > 1 ? `<span class="fo-best">${ic("star")}Le plus adapté</span>` : ""}<span class="ac-kind${nm > 1 ? " parc" : ""}">${nm > 1 ? `${ic("modules")}Parcours · ${nm} modules` : "Formation"}</span>
         <h3>${esc(f.nom)}${nm < 2 ? cpfBadge(cpfTexte(f.modules[codes[0]], (f.infos[codes[0]] || {}).cpf)) : ""}</h3>${f.intitule && f.intitule !== f.nom ? `<p>${esc(f.intitule)}</p>` : ""}
-        <span class="fo-tags">${f.duree ? `<span>${ic("duree")}${esc(f.duree)}</span>` : ""}${f.certification ? `<span>${ic("certif")}${esc(f.certification)}</span>` : ""}</span></div>${tarifs(f)}</div>
+        <span class="fo-tags">${f.duree ? `<span>${ic("duree")}${esc(f.duree)}</span>` : ""}${(f.certs || []).map(c => `<span>${ic("certif")}${esc(c)}</span>`).join("")}</span></div>${tarifs(f)}</div>
       ${pc.pourquoi ? `<div class="ac-why">${ic("why")}<span><b>Pourquoi :</b> ${esc(pc.pourquoi)}${pc.argumentaire ? `<details class="fo-more"><summary>Argumentaire détaillé</summary><span class="fo-moretxt">${esc(pc.argumentaire)}</span></details>` : ""}</span></div>` : ""}`;
     if(nm < 2) return `<div class="ac-card solo">${head}${modBloc(f, codes[0], false)}</div>`;
     return `<details class="ac-card parc" name="parcours" data-acc="${esc(f.id)}"${state.accOuvert === f.id ? " open" : ""}><summary>${head}
@@ -1009,7 +1020,7 @@ function renderFormationDetail(el){
   const enCompl = (RAW.profils || []).filter(p => (p.complements || []).some(x => x.formation === f.id));
   const nomD = id => ((RAW.domaines || []).find(x => x.id === id) || {}).nom || "";
   const lien = (p, why) => `<button type="button" class="prof" data-gopid="${esc(p.id)}" data-dom="${esc(p.domaine)}"><span>${esc(p.nom)}<small class="pdom">${esc(nomD(p.domaine))}${why ? " · " + esc(why) : ""}</small></span></button>`;
-  const facts = [dm.financement ? `<span><b class="fo-lab">Financement</b> ${esc(dm.financement)}</span>` : "", f.certification ? `<span><b class="fo-lab">Certification</b> ${esc(f.certification)}${dm.certification && parcours ? " — " + esc(dm.certification) : ""}</span>` : (parcours && dm.certification ? `<span><b class="fo-lab">Certification</b> ${esc(dm.certification)}</span>` : "")].filter(Boolean).join("");
+  const facts = [dm.financement ? `<span><b class="fo-lab">Financement</b> ${esc(dm.financement)}</span>` : "", f.certification ? `<span><b class="fo-lab">${certsDe(f).length > 1 ? "Certifications" : "Certification"}</b> ${esc(certsDe(f).length > 1 ? certsDe(f).join(" · ") : f.certification)}${dm.certification && parcours ? " — " + esc(dm.certification) : ""}</span>` : (parcours && dm.certification ? `<span><b class="fo-lab">Certification</b> ${esc(dm.certification)}</span>` : "")].filter(Boolean).join("");
   el.innerHTML = `<div class="ff">
     <div class="ff-top"><button type="button" class="btn small" id="ffBack">← Retour</button></div>
     <div class="fo-head${facts ? "" : " nofacts"}">
@@ -1032,6 +1043,14 @@ function renderFormationDetail(el){
 const cpfOk = c => /^oui/i.test(String(c || ""));
 /* Module hors dossier CPF d'un parcours (ex. Photoshop dans le parcours InDesign) mais certifiable seul :
    on retrouve la formation seule éligible qui porte le même module (sa certification sert alors pour le CPF). */
+/* nom précis de la certification d'un module certifiable seul : repris d'un parcours où il est le module certifiant (ex. « Tosa Photoshop RS6959 »), sinon « Tosa » + nom de la formation */
+function nomCertAlt(titre, a){
+  const k = norm(titre || "");
+  for(const f of (RAW.formations || [])) for(const m of (f.modules || [])){
+    if(norm(m.titre || "") !== k) continue; const x = /certification\s+([^)]+)\)/i.exec(String(m.cpf || ""));
+    if(x && x[1].trim().length > nomCert(a.f.certification).length) return x[1].trim(); }
+  return nomCert(a.f.certification) + " " + a.f.nom;
+}
 function cpfAlt(titre){
   const k = norm(titre || "");
   for(const f of (RAW.formations || [])){ const mods = f.modules || [];
@@ -1057,7 +1076,7 @@ function complementsHtml(p, d){
 }
 function prixCarte(f){
   const x = prixParcours(f), n = (f.modules || []).length;
-  return `<span class="minfo"><span class="ml">${ic("modules")}<span>Parcours de ${n} modules${x ? ` · <b>${eur(x.parcours)}</b>${x.cpf ? ` · ${x.partiel ? "Dossier CPF" : "Total CPF"} ${eur(x.cpf)}` : ""}` : ""}</span></span></span>`;
+  return `<span class="minfo"><span class="ml">${ic("modules")}<span>Parcours de ${n} modules${x ? ` · <b>${eur(x.parcours)}</b>${x.cpf ? ` · ${x.partiel ? "Dossier CPF" : "Total CPF"}${x.autres.length ? " " + esc(nomCert(f.certification)) : ""} ${eur(x.cpf)}` : ""}${(x.autres || []).map(a => ` · Dossier CPF ${esc(a.nom)} ${eur(a.cpf)}`).join("")}` : ""}</span></span></span>`;
 }
 function safeUrl(u){ try{ const x = new URL(String(u || "")); return /^https?:$/.test(x.protocol) ? x.href : ""; }catch(e){ return ""; } }
 
@@ -1819,8 +1838,8 @@ function propLigne(it){
   const x = propContexte(it); if(!x || !x.m) return null;
   const { f, m } = x, d = (RAW.domaines || []).find(y => y.id === f.domaine) || {}, parcours = (f.modules || []).length > 1;
   /* financement par défaut selon le parcours retenu (tant que la conseillère ne l'a pas changé à la main) ; jamais de CPF si non éligible */
-  if(!it.manuel) it.type = cpfOk(m.cpf) ? "cpf" : "hors";
   const alt = cpfOk(m.cpf) ? null : cpfAlt(m.titre); /* éligible CPF avec sa propre certification */
+  if(!it.manuel) it.type = (cpfOk(m.cpf) || alt) ? "cpf" : "hors"; /* toutes les certifications comptées ; retirables dans le détail */
   if(it.type === "cpf" && !cpfOk(m.cpf) && !alt) it.type = "hors";
   const sess = (m.sessions || []).find(s => s.texte === it.session) || null;
   /* tarif préférentiel (« en parcours ») : seulement quand la proposition compte au moins 2 formations ou modules
@@ -1832,7 +1851,7 @@ function propLigne(it){
   const remise = base > 0 && prix < base ? Math.round((base - prix) / base * 100) : 0;
   const jours = sess ? joursDe(sess.texte) : (parcours ? 0 : parseInt(f.duree, 10) || 0);
   if(alt && it.type === "cpf") return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, eligible: true,
-    certKey: "f:" + alt.f.id, certNom: "Certification " + String(alt.f.certification).replace(/\s*\(.*\)\s*$/, ""), certPrix: Number(alt.f.tarifCertification) || 0 };
+    certKey: "f:" + alt.f.id, certNom: "Certification " + nomCertAlt(m.titre, alt), certPrix: Number(alt.f.tarifCertification) || 0 };
   return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, eligible: cpfOk(m.cpf) || !!alt,
     certKey: parcours ? (f.certification ? "c:" + f.certification : "d:" + f.domaine) : "f:" + f.id,
     certNom: parcours && f.certification ? "Certification " + f.certification : parcours ? (String(d.certification || "").split(":")[0].trim() || "Certification " + (d.nom || "")) : "Certification " + String(f.certification || "").replace(/\s*\(.*\)\s*$/, ""),
