@@ -1,0 +1,23 @@
+name: Alertes Pilotage (e-mail)
+on:
+  schedule:
+    - cron: "0 6 * * 1-5"   # du lundi au vendredi, 7 h (hiver) / 8 h (été), heure de Paris
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Envoyer un e-mail de test même sans nouvelle alerte"
+        type: boolean
+        default: true
+jobs:
+  alertes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node alertes/alertes-pilotage.mjs
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force }}

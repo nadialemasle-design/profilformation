@@ -28,6 +28,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `supabase-mise-a-jour-2027-n9.sql` | Mise à jour n°9 : les éditrices gèrent la liste des conseillères depuis Gestion › Conseillères. |
 | `supabase-mise-a-jour-2027-n10.sql` | Mise à jour n°10 : 6 parcours PAO (De Photoshop à l'IA, Photoshop et InDesign, Photoshop et Illustrator, Prise de vue et retouche photo, Photo Pro, Création visuelle et IA). Modules copiés depuis les formations seules ; seul le module certifiant (Tosa) passe en dossier CPF. Ne supprime rien, ne modifie pas un parcours déjà créé. |
 | `supabase-mise-a-jour-2027-n11.sql` | Mise à jour n°11 (après la n°10) : les parcours PAO deviennent l'offre principale de 7 sous-profils PAO et PAO & IA, avec « pourquoi » et argumentaire ; les formations seules certifiantes passent en formations complémentaires. Un sous-profil qui a déjà un parcours PAO n'est pas modifié. |
+| `supabase-mise-a-jour-2027-n12.sql` | Mise à jour n°12 : onglet Pilotage (bêta). Table protégée `pilotage` (inscrits par agence, formateur, lieu, Convoc / Salle / Licences / Certif OK, réglages), lisible et modifiable par les éditrices seulement. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 
@@ -130,3 +131,17 @@ Chaque module peut porter, en plus de `code`, `titre` et `lien` :
 ## Proposition commerciale (document Word)
 
 Sur la fiche d'un sous-profil, chaque module et chaque formation complémentaire a une case « Ajouter à la proposition » et le choix de la session. La barre du bas récapitule : tarifs (préférentiels dans un parcours), certification, plafond CPF de 1 500 € et participation forfaitaire de 150 € par dossier CPF, incluse dans le reste à charge (le CPF paie au plus le prix moins 150 €, et au plus 1 500 € ; case « exonéré(e) »), part hors CPF, reste à charge, jours et coût par jour. Chaque ligne peut passer en « CPF » ou « Hors CPF ». « Générer le document Word » télécharge le tableau, avec des champs à compléter (nom, entreprise, conseiller, date, droits CPF). Dans la version Claude, une fenêtre de confirmation s'ouvre avant l'enregistrement ; « Copier le tableau » reste possible.
+
+
+## Pilotage (bêta) et alertes e-mail
+
+L'onglet **Pilotage** (éditrices connectées) affiche le calendrier des sessions de formation (une ligne par session, pas par parcours), le dernier jour en rouge pour les formations certifiantes, les inscrits par agence (B, M, Q), le formateur, le lieu et les cases Convoc OK, Salle OK, Licences OK, Certif OK. Les saisies sont enregistrées automatiquement dans la table protégée `pilotage` (script n°12).
+
+Alertes : salle à J-25 avant le début, licences à J-15, certification à J-10 puis J-2 ouvrés avant le dernier jour. Cocher la case OK arrête l'alerte.
+
+**Alertes par e-mail** (`alertes/alertes-pilotage.mjs`, lancé du lundi au vendredi à 7 h par `.github/workflows/alertes-pilotage.yml`) :
+1. Créer un compte gratuit sur resend.com avec l'adresse qui doit recevoir les alertes, puis créer une clé API.
+2. Dans Supabase › Project Settings › API, copier la clé **service_role** (secrète, ne jamais la mettre dans un fichier).
+3. Dans GitHub › Settings › Secrets and variables › Actions › New repository secret : `SUPABASE_SERVICE_KEY` (clé service_role) et `RESEND_API_KEY` (clé Resend).
+4. Dans l'appli, Pilotage › Réglages : renseigner l'e-mail qui reçoit les alertes (le même que le compte Resend tant qu'aucun domaine n'est vérifié chez Resend).
+5. Test : GitHub › Actions › « Alertes Pilotage (e-mail) » › Run workflow.

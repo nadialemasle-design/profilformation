@@ -340,6 +340,32 @@ details.group .profiles{padding:6px 0 4px 6px}
 .pt .exo{margin-left:10px;font-size:12px;color:var(--muted)}
 .pb-acts{display:flex;gap:8px;align-items:center;margin-top:8px}
 @media print{#propBar{display:none}}
+/* ---------- Pilotage ---------- */
+#pilot{max-width:1680px;margin:0 auto}
+.pl-top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-bottom:12px}.pl-top h2{margin:0;font-size:18px;color:var(--blue-ink)}
+.pl-beta{font-size:11px;font-weight:700;background:#fff3cd;color:#7a5a00;border:1px solid #f0d27a;border-radius:6px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+.pl-nav{display:flex;align-items:center;gap:8px}.pl-nav b{min-width:140px;text-align:center;text-transform:capitalize}.pl-vues{display:flex;gap:6px;margin-left:auto}
+.pl-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}.pl-grid.large{grid-template-columns:1fr}.pl-grid.large .pl-side{display:grid;grid-template-columns:1fr 1fr;align-items:start}@media (max-width:900px){.pl-grid.large .pl-side{grid-template-columns:1fr}}.pl-dt{min-width:110px}.pl-t-tab td.n{white-space:nowrap}@media (max-width:1000px){.pl-grid{grid-template-columns:1fr}}
+.pc{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.pc-h{font-size:11px;font-weight:700;color:var(--muted);text-align:center;text-transform:uppercase}
+.pc-d{min-height:96px;border:1px solid var(--line);border-radius:8px;padding:4px;background:var(--surface);font-size:11.5px;min-width:0}.pc-d.we{background:#f4f6f9}.pc-d.out{opacity:.4}.pc-d.today{outline:2px solid #e8590c}
+.pc-d b{display:block;font-size:12px;margin-bottom:2px}
+.pc-ev{display:block;width:100%;text-align:left;font:inherit;font-size:11px;background:var(--blue-soft);border:none;border-left:3px solid var(--blue);border-radius:4px;padding:2px 4px;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:var(--blue-ink)}
+.pc-ev small{background:#fff;border-radius:8px;padding:0 4px;font-weight:700}.pc-ev.cert{background:#fde7e7;border-left-color:#c62828;color:#c62828;font-weight:700}
+.pl-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:8px}.pl-leg i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.pl-leg .l1{background:var(--blue-soft);border-left:3px solid var(--blue)}.pl-leg .l2{background:#fde7e7;border-left:3px solid #c62828}.pl-leg .l3{outline:2px solid #e8590c}
+.pl-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.pl-t-tab{border-collapse:collapse;width:100%;font-size:12.5px}.pl-t-tab th{background:var(--blue);color:#fff;padding:6px 5px;text-align:left;font-size:11.5px;position:sticky;top:0}
+.pl-t-tab td{border-bottom:1px solid var(--line);padding:4px 5px;vertical-align:middle}.pl-t-tab td.n{text-align:center}.pl-t-tab td.tot{font-weight:800}
+.pl-t-tab tr.certrow td:first-child{box-shadow:inset 4px 0 0 #c62828}.pl-t-tab tr.flash td{background:#fff3cd}
+.pl-cert{display:block;color:#c62828;font-weight:700;font-size:11px}.pl-pos{font-size:11px;background:#eef7ee;color:#2e7d32;border-radius:10px;padding:1px 6px;white-space:nowrap}.pl-cpf{font-size:11px;max-width:140px}
+.pl-n{width:46px;padding:3px;border:1px solid var(--line);border-radius:5px;text-align:center;font:inherit}.pl-t{width:120px;padding:3px 5px;border:1px solid var(--line);border-radius:5px;font:inherit;font-size:12px}
+.pl-side{display:flex;flex-direction:column;gap:14px}.pl-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}.pl-card h3{margin:0 0 6px;font-size:15px;color:var(--blue-ink)}
+.pl-note{font-size:12px;color:var(--muted);margin:6px 0}
+.pl-al{display:block;width:100%;text-align:left;font:inherit;font-size:12.5px;border:none;border-left:4px solid #e8590c;background:#fff7f0;border-radius:6px;padding:6px 8px;margin:6px 0;cursor:pointer;color:var(--ink)}
+.pl-al b{display:block}.pl-al.lic{border-left-color:var(--blue);background:var(--blue-soft)}.pl-al.cert{border-left-color:#c62828;background:#fdeeee}
+.pl-reg label{display:block;font-size:12px;color:var(--muted)}.pl-reg input{display:block;width:100%;margin:3px 0;padding:5px 7px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:13px}
+.pl-reg fieldset{border:1px solid var(--line);border-radius:8px;margin:8px 0;padding:4px 8px 6px}.pl-reg legend{font-size:12px;font-weight:700;color:var(--blue-ink)}
+
 .catchecks{display:flex;flex-wrap:wrap;gap:4px 14px;margin:6px 0}
 .catchk{display:inline-flex;align-items:center;gap:5px;font-size:13.5px;font-weight:500}
 .catrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
@@ -454,6 +480,7 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
       <div class="views" id="views" hidden>
         <button type="button" class="vbtn" data-view="consult" aria-pressed="true">Consulter</button>
         <button type="button" class="vbtn" data-view="admin" aria-pressed="false">Gestion</button>
+        <button type="button" class="vbtn" data-view="pilot" aria-pressed="false">Pilotage</button>
       </div>
     </div>
   </header>
@@ -516,6 +543,7 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
       <div id="admForm"></div>
     </div>
   </section>
+  <section id="pilot" hidden></section>
 </div>
 <div class="toast" id="toast" hidden></div>
 
@@ -619,7 +647,7 @@ const INFO_KEYS = ["sessions", "tarif", "tarifParcours", "questionnaire", "quest
 
 /* ---------- Données ---------- */
 let db = null, user = null, canAdmin = false; /* canRead : voir les liens des questionnaires */
-const RAW = { domaines: null, formations: null, profils: null, questionnaires: [] };
+const RAW = { domaines: null, formations: null, profils: null, questionnaires: [], pilotage: [] };
 /* liens des questionnaires de positionnement : rangés à part, lisibles seulement par les personnes autorisées */
 let canRead = false;
 const qKey = (fid, code) => fid + "__" + String(code || "").replace(/[^\w-]/g, "_");
@@ -965,8 +993,8 @@ $("views").addEventListener("click", e => {
   const b = e.target.closest("[data-view]"); if(!b) return;
   state.view = b.dataset.view;
   document.querySelectorAll(".vbtn").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-  $("consult").hidden = state.view !== "consult"; $("admin").hidden = state.view !== "admin";
-  if(state.view === "admin"){ if(!adm.dom) adm.dom = state.dom; renderAdmin(true); } else renderConsult();
+  $("consult").hidden = state.view !== "consult"; $("admin").hidden = state.view !== "admin"; $("pilot").hidden = state.view !== "pilot";
+  if(state.view === "admin"){ if(!adm.dom) adm.dom = state.dom; renderAdmin(true); } else if(state.view === "pilot") renderPilot(); else renderConsult();
   renderProp();
   renderDomains();
 });
@@ -1825,11 +1853,154 @@ async function propWord(){
   document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
 }
 
+/* =====================================================================
+   PILOTAGE (bêta, éditrices connectées) : calendrier des sessions, inscrits par agence,
+   salle / licences / certification à prévoir. Données dans la collection protégée « pilotage ».
+   ===================================================================== */
+const PIL = { vue: "cal", mois: null, edits: {}, timers: {} };
+const AG = ["B", "M", "Q"];
+const pilDoc = id => (RAW.pilotage || []).find(x => x.id === id) || {};
+const pilReg = () => pilDoc("_reglages");
+const isoD = d => d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+const dateD = s => { const [y, m, j] = s.split("-").map(Number); return new Date(y, m - 1, j); };
+function joursSession(t){ /* toutes les dates d'une session écrite en texte */
+  const s = norm(t).replace(/(\d+)\s*(?:er)?\s*au\s*(\d+)/g, (x, a, b) => { const r = []; for(let i = +a; i <= +b && r.length < 31; i++) r.push(i); return r.join(" "); });
+  let an = null, pend = [], jours = [];
+  (s.match(/\d+|[a-z]+/g) || []).forEach(k => {
+    if(/^\d{4}$/.test(k)) an = +k; else if(/^\d{1,2}$/.test(k)) pend.push(+k);
+    else if(MOISN[k]){ pend.forEach(j => jours.push([MOISN[k], j])); pend = []; }
+  });
+  if(!an) return [];
+  return jours.map(([m, j]) => an + "-" + String(m).padStart(2,"0") + "-" + String(j).padStart(2,"0"));
+}
+const cpfCourt = c => { const t = String(c || ""); const m = t.match(/parcours[^0-9]*(\d+)\s*jours?/i); return m ? "En parcours (" + m[1] + " j min.)" : /^oui/i.test(t) ? "Oui" : /^non/i.test(t) ? "Non" : t.replace(/\s*\(.*\)/, ""); };
+const nomCourt = t => { const [a, ...b] = String(t).split(":"); const x = a.split(" - ")[0].trim();
+  return (x.split(/\s+/).length <= 2 && b.length) ? b.join(":").split(/[-–,]/)[0].trim().replace(/^./, c => c.toUpperCase()) : x; };
+/* une ligne par session de formation (pas par parcours) : une session commune à plusieurs parcours n'apparaît qu'une fois */
+function sessionsPilotage(){
+  const map = new Map(), doms = Object.fromEntries((RAW.domaines || []).map(d => [d.id, d]));
+  (RAW.formations || []).forEach(f => {
+    const par = (f.modules || []).length > 1, d = doms[f.domaine] || {};
+    (f.modules || []).forEach(m => (m.sessions || []).forEach(s => {
+      const jours = joursSession(s.texte); if(!jours.length) return;
+      const id = norm(m.titre || "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) + "__" + jours[0];
+      /* jour de certification : formation seule certifiante (hors « à venir »), dernier module M3 des parcours IA et réseaux, Vidéo IA Avatar */
+      const certSeule = !par && f.certification && !/venir/i.test(f.certification);
+      const certParc = par && /^M3$/i.test(m.code) && (f.domaine === "ia" || f.domaine === "rs");
+      const certVid = f.id === "video-ia-avatar";
+      const cnom = certSeule ? String(f.certification).replace(/\s*\(.*\)\s*$/, "") : (certParc || certVid) ? (String((doms[certVid ? "ia" : f.domaine] || {}).certification || "").split(":")[0].trim() || "Certification") : "";
+      const x = map.get(id) || { id, titre: m.titre, nom: par ? nomCourt(m.titre) : f.nom, texte: s.texte, jours, debut: jours[0], fin: jours[jours.length - 1],
+        tarif: m.tarif, tp: m.tarifParcours, cpf: m.cpf || "", pos: m.questionnaire ? (m.questionnaireType || "Oui") : "", cert: "" , fids: [] };
+      if(cnom && !x.cert) x.cert = cnom;
+      if(!x.pos && m.questionnaire) x.pos = m.questionnaireType || "Oui";
+      if(!x.tp && m.tarifParcours) x.tp = m.tarifParcours;
+      x.fids.push(f.id); map.set(id, x);
+    }));
+  });
+  return [...map.values()].sort((a, b) => a.debut.localeCompare(b.debut) || a.nom.localeCompare(b.nom));
+}
+const pilVal = (id, k) => (PIL.edits[id] && k in PIL.edits[id]) ? PIL.edits[id][k] : pilDoc(id)[k];
+const pilTot = id => AG.reduce((t, a) => t + (Number(pilVal(id, a)) || 0), 0);
+function ouvresAvant(iso, n){ const d = dateD(iso); let k = 0; while(k < n){ d.setDate(d.getDate() - 1); if(d.getDay() % 6) k++; } return isoD(d); }
+const ajouter = (iso, n) => { const d = dateD(iso); d.setDate(d.getDate() + n); return isoD(d); };
+const ecart = (a, b) => Math.round((dateD(b) - dateD(a)) / 864e5);
+/* alertes en cours aujourd'hui ; déclenchement : salle J-25, licences J-15, certification J-10 puis J-2 ouvrés avant le dernier jour */
+function alertesPilotage(S, auj){
+  const A = [];
+  S.forEach(s => {
+    const j = ecart(auj, s.debut);
+    if(j >= 0 && j <= 25 && !pilVal(s.id, "salleOk")) A.push({ s, k: "salle", j, txt: `Prévoir la salle · J-${j}` });
+    if(j >= 0 && j <= 15 && !pilVal(s.id, "licOk")) A.push({ s, k: "lic", j, txt: `Prévoir les licences · J-${j}` });
+    if(s.cert && auj >= ajouter(s.fin, -10) && auj <= s.fin && !pilVal(s.id, "certOk"))
+      A.push({ s, k: "cert", j: ecart(auj, s.fin), txt: `Prévoir la certification ${s.cert} · examen le ${dateD(s.fin).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}${auj >= ouvresAvant(s.fin, 2) ? " · relance J-2 ouvrés" : ""}` });
+  });
+  return A.sort((a, b) => a.j - b.j);
+}
+function renderPilot(){
+  const el = $("pilot"); if(!el) return;
+  const S = sessionsPilotage(), auj = isoD(new Date()), reg = pilReg();
+  if(!PIL.mois){ const p = S.find(s => s.fin >= auj); PIL.mois = (p ? p.debut : auj).slice(0, 7); }
+  const [y, mo] = PIL.mois.split("-").map(Number), lib = new Date(y, mo - 1, 1).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  const duMois = S.filter(s => s.jours.some(d => d.startsWith(PIL.mois)));
+  const agNom = a => ((reg.agences || {})[a] || {}).nom || "Agence " + a;
+  /* calendrier du mois */
+  const first = new Date(y, mo - 1, 1), off = (first.getDay() + 6) % 7, nbSem = Math.ceil((off + new Date(y, mo, 0).getDate()) / 7);
+  let cal = ["lun.","mar.","mer.","jeu.","ven.","sam.","dim."].map(x => `<div class="pc-h">${x}</div>`).join("");
+  for(let i = 0; i < nbSem * 7; i++){
+    const d = new Date(y, mo - 1, 1 - off + i), iso = isoD(d);
+    const ev = S.filter(s => s.jours.includes(iso)).map(s => { const der = s.cert && s.fin === iso;
+      return `<button type="button" class="pc-ev${der ? " cert" : ""}" data-pgo="${esc(s.id)}" title="${esc(s.titre)} · ${esc(s.texte)}${der ? " · certification " + esc(s.cert) : ""}">${der ? "🎓 " : ""}${esc(s.nom)}${pilTot(s.id) ? ` <small>${pilTot(s.id)}</small>` : ""}</button>`; }).join("");
+    cal += `<div class="pc-d${d.getMonth() !== mo - 1 ? " out" : ""}${d.getDay() % 6 ? "" : " we"}${iso === auj ? " today" : ""}"><b>${d.getDate()}</b>${ev}</div>`;
+  }
+  const chk = (id, k, lab) => `<input type="checkbox" data-plf="${esc(id)}" data-pk="${k}" aria-label="${lab}"${pilVal(id, k) ? " checked" : ""}>`;
+  const txt = (id, k, lab) => `<input type="text" class="pl-t" data-plf="${esc(id)}" data-pk="${k}" aria-label="${lab}" value="${esc(pilVal(id, k) || "")}">`;
+  const rows = duMois.map(s => { const d = dateD(s.debut);
+    return `<tr id="pr-${esc(s.id)}" class="${s.cert ? "certrow" : ""}"><td>${d.toLocaleDateString("fr-FR")}</td><td>${d.toLocaleDateString("fr-FR", { weekday: "short" })}</td><td class="n">${s.jours.length}</td>
+      <td><b title="${esc(s.titre)}">${esc(s.nom)}</b>${s.cert ? `<span class="pl-cert">certif ${esc(s.cert)}</span>` : ""}</td><td class="pl-dt">${esc(s.texte.replace(/\s*20\d\d$/, ""))}</td><td>${txt(s.id, "formateur", "Formateur")}</td>
+      <td class="n">${s.tarif ? eur(s.tarif) : ""}</td><td>${s.pos ? `<span class="pl-pos">Oui · ${esc(s.pos)}</span>` : ""}</td><td class="pl-cpf">${esc(cpfCourt(s.cpf))}</td><td class="n">${s.tp ? eur(s.tp) : ""}</td>
+      <td>${txt(s.id, "lieu", "Lieu")}</td>${AG.map(a => `<td class="n"><input type="number" min="0" class="pl-n" data-plf="${esc(s.id)}" data-pk="${a}" aria-label="${esc(agNom(a))}" value="${pilVal(s.id, a) || ""}"></td>`).join("")}
+      <td class="n tot" data-ptot="${esc(s.id)}">${pilTot(s.id)}</td><td class="n">${chk(s.id, "convoc", "Convocations envoyées")}</td>
+      <td class="n">${chk(s.id, "salleOk", "Salle réservée")}</td><td class="n">${chk(s.id, "licOk", "Licences prévues")}</td><td class="n">${s.cert ? chk(s.id, "certOk", "Certification prévue") : ""}</td></tr>`; }).join("");
+  const A = alertesPilotage(S, auj);
+  const ins = s => { const t = pilTot(s.id); return t ? `${t} inscrit${t > 1 ? "s" : ""} (${AG.map(a => a + " " + (Number(pilVal(s.id, a)) || 0)).join(" · ")})` : "aucun inscrit saisi"; };
+  el.innerHTML = `
+    <div class="pl-top"><h2>Pilotage des sessions <span class="pl-beta">BÊTA · éditrices uniquement</span></h2>
+      <div class="pl-nav"><button type="button" class="btn small" data-pmois="-1" aria-label="Mois précédent">◀</button><b>${lib}</b><button type="button" class="btn small" data-pmois="1" aria-label="Mois suivant">▶</button>
+      <button type="button" class="btn small" data-pmois="0">Aujourd'hui</button></div>
+      <div class="pl-vues"><button type="button" class="stab" data-pvue="cal" aria-pressed="${PIL.vue === "cal"}">Calendrier</button><button type="button" class="stab" data-pvue="liste" aria-pressed="${PIL.vue === "liste"}">Liste</button></div></div>
+    <div class="pl-grid${PIL.vue === "liste" ? " large" : ""}"><div class="pl-main">
+      ${PIL.vue === "cal" ? `<div class="pc">${cal}</div><div class="pl-leg"><span><i class="l1"></i>Jour de formation</span><span><i class="l2"></i>Dernier jour d'une formation certifiante (certification)</span><span><i class="l3"></i>Aujourd'hui</span><span>Cliquez sur une session pour la retrouver dans la liste.</span></div>`
+      : `<div class="pl-wrap"><table class="pl-t-tab"><thead><tr><th>Début</th><th>Jour</th><th>J</th><th>Formation</th><th>Dates</th><th>Formateur</th><th>Tarif</th><th>Positionnement</th><th>CPF</th><th>Tarif parcours</th><th>Lieu</th>${AG.map(a => `<th title="${esc(agNom(a))}">${a}</th>`).join("")}<th>Total</th><th>Convoc OK</th><th>Salle OK</th><th>Licences OK</th><th>Certif OK</th></tr></thead>
+        <tbody>${rows || `<tr><td colspan="20" class="none">Aucune session ce mois-ci.</td></tr>`}</tbody></table></div><p class="pl-note">Les saisies sont enregistrées automatiquement.</p>`}
+    </div><aside class="pl-side">
+      <div class="pl-card"><h3>À prévoir</h3><p class="pl-note">Aujourd'hui, ${dateD(auj).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}. Cochez « Salle OK », « Licences OK » ou « Certif OK » pour arrêter une alerte.</p>
+        ${A.length ? A.map(a => `<button type="button" class="pl-al ${a.k}" data-pgo="${esc(a.s.id)}"><b>${esc(a.txt)}</b>${esc(a.s.nom)} · ${esc(a.s.texte)} · ${ins(a.s)}</button>`).join("") : `<p class="none">Rien à prévoir pour le moment.</p>`}
+        <p class="pl-note">Le même récapitulatif est envoyé par e-mail chaque matin (lundi au vendredi) si les alertes e-mail sont activées.</p></div>
+      <div class="pl-card pl-reg"><h3>Réglages (contacts)</h3>
+        <label>E-mail qui reçoit les alertes<input type="email" data-rk="email" value="${esc(reg.email || "")}" placeholder="vous@…"></label>
+        ${AG.map(a => { const g = (reg.agences || {})[a] || {}; return `<fieldset><legend>Agence ${a}</legend><input data-ra="${a}" data-rf="nom" placeholder="Nom de l'agence" value="${esc(g.nom || "")}"><input data-ra="${a}" data-rf="contact" placeholder="Contact" value="${esc(g.contact || "")}"><input type="email" data-ra="${a}" data-rf="email" placeholder="E-mail" value="${esc(g.email || "")}"></fieldset>`; }).join("")}
+        <button type="button" class="btn small primary" id="pRegSave">Enregistrer les réglages</button><span class="msg" id="pRegMsg"></span>
+        <p class="pl-note">Bêta : vous seule. Plus tard, un compte par agence, qui ne modifiera que sa colonne.</p></div>
+    </aside></div>`;
+}
+function pilSave(id){
+  clearTimeout(PIL.timers[id]);
+  PIL.timers[id] = setTimeout(async () => {
+    const data = Object.assign({}, pilDoc(id), PIL.edits[id] || {}); delete data.id;
+    try{ await db.doc("pilotage/" + id).set(data); delete PIL.edits[id]; }catch(e){ toast("Enregistrement impossible : vérifiez votre connexion."); }
+  }, 600);
+}
+document.addEventListener("input", e => {
+  const t = e.target.closest("#pilot [data-plf]"); if(!t) return;
+  const id = t.dataset.plf, k = t.dataset.pk;
+  (PIL.edits[id] = PIL.edits[id] || {})[k] = t.type === "checkbox" ? t.checked : t.type === "number" ? (t.value === "" ? 0 : Math.max(0, parseInt(t.value, 10) || 0)) : t.value;
+  const c = document.querySelector(`[data-ptot="${CSS.escape(id)}"]`); if(c) c.textContent = pilTot(id);
+  pilSave(id);
+  if(t.type === "checkbox") renderPilotSoon();
+});
+let pilRT = null; const renderPilotSoon = () => { clearTimeout(pilRT); pilRT = setTimeout(() => { if(state.view === "pilot" && !$("pilot").contains(document.activeElement) || document.activeElement.type === "checkbox") renderPilot(); }, 700); };
+document.addEventListener("click", async e => {
+  if(!e.target.closest("#pilot")) return;
+  const m = e.target.closest("[data-pmois]");
+  if(m){ const n = +m.dataset.pmois; if(!n) PIL.mois = isoD(new Date()).slice(0, 7); else { const [y, mo] = PIL.mois.split("-").map(Number); PIL.mois = isoD(new Date(y, mo - 1 + n, 1)).slice(0, 7); } renderPilot(); return; }
+  const v = e.target.closest("[data-pvue]"); if(v){ PIL.vue = v.dataset.pvue; renderPilot(); return; }
+  const g = e.target.closest("[data-pgo]");
+  if(g){ const s = sessionsPilotage().find(x => x.id === g.dataset.pgo); if(!s) return; PIL.vue = "liste"; PIL.mois = s.debut.slice(0, 7); renderPilot();
+    const r = document.getElementById("pr-" + s.id); if(r){ r.scrollIntoView({ block: "center", behavior: "smooth" }); r.classList.add("flash"); setTimeout(() => r.classList.remove("flash"), 1600); } return; }
+  if(e.target.id === "pRegSave"){
+    const reg = { email: (document.querySelector('#pilot [data-rk="email"]').value || "").trim(), agences: {} };
+    AG.forEach(a => { reg.agences[a] = {}; document.querySelectorAll(`#pilot [data-ra="${a}"]`).forEach(i => reg.agences[a][i.dataset.rf] = i.value.trim()); });
+    try{ await db.doc("pilotage/_reglages").set(reg); renderPilot(); $("pRegMsg").textContent = "Réglages enregistrés."; $("pRegMsg").className = "msg ok"; }
+    catch(err){ $("pRegMsg").textContent = "Enregistrement impossible."; $("pRegMsg").className = "msg err"; }
+  }
+});
+
 /* ---------- Démarrage ---------- */
 function onData(){
   if(!ready()) return;
   buildModel();
-  if(state.view === "consult") renderConsult(); else { renderAdmin(adm.tab === "categories" || !!document.querySelector("#admForm [data-qwait]") || (adm.tab === "questionnaires" && !$("admForm").dataset.dirty)); rattachRefresh(); }
+  if(state.view === "pilot"){ if(!$("pilot").contains(document.activeElement)) renderPilot(); }
+  else if(state.view === "consult") renderConsult(); else { renderAdmin(adm.tab === "categories" || !!document.querySelector("#admForm [data-qwait]") || (adm.tab === "questionnaires" && !$("admForm").dataset.dirty)); rattachRefresh(); }
   renderProp();
 }
 function useStatic(){ /* contenu lu dans contenu.js, pas de back office */
@@ -1870,6 +2041,8 @@ async function refreshAuth(){
     const c = ok ? null : await SB.from("conseilleres").select("email").limit(1); lit = ok || (!!c && !c.error && c.data && c.data.length > 0);
   }
   canAdmin = ok; canRead = lit; if(ok && adm.tab === "comptes") chargerComptes();
+  if(ok){ const { data: pl, error: pe } = await SB.from("pilotage").select("id,data").limit(5000); RAW.pilotage = pe ? [] : (pl || []).map(x => Object.assign({ id: x.id }, x.data || {})); }
+  else RAW.pilotage = [];
   if(lit){ const { data: q, error } = await SB.from("questionnaires").select("id,data").limit(5000); RAW.questionnaires = error ? [] : (q || []).map(x => Object.assign({ id: x.id }, x.data || {})); }
   else RAW.questionnaires = [];
   onData();
@@ -1877,7 +2050,7 @@ async function refreshAuth(){
   $("views").hidden = !ok;
   if(session && !lit){ $("notice").textContent = "Ce compte n'est pas encore autorisé : demandez à être ajouté(e) à la liste des conseillères."; $("notice").hidden = false; }
   else if($("notice").textContent.startsWith("Ce compte")) $("notice").hidden = true;
-  if(!ok && state.view === "admin") document.querySelector('.vbtn[data-view="consult"]').click();
+  if(!ok && (state.view === "admin" || state.view === "pilot")) document.querySelector('.vbtn[data-view="consult"]').click();
 }
 $("loginBtn").addEventListener("click", async () => {
   if(!SB) return;
@@ -1916,11 +2089,11 @@ $("loginForm").addEventListener("submit", async e => {
   try{ user = (typeof claude !== "undefined" && claude.use) ? await claude.use("user") : null; }catch(e){ user = null; }
   if(!db){ renderDetail(); return; }
   canRead = true; /* version Claude : l'application n'est ouverte qu'aux personnes avec qui elle est partagée */
-  ["domaines","formations","profils","questionnaires"].forEach(c => {
+  ["domaines","formations","profils","questionnaires","pilotage"].forEach(c => {
     db.collection(c).limit(1000).onSnapshot(snap => {
       RAW[c] = snap.docs.filter(x => x.exists).map(x => Object.assign({ id: x.id }, x.data()));
       onData();
-    }, () => { if(!RAW[c] || c === "questionnaires") RAW[c] = RAW[c] || []; onData(); });
+    }, () => { if(!RAW[c] || c === "questionnaires" || c === "pilotage") RAW[c] = RAW[c] || []; onData(); });
   });
   canAdmin = user ? await user.canEdit() : false;
   $("views").hidden = !canAdmin; renderDetail();
