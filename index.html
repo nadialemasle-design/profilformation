@@ -1678,9 +1678,9 @@ function propLigne(it){
   const x = rawFm(it.fid, it.code); if(!x || !x.m) return null;
   const { f, m } = x, d = (RAW.domaines || []).find(y => y.id === f.domaine) || {}, parcours = (f.modules || []).length > 1;
   const sess = (m.sessions || []).find(s => s.texte === it.session) || null;
-  /* tarif préférentiel (« en parcours ») : module d'un parcours, ou dès que la proposition compte au moins 2 formations ou modules,
-     même hors parcours (ex. une formation complémentaire ajoutée) ; CPF ou hors CPF */
-  const pref = Number(m.tarifParcours) > 0 && (parcours || prop.items.length >= 2);
+  /* tarif préférentiel (« en parcours ») : seulement quand la proposition compte au moins 2 formations ou modules
+     (parcours ou non) ; une seule case cochée = tarif plein, même pour un module de parcours */
+  const pref = Number(m.tarifParcours) > 0 && prop.items.length >= 2;
   const auto = pref ? Number(m.tarifParcours) : Number(m.tarif) || 0;
   /* tarif modifié à la main dans le détail de la proposition ; remise calculée par rapport au tarif plein de la formation */
   const perso = typeof it.prix === "number" && isFinite(it.prix), prix = perso ? it.prix : auto, base = Number(m.tarif) || 0;
