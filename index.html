@@ -535,6 +535,25 @@ details.group summary{border-left:none !important;box-shadow:none !important}det
 .ff-mod>.ff-mbody:only-child{grid-column:1/-1}
 @media (max-width:700px){.ac-mod{grid-template-columns:40px minmax(0,1fr);gap:8px}.ac-step{width:40px;margin-left:-20px;font-size:11.5px}.ac-mods{padding:2px 10px 14px 22px}.ac-mods::before{left:21px}
 .ff-mod{grid-template-columns:40px minmax(0,1fr) !important;gap:8px !important}.ff-mod>.code{width:40px}}
+/* accents #27CCAD */
+:root{--teal:#27CCAD;--teal-clair:#DDF6F1}
+.side .sidebox>h2,.side .sidebox .stit,.side .domtit{position:relative}
+.side .domtit::before,.side .sidetit::before{content:"";display:inline-block;width:14px;height:3px;border-radius:2px;background:var(--teal);vertical-align:middle;margin-right:8px}
+.prof[aria-pressed="true"]{background:var(--teal-clair) !important;box-shadow:inset 4px 0 0 var(--teal) !important}
+.prof[aria-pressed="true"] .count{background:var(--teal) !important;color:#12343F !important}
+.prof:hover{background:#EEF9F6}
+details.group[open] summary{color:#12343F !important;border-bottom:2px solid var(--teal) !important}
+details.group[open] summary .chev{stroke:var(--teal)}
+.side .inp:focus,.side select:focus,#q:focus{border-color:var(--teal) !important;box-shadow:0 0 0 3px rgba(39,204,173,.22) !important;outline:none}
+.pend{display:inline-flex;align-items:center;gap:6px;flex:none}
+.pk{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:7px;background:var(--teal);color:#12343F;flex:none}
+.pk svg{width:13px;height:13px;stroke:#12343F}
+.ff-item .pk{width:18px;height:18px;border-radius:6px;margin-right:6px;vertical-align:-3px}.ff-item .pk svg{width:11px;height:11px}
+.ff-item>span>svg{display:none}
+.ac-kind.parc{display:inline-flex;align-items:center;gap:6px;color:#12343F}
+.ac-kind.parc svg{width:20px;height:20px;padding:3px;border-radius:6px;background:var(--teal);stroke:#12343F;box-sizing:border-box}
+.fo-best,.ac-card .fo-best{background:var(--teal) !important;color:#12343F !important}
+.fo-best svg{stroke:#12343F;fill:#12343F}
 </style>
 </head>
 <body>
@@ -813,7 +832,7 @@ function renderList(){
     const open = q || ouvertes.has(d.id + "|" + c.nom); /* toutes visibles, repliées par défaut ; dépliées pendant une recherche */
     return `<details class="group" data-cat="${esc(c.nom)}"${open?" open":""}><summary><span class="sum">${esc(c.nom)}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="profiles">${c.items.map(p => {
       const n = Object.keys(p.parcours).length;
-      return `<button type="button" class="prof" data-pid="${esc(p.id)}" aria-pressed="${state.pid===p.id}"><span>${esc(p.nom)}</span><span class="count" title="${n} parcours possible${n>1?"s":""}">${n}</span></button>`;
+      return `<button type="button" class="prof" data-pid="${esc(p.id)}" aria-pressed="${state.pid===p.id}"><span>${esc(p.nom)}</span><span class="pend">${pkIc(p)}<span class="count" title="${n} proposition${n>1?"s":""} possible${n>1?"s":""}">${n}</span></span></button>`;
     }).join("")}</div></details>`;
   }).join("") : `<p class="none">${!d.profils.length ? "Aucun profil dans ce domaine pour l'instant." : q ? `Rien dans ce domaine pour « ${esc(state.q)} »${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}.` : "Aucun sous-profil dans cette famille."}</p>`;
   if(q) $("groups").insertAdjacentHTML("afterbegin", formationsHtml(q));
@@ -822,7 +841,7 @@ function renderList(){
     const autres = [];
     DOMAINES.filter(x => x.id !== d.id).forEach(x => x.profils.forEach(p => { if(matchQ(hayOf(p, x), q)) autres.push({ p, x }); }));
     if(autres.length) $("groups").insertAdjacentHTML("beforeend", `<div class="ailleurs"><div class="ailtit">Dans les autres domaines (${autres.length})</div>${autres.map(({p, x}) =>
-      `<button type="button" class="prof" data-pid="${esc(p.id)}" data-dom="${esc(x.id)}"><span>${esc(p.nom)}<small class="pdom">${esc(x.nom)} · ${esc(p.categories[0])}</small></span><span class="count">${Object.keys(p.parcours).length}</span></button>`).join("")}</div>`);
+      `<button type="button" class="prof" data-pid="${esc(p.id)}" data-dom="${esc(x.id)}"><span>${esc(p.nom)}<small class="pdom">${esc(x.nom)} · ${esc(p.categories[0])}</small></span><span class="pend">${pkIc(p)}<span class="count">${Object.keys(p.parcours).length}</span></span></button>`).join("")}</div>`);
     else if(!cats.length) $("groups").insertAdjacentHTML("beforeend", `<p class="none">Rien non plus dans les autres domaines. Essayez un autre mot.</p>`);
   }
 }
@@ -834,11 +853,13 @@ function formationsTrouvees(q){
   return (RAW.formations || []).filter(f => matchQ(norm([f.nom, f.intitule, ...(f.modules || []).map(m => m.titre)].join(" ")), q)) /* titres seulement */
     .sort((a, b) => (a.nom || "").localeCompare(b.nom || ""));
 }
+const aParcoursP = p => Object.keys(p.parcours || {}).some(fid => { const f = (RAW.formations || []).find(x => x.id === fid); return f && Array.isArray(f.modules) && f.modules.length > 1; });
+const pkIc = p => aParcoursP(p) ? `<span class="pk" title="Ce sous-profil propose au moins un parcours">${ic("modules")}</span>` : "";
 function formationsHtml(q){
   const l = formationsTrouvees(q); if(!l.length) return "";
   return `<div class="ff-res"><div class="domtit">Formations (${l.length})</div>${l.map(f => {
     const d = (RAW.domaines || []).find(x => x.id === f.domaine);
-    return `<button type="button" class="prof ff-item" data-fid="${esc(f.id)}" aria-pressed="${state.fid===f.id}"><span>${ic("modules")}${esc(f.nom)}<small class="pdom">${esc(d ? d.nom : "")}${f.duree ? " · " + esc(f.duree) : ""}</small></span></button>`;
+    return `<button type="button" class="prof ff-item" data-fid="${esc(f.id)}" aria-pressed="${state.fid===f.id}"><span>${(f.modules || []).length > 1 ? `<span class="pk" title="Parcours">${ic("modules")}</span>` : ""}${esc(f.nom)}<small class="pdom">${esc(d ? d.nom : "")}${f.duree ? " · " + esc(f.duree) : ""}</small></span></button>`;
   }).join("")}</div>`;
 }
 function renderListTous(){
@@ -856,7 +877,7 @@ function renderListTous(){
       const open = q || ouvertes.has(d.id + "|" + c.nom);
       return `<details class="group" data-cat="${esc(c.nom)}" data-dom="${esc(d.id)}"${open?" open":""}><summary><span class="sum">${esc(c.nom)}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="profiles">${c.items.map(p => {
         const n = Object.keys(p.parcours).length;
-        return `<button type="button" class="prof" data-pid="${esc(p.id)}" data-dom="${esc(d.id)}" aria-pressed="${state.dom===d.id && state.pid===p.id}"><span>${esc(p.nom)}</span><span class="count" title="${n} parcours possible${n>1?"s":""}">${n}</span></button>`;
+        return `<button type="button" class="prof" data-pid="${esc(p.id)}" data-dom="${esc(d.id)}" aria-pressed="${state.dom===d.id && state.pid===p.id}"><span>${esc(p.nom)}</span><span class="pend">${pkIc(p)}<span class="count" title="${n} proposition${n>1?"s":""} possible${n>1?"s":""}">${n}</span></span></button>`;
       }).join("")}</div></details>`;
     }).join("");
   }).join("");
@@ -938,7 +959,7 @@ function renderDetail(){
       ${pied(f.infos[m], Object.assign(ctxF(f), avecStep ? {} : { sansTarif: true }))}${propCtl(f.id, m)}</div></div>`;
   const acc = cols.map((f, i) => {
     const pc = p.parcours[f.id] || {}, codes = d.ordreModules.filter(m => f.modules[m]), nm = codes.length;
-    const head = `<div class="ac-head"><div class="ac-ttl">${i === 0 && n > 1 ? `<span class="fo-best">${ic("star")}Le plus adapté</span>` : ""}<span class="ac-kind">${nm > 1 ? `Parcours · ${nm} modules` : "Formation"}</span>
+    const head = `<div class="ac-head"><div class="ac-ttl">${i === 0 && n > 1 ? `<span class="fo-best">${ic("star")}Le plus adapté</span>` : ""}<span class="ac-kind${nm > 1 ? " parc" : ""}">${nm > 1 ? `${ic("modules")}Parcours · ${nm} modules` : "Formation"}</span>
         <h3>${esc(f.nom)}${nm < 2 ? cpfBadge(cpfTexte(f.modules[codes[0]], (f.infos[codes[0]] || {}).cpf)) : ""}</h3>${f.intitule && f.intitule !== f.nom ? `<p>${esc(f.intitule)}</p>` : ""}
         <span class="fo-tags">${f.duree ? `<span>${ic("duree")}${esc(f.duree)}</span>` : ""}${f.certification ? `<span>${ic("certif")}${esc(f.certification)}</span>` : ""}</span></div>${tarifs(f)}</div>
       ${pc.pourquoi ? `<div class="ac-why">${ic("why")}<span><b>Pourquoi :</b> ${esc(pc.pourquoi)}${pc.argumentaire ? `<details class="fo-more"><summary>Argumentaire détaillé</summary><span class="fo-moretxt">${esc(pc.argumentaire)}</span></details>` : ""}</span></div>` : ""}`;
