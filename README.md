@@ -27,6 +27,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `supabase-mise-a-jour-2027-n8.sql` | Mise à jour n°8 : argumentaire détaillé replié (besoin Situation / Difficulté / Attente, argumentaire par parcours), M1 commun pour l'IA et les réseaux sociaux. Ne change un texte que s'il n'a pas été modifié dans Gestion. |
 | `supabase-mise-a-jour-2027-n9.sql` | Mise à jour n°9 : les éditrices gèrent la liste des conseillères depuis Gestion › Conseillères. |
 | `supabase-mise-a-jour-2027-n10.sql` | Mise à jour n°10 : 6 parcours PAO (De Photoshop à l'IA, Photoshop et InDesign, Photoshop et Illustrator, Prise de vue et retouche photo, Photo Pro, Création visuelle et IA). Modules copiés depuis les formations seules ; seul le module certifiant (Tosa) passe en dossier CPF. Ne supprime rien, ne modifie pas un parcours déjà créé. |
+| `supabase-mise-a-jour-2027-n11.sql` | Mise à jour n°11 (après la n°10) : les parcours PAO deviennent l'offre principale de 7 sous-profils PAO et PAO & IA, avec « pourquoi » et argumentaire ; les formations seules certifiantes passent en formations complémentaires. Un sous-profil qui a déjà un parcours PAO n'est pas modifié. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 

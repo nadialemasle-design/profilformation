@@ -4132,6 +4132,18 @@ window.CONTENU = {
       "categorie": "Communication et marketing",
       "complements": [
         {
+          "formation": "pao-indesign",
+          "pourquoi": "InDesign seul : si elle maîtrise déjà Photoshop, ou pour un financement CPF par formation."
+        },
+        {
+          "formation": "pao-photoshop-init",
+          "pourquoi": "Photoshop seul : pour un financement CPF par formation (certification Tosa)."
+        },
+        {
+          "formation": "pao-illustrator",
+          "pourquoi": "Illustrator seul : si elle maîtrise déjà Photoshop, ou pour un financement CPF par formation."
+        },
+        {
           "formation": "paoia-design",
           "pourquoi": "Créer des visuels avec les outils IA du design (Midjourney, Ideogram)."
         },
@@ -4145,26 +4157,19 @@ window.CONTENU = {
       "ordre": 1,
       "parcours": [
         {
-          "formation": "pao-indesign",
-          "pourquoi": "Le plus adapté pour ses plaquettes, affiches et documents imprimés.",
-          "reponses": {
-            "Formation": "Mettre en page des publications professionnelles prêtes à imprimer ; certification Tosa."
-          },
-          "argumentaire": "Mise en page professionnelle prête à imprimer, avec certification Tosa."
+          "formation": "pao-p-indesign",
+          "pourquoi": "Le plus adapté : créer ses plaquettes, affiches et publications de A à Z.",
+          "argumentaire": "Photoshop pour préparer et retoucher les images, puis InDesign pour monter les plaquettes, affiches et documents imprimés. La personne repart en sachant produire seule un support complet, prêt pour l'imprimeur ou le web. Certification Tosa InDesign pour valoriser la compétence."
         },
         {
-          "formation": "pao-photoshop-init",
-          "pourquoi": "À proposer pour retoucher et composer ses images pour tous ses supports.",
-          "reponses": {
-            "Formation": "Retouches et compositions d'images pour tous ses supports ; certification Tosa."
-          }
+          "formation": "pao-p-ia",
+          "pourquoi": "À proposer si elle produit surtout des visuels et veut gagner du temps grâce à l'IA d'Adobe.",
+          "argumentaire": "Photoshop pour maîtriser la retouche et la composition d'images, puis Adobe & IA pour produire plus vite avec les outils IA intégrés (remplissage génératif, variantes, détourage). Idéal pour multiplier les visuels pour le web et les réseaux. Certification Tosa Photoshop."
         },
         {
-          "formation": "pao-illustrator",
-          "pourquoi": "À proposer pour créer logos, pictogrammes et illustrations vectorielles nets à toutes les tailles.",
-          "reponses": {
-            "Formation": "Illustrations vectorielles et graphiques nets à toutes les tailles ; certification Tosa."
-          }
+          "formation": "pao-p-illustrator",
+          "pourquoi": "À proposer pour créer logos, pictogrammes et illustrations vectorielles.",
+          "argumentaire": "Photoshop pour les images, Illustrator pour les éléments vectoriels nets à toutes les tailles : logos, pictos, infographies. Utile quand la structure gère sa propre identité visuelle. Certification Tosa Illustrator."
         }
       ],
       "reponses": {},
@@ -4184,6 +4189,10 @@ window.CONTENU = {
       "categorie": "Création et contenus",
       "complements": [
         {
+          "formation": "pao-photoshop-perf",
+          "pourquoi": "Pour les retouches avancées, s'il maîtrise déjà Photoshop."
+        },
+        {
           "formation": "paoia-adobe",
           "pourquoi": "L'IA intégrée à Photoshop et Illustrator pour produire plus vite."
         },
@@ -4197,26 +4206,14 @@ window.CONTENU = {
       "ordre": 2,
       "parcours": [
         {
-          "formation": "pao-prise-vue",
-          "pourquoi": "À proposer pour maîtriser exposition, lumière et cadrage, en photo comme en vidéo.",
-          "reponses": {
-            "Formation": "De l'exposition au cadrage : des prises de vue photo et vidéo professionnelles."
-          }
+          "formation": "pao-p-photopro",
+          "pourquoi": "Le plus adapté : toute la chaîne, de la prise de vue à l'image finalisée.",
+          "argumentaire": "Prise de vue (exposition, lumière, cadrage), Lightroom pour trier et développer ses séries de façon homogène, Photoshop pour les retouches et compositions. Une méthode complète et professionnelle, de l'appareil à la livraison client. Certification Tosa Photoshop."
         },
         {
-          "formation": "pao-lightroom",
-          "pourquoi": "À proposer pour trier son catalogue et développer ses séries de photos de façon homogène.",
-          "reponses": {
-            "Formation": "Organiser son catalogue et développer ses photos de façon homogène."
-          }
-        },
-        {
-          "formation": "pao-photoshop-perf",
-          "pourquoi": "Pour les retouches avancées.",
-          "reponses": {
-            "Formation": "Retouches fines, montages et compositions avancées."
-          },
-          "argumentaire": "Retouches fines, montages et compositions."
+          "formation": "pao-p-photo",
+          "pourquoi": "À proposer s'il n'utilise pas Lightroom ou veut un parcours plus court.",
+          "argumentaire": "Prise de vue maîtrisée puis retouche et valorisation des images dans Photoshop. Un jour de moins que Photo Pro, pour qui travaille image par image plutôt qu'en séries. Certification Tosa Photoshop."
         }
       ],
       "reponses": {},
@@ -4236,6 +4233,10 @@ window.CONTENU = {
       "categorie": "Commerce, artisanat, tourisme",
       "complements": [
         {
+          "formation": "pao-lightroom",
+          "pourquoi": "Retoucher rapidement et de façon cohérente toute une série de photos produits."
+        },
+        {
           "formation": "com-canva1",
           "pourquoi": "Créer ses visuels soi-même, sans compétences graphiques."
         }
@@ -4253,11 +4254,9 @@ window.CONTENU = {
           "argumentaire": "Il apprend à photographier ses produits et réalisations avec un rendu professionnel (lumière, cadrage, exposition). Résultat : des photos qui font vendre."
         },
         {
-          "formation": "pao-lightroom",
-          "pourquoi": "À proposer pour retoucher rapidement et de façon cohérente toute une série de photos produits.",
-          "reponses": {
-            "Formation": "Retouches rapides et cohérentes sur toute une série de photos produits."
-          }
+          "formation": "pao-p-photo",
+          "pourquoi": "À proposer s'il veut aussi retoucher ses photos avec Photoshop et mobiliser son CPF.",
+          "argumentaire": "Réussir ses photos de produits (lumière, cadrage, fond) puis les détourer et les retoucher dans Photoshop pour sa boutique en ligne et ses réseaux. La certification Tosa Photoshop permet le financement CPF du module Photoshop."
         },
         {
           "formation": "pao-affinity",
@@ -4285,6 +4284,18 @@ window.CONTENU = {
       "categorie": "Emploi et transition",
       "complements": [
         {
+          "formation": "pao-photoshop-init",
+          "pourquoi": "Photoshop seul : pour un financement CPF par formation (une certification Tosa par logiciel)."
+        },
+        {
+          "formation": "pao-illustrator",
+          "pourquoi": "Illustrator seul : pour un financement CPF par formation (une certification Tosa par logiciel)."
+        },
+        {
+          "formation": "pao-indesign",
+          "pourquoi": "InDesign seul : pour un financement CPF par formation (une certification Tosa par logiciel)."
+        },
+        {
           "formation": "paoia-design",
           "pourquoi": "Créer des visuels avec les outils IA du design (Midjourney, Ideogram)."
         }
@@ -4294,28 +4305,19 @@ window.CONTENU = {
       "ordre": 4,
       "parcours": [
         {
-          "formation": "pao-photoshop-init",
-          "pourquoi": "La base du métier : la retouche d’image.",
-          "reponses": {
-            "Formation": "Retouches et compositions d'images ; certification Tosa reconnue."
-          },
-          "argumentaire": "La base du métier : retouches et compositions d'images, avec une certification Tosa reconnue par les employeurs."
+          "formation": "pao-p-illustrator",
+          "pourquoi": "Le plus adapté : les deux logiciels de base de la création graphique.",
+          "argumentaire": "Photoshop pour l'image et Illustrator pour le vectoriel : le socle attendu dans les offres d'emploi de graphiste. Certification Tosa Illustrator à mettre sur son CV."
         },
         {
-          "formation": "pao-illustrator",
-          "pourquoi": "Pour la création graphique vectorielle.",
-          "reponses": {
-            "Formation": "Logos, illustrations et graphiques vectoriels ; certification Tosa."
-          },
-          "argumentaire": "Pour la création graphique vectorielle : logos, illustrations et graphiques, avec certification Tosa."
+          "formation": "pao-p-indesign",
+          "pourquoi": "À proposer si elle vise la mise en page (édition, imprimerie, communication).",
+          "argumentaire": "Photoshop pour l'image, InDesign pour la mise en page professionnelle de documents imprimés. Certification Tosa InDesign à valoriser auprès des recruteurs."
         },
         {
-          "formation": "pao-indesign",
-          "pourquoi": "Pour la mise en page professionnelle.",
-          "reponses": {
-            "Formation": "Mise en page de documents imprimés et numériques ; certification Tosa."
-          },
-          "argumentaire": "Pour la mise en page professionnelle de documents imprimés et numériques, avec certification Tosa."
+          "formation": "pao-p-ia",
+          "pourquoi": "À proposer pour ajouter l'IA d'Adobe à ses compétences.",
+          "argumentaire": "Photoshop, puis les outils IA intégrés à la suite Adobe : une compétence de plus en plus demandée. Certification Tosa Photoshop."
         }
       ],
       "reponses": {},
@@ -4376,6 +4378,10 @@ window.CONTENU = {
       "categorie": "Création et contenus",
       "complements": [
         {
+          "formation": "paoia-design",
+          "pourquoi": "Explorer les générateurs d'images IA (Midjourney, Ideogram)."
+        },
+        {
           "formation": "pao-photoshop-perf",
           "pourquoi": "Retouches et compositions avancées."
         },
@@ -4389,19 +4395,17 @@ window.CONTENU = {
       "ordre": 1,
       "parcours": [
         {
+          "formation": "paoia-p-creation",
+          "pourquoi": "Le plus adapté : l'IA d'Adobe et les générateurs d'images IA.",
+          "argumentaire": "Adobe & IA pour gagner du temps dans ses logiciels habituels, puis IA design graphique pour explorer Midjourney et Ideogram et trouver de nouvelles pistes créatives. Parcours non certifiant, hors CPF."
+        },
+        {
           "formation": "paoia-adobe",
-          "pourquoi": "Le plus adapté : l’IA intégrée à ses logiciels Adobe.",
+          "pourquoi": "À proposer s'il veut seulement l'IA intégrée à ses logiciels Adobe.",
           "reponses": {
             "Formation": "Fonctions IA de Photoshop, Illustrator et de la suite Adobe pour produire plus vite."
           },
           "argumentaire": "Il apprend à utiliser les fonctions IA de Photoshop, Illustrator et de la suite Adobe (remplissage génératif, Firefly…) dans son travail habituel. Résultat : du temps gagné sans changer d'outils."
-        },
-        {
-          "formation": "paoia-design",
-          "pourquoi": "À proposer pour explorer les générateurs d'images IA (Midjourney, Ideogram) et trouver de nouvelles pistes créatives.",
-          "reponses": {
-            "Formation": "Générer des visuels et des pistes créatives avec les solutions IA du design graphique."
-          }
         }
       ],
       "reponses": {},
@@ -4420,6 +4424,10 @@ window.CONTENU = {
       "besoin": "Produire plus de visuels percutants, plus vite.",
       "categorie": "Communication et marketing",
       "complements": [
+        {
+          "formation": "paoia-adobe",
+          "pourquoi": "L'IA intégrée à Photoshop et Illustrator, s'il travaille avec la suite Adobe."
+        },
         {
           "formation": "com-canva-pro",
           "pourquoi": "Aller plus loin sur Canva : charte, vidéo, IA, automatisation."
@@ -4446,12 +4454,9 @@ window.CONTENU = {
           "argumentaire": "Créer visuels de campagne et de réseaux sociaux avec Midjourney et Ideogram. Résultat : plus de visuels, plus vite."
         },
         {
-          "formation": "paoia-adobe",
-          "pourquoi": "S’il travaille déjà avec la suite Adobe.",
-          "reponses": {
-            "Formation": "Automatiser et accélérer ses créations dans Adobe grâce à l’IA."
-          },
-          "argumentaire": "Accélérer ses créations grâce à l'IA intégrée."
+          "formation": "paoia-p-creation",
+          "pourquoi": "À proposer s'il travaille aussi avec la suite Adobe.",
+          "argumentaire": "IA design graphique pour créer des visuels originaux, Adobe & IA pour les retravailler et les décliner dans Photoshop et Illustrator. Parcours non certifiant, hors CPF."
         }
       ],
       "reponses": {},
@@ -6638,30 +6643,25 @@ window.CONTENU = {
       "reponses": {},
       "parcours": [
         {
-          "formation": "pao-indesign",
-          "pourquoi": "Le plus adapté : la mise en page professionnelle.",
-          "reponses": {
-            "Formation": "Gabarits, styles, longs documents et export PDF pour l'imprimeur ; certification Tosa."
-          },
-          "argumentaire": "Gabarits, styles, longs documents et export PDF pour l'imprimeur, avec certification Tosa. Résultat : des documents fiables, produits plus vite."
+          "formation": "pao-p-indesign",
+          "pourquoi": "Le plus adapté : préparer les images et monter des documents prêts pour l'imprimeur.",
+          "argumentaire": "Photoshop pour préparer les images (résolution, couleurs, détourage), InDesign pour monter catalogues, magazines et plaquettes conformes aux exigences de l'imprimeur. Certification Tosa InDesign."
         },
         {
-          "formation": "pao-illustrator",
-          "pourquoi": "À proposer pour les logos, pictogrammes et illustrations vectorielles intégrés aux mises en page.",
-          "reponses": {
-            "Formation": "Logos, pictogrammes et illustrations nets à toutes les tailles ; certification Tosa."
-          }
-        },
-        {
-          "formation": "pao-photoshop-perf",
-          "pourquoi": "S'il maîtrise déjà les bases de Photoshop.",
-          "reponses": {
-            "Formation": "Détourages, photomontages et retouches avancées pour l'impression."
-          },
-          "argumentaire": "Détourages, photomontages et retouches avancées pour l'impression."
+          "formation": "pao-p-illustrator",
+          "pourquoi": "À proposer pour les logos et illustrations intégrés aux mises en page.",
+          "argumentaire": "Photoshop et Illustrator pour produire soi-même les éléments graphiques (logos, pictos, plans) intégrés aux documents. Certification Tosa Illustrator."
         }
       ],
       "complements": [
+        {
+          "formation": "pao-indesign",
+          "pourquoi": "InDesign seul : s'il maîtrise déjà Photoshop."
+        },
+        {
+          "formation": "pao-photoshop-perf",
+          "pourquoi": "Retouches avancées pour l'impression, s'il maîtrise déjà les bases de Photoshop."
+        },
         {
           "formation": "paoia-adobe",
           "pourquoi": "Gagner du temps grâce à l'IA intégrée aux logiciels Adobe."

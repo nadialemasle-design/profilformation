@@ -802,7 +802,7 @@ function renderDetail(){
   const tarifs = f => {
     if(Object.keys(f.modules).length > 1){
       const x = f.prix; if(!x) return "";
-      return `<span class="fo-tarifs" title="${x.separe ? `${eur(x.separe)} si les modules sont pris séparément` : ""}"><b>${eur(x.parcours)}</b><small>le parcours</small>${x.cpf ? `<span class="fo-cpf">${x.partiel ? `Dossier CPF ${eur(x.cpf)} <small>module certifiant + certification ${eur(x.cert)} · autres modules hors CPF</small>` : `Total CPF ${eur(x.cpf)} <small>dont certification ${eur(x.cert)}</small>`}</span>` : ""}</span>`;
+      return `<span class="fo-tarifs" title="${x.separe ? `${eur(x.separe)} si les modules sont pris séparément` : ""}"><b>${eur(x.parcours)}</b><small>le parcours</small>${x.cpf ? `<span class="fo-cpf">${x.partiel ? `Dossier CPF ${eur(x.cpf)} <small>module certifiant + certification ${eur(x.cert)}</small>` : `Total CPF ${eur(x.cpf)} <small>dont certification ${eur(x.cert)}</small>`}</span>` : ""}</span>`;
     }
     const m = f.infos[Object.keys(f.modules)[0]] || {};
     const c = certInfo(f, m);
