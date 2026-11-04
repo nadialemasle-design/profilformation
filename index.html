@@ -948,7 +948,13 @@ $("detail").addEventListener("click", e => {
   adm.dom = b.dataset.dom; adm.tab = "profils"; adm.sel = b.dataset.editp;
   document.querySelector('.vbtn[data-view="admin"]').click();
 });
-$("resetBtn").addEventListener("click", () => {
+$("resetBtn").addEventListener("click", e => {
+  const b = e.currentTarget;
+  /* 2e clic dans les 4 s : vider aussi la proposition */
+  if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.textContent = "Réinitialiser"; b.classList.remove("danger");
+    prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition vidée"); return; }
+  if(prop.items.length){ b.dataset.ok = "1"; b.textContent = "Vider aussi la proposition ?"; b.classList.add("danger");
+    setTimeout(() => { if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.textContent = "Réinitialiser"; b.classList.remove("danger"); } }, 4000); }
   state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; ouvertes.clear();
   $("q").value = ""; renderConsult(); $("groups").scrollTop = 0;
 });
@@ -1624,8 +1630,10 @@ async function write(fn, okText, after){
    ===================================================================== */
 const PLAFOND_CPF = 1500, PARTICIPATION_CPF = 150;
 const prop = { items: [], exonere: false, ouvert: false };
-try{ const x = JSON.parse(localStorage.getItem("proposition-v1") || "null"); if(x && Array.isArray(x.items)){ prop.items = x.items; prop.exonere = !!x.exonere; } }catch(e){}
-const propSave = () => { try{ localStorage.setItem("proposition-v1", JSON.stringify({ items: prop.items, exonere: prop.exonere })); }catch(e){} };
+/* la proposition dure le temps de l'onglet (sessionStorage) : on repart d'une page vide à chaque ouverture */
+try{ localStorage.removeItem("proposition-v1"); }catch(e){}
+try{ const x = JSON.parse(sessionStorage.getItem("proposition-v1") || "null"); if(x && Array.isArray(x.items)){ prop.items = x.items; prop.exonere = !!x.exonere; } }catch(e){}
+const propSave = () => { try{ sessionStorage.setItem("proposition-v1", JSON.stringify({ items: prop.items, exonere: prop.exonere })); }catch(e){} };
 const rawFm = (fid, code) => { const f = (RAW.formations || []).find(x => x.id === fid); return f ? { f, m: (f.modules || []).find(y => y.code === code) } : null; };
 const propKey = m => norm(m.titre || "");
 /* nombre de jours d'une session écrite en texte */
