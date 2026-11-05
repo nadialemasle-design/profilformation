@@ -561,6 +561,13 @@ details.group[open] summary .chev{stroke:var(--teal)}
 .pt-min{display:block;font-size:10.5px;font-weight:600;color:#2A6F97;white-space:nowrap}
 .ac-fermer{display:inline-flex;align-items:center;gap:6px;margin:14px 0 0 -2px;padding:7px 14px;border-radius:999px;border:1px solid var(--bleu-clair3);background:#fff;color:#12343F;font:inherit;font-size:13px;font-weight:700;cursor:pointer;position:relative;z-index:1}
 .ac-fermer:hover{background:var(--teal-clair);border-color:var(--teal)}.ac-fermer i{font-style:normal}
+.ia-btn{display:none;align-items:center;gap:4px;border:1px solid var(--teal);background:var(--teal-clair);color:#12343F;font:inherit;font-size:12.5px;font-weight:700;border-radius:999px;padding:5px 12px;cursor:pointer;margin-left:auto}
+body.ia-on .ia-btn{display:inline-flex}.ia-btn:hover{background:var(--teal)}.ia-btn:disabled{opacity:.7;cursor:wait}
+.ia-line{display:flex;justify-content:flex-end;margin-bottom:-6px}.ia-line .ia-btn{margin-left:0}
+.cprow .ia-btn{margin-left:0;white-space:nowrap}
+.ia-undo{border:none;background:none;color:#2A6F97;font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:4px 6px;white-space:nowrap}
+.inp.ia-rempli{border-color:var(--teal) !important;background:#F3FCFA !important}
+.field.ia-line{display:flex !important;flex-direction:row !important;justify-content:flex-end;align-items:center;gap:8px}.field.ia-line>*{width:auto !important;flex:none}
 </style>
 </head>
 <body>
@@ -1696,6 +1703,7 @@ function formCategorie(el, d){
 
 /* ----- Formulaire profil ----- */
 function formProfil(el, d){
+  IA_DOM = d; /* domaine du formulaire, pour l'assistance IA */
   const isNew = adm.sel === "new";
   const r = isNew ? { categorie: adm.cat || "", nom: "", besoin: "", reponses: {}, parcours: [] } : (rawP(adm.sel) || {});
   const cats = domCats(d), mes = isNew ? (adm.cat ? [adm.cat] : []) : profCats(r);
@@ -1708,6 +1716,7 @@ function formProfil(el, d){
       <div class="field full"><span>Catégories * <small class="fhint">— cochez toutes celles où ce sous-profil doit apparaître ; la première cochée est la principale</small></span>
         <div class="catchecks" id="fCats">${cats.map(c => `<label class="catchk"><input type="checkbox" value="${esc(c)}"${mes.includes(c)?" checked":""}> ${esc(c)}</label>`).join("")}</div>
         <input class="inp" id="fCatNew" placeholder="ou nouvelle catégorie : saisir son nom"></div>
+      <div class="field full ia-line"><button type="button" class="ia-btn" data-ia="besoin" title="Proposer le besoin, son argumentaire détaillé et des mots-clés à partir du nom et des catégories (les champs déjà remplis servent de base)">✨ Rédiger le besoin et les mots-clés avec l'IA</button></div>
       ${field("Besoin <small class=\"fhint\">— une phrase, affichée d'emblée</small>", ta("fBesoin", r.besoin || ""), true)}
       <details class="mextra full"${r.besoinDetail ? "" : ""}><summary>Argumentaire détaillé du besoin (replié sur la fiche)</summary><div class="fgrid">
         ${field("Situation", ta("fBSit", (r.besoinDetail || {}).situation || "", "ex. Gère seul(e) toute son activité…"), true)}
@@ -1780,7 +1789,7 @@ function pcRow(d, x, i){
   const f = d.formations.find(f => f.id === x.formation);
   return `<div class="pcrow"><div class="pchead"><span class="rank">#${i+1}</span>
       <select class="pcf" aria-label="Parcours">${d.formations.map(o => `<option value="${esc(o.id)}"${o.id===x.formation?" selected":""}>${esc(o.nom)}</option>`).join("")}</select>
-      <button type="button" class="btn small" data-up="1">Monter</button><button type="button" class="btn small" data-down="1">Descendre</button><button type="button" class="btn small danger" data-rm="1">Retirer</button></div>
+      <button type="button" class="btn small" data-up="1">Monter</button><button type="button" class="btn small" data-down="1">Descendre</button><button type="button" class="btn small danger" data-rm="1">Retirer</button><button type="button" class="ia-btn" data-ia="pc" title="Rédiger le pourquoi, l'argumentaire détaillé et l'argument de chaque module pour ce sous-profil">✨ Rédiger avec l'IA</button></div>
     <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Pourquoi</span><input class="inp pcw" value="${esc(x.pourquoi || "")}" placeholder="ex. Si sa clientèle est locale. (une ligne, affichée d'emblée)"></div>
     <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Argumentaire détaillé</span><textarea class="inp pca" placeholder="Replié sur la fiche : ce que chaque module apporte, le résultat concret. Laisser vide si inutile.">${esc(x.argumentaire || "")}</textarea></div>
     ${f ? Object.keys(f.modules).map(m => `<div class="modrow"><span class="code">${esc(m)}</span><textarea class="inp pcm" data-m="${esc(m)}" placeholder="Laisser vide pour utiliser l'argument commun">${esc((x.reponses||{})[m] || "")}</textarea></div>`).join("") : ""}
@@ -1788,7 +1797,7 @@ function pcRow(d, x, i){
 }
 function cpRow(d, c){
   const autres = DOMAINES.filter(x => x.id !== d.id);
-  return `<div class="cprow"><select aria-label="Formation complémentaire"><option value="">Choisir une formation…</option>${autres.map(x => `<optgroup label="${esc(x.nom)}">${x.formations.map(f => `<option value="${esc(f.id)}"${f.id===c.formation?" selected":""}>${esc(f.nom)}</option>`).join("")}</optgroup>`).join("")}</select><input class="inp" value="${esc(c.pourquoi || "")}" placeholder="Pourquoi la proposer" aria-label="Pourquoi la proposer"><button type="button" class="btn small danger" data-rm="1">Retirer</button></div>`;
+  return `<div class="cprow"><select aria-label="Formation complémentaire"><option value="">Choisir une formation…</option>${autres.map(x => `<optgroup label="${esc(x.nom)}">${x.formations.map(f => `<option value="${esc(f.id)}"${f.id===c.formation?" selected":""}>${esc(f.nom)}</option>`).join("")}</optgroup>`).join("")}</select><input class="inp" value="${esc(c.pourquoi || "")}" placeholder="Pourquoi la proposer" aria-label="Pourquoi la proposer"><button type="button" class="ia-btn" data-ia="cp" title="Rédiger le pourquoi avec l'IA">✨ IA</button><button type="button" class="btn small danger" data-rm="1">Retirer</button></div>`;
 }
 function readRow(row){
   const reponses = {};
@@ -2369,6 +2378,76 @@ document.addEventListener("click", e => {
   const d = b.closest("details.ac-card"); if(!d) return;
   d.open = false; state.accOuvert = "";
   const top = d.getBoundingClientRect().top; if(top < 70) window.scrollBy({ top: top - 90, behavior: "smooth" });
+});
+
+/* ===== Assistance IA dans Gestion (version Claude uniquement : capacité « sample ») ===== */
+let IA_SAMPLE, IA_DOM = null;
+async function iaSample(){
+  if(IA_SAMPLE === undefined){ try{ IA_SAMPLE = (!window.SUPABASE_CONFIG && typeof claude !== "undefined" && claude.use) ? await claude.use("sample") : null; }catch(e){ IA_SAMPLE = null; } }
+  return IA_SAMPLE;
+}
+iaSample().then(x => { if(x) document.body.classList.add("ia-on"); });
+const IA_STYLE = `Tu aides une conseillère d'un centre de formation continue à rédiger les textes d'un outil d'orientation (sous-profils métiers → formations).
+Règles : français ; phrases courtes, concrètes, orientées résultat pour la personne ; pas de jargon marketing ni de superlatifs ; écriture inclusive sobre (« la personne », « il ou elle » à éviter : préférer des tournures neutres) ;
+n'invente JAMAIS de tarif, de date, de durée, de certification ou de financement ; n'utilise que les informations fournies.`;
+const iaFormInfo = f => f ? { nom: f.nom, intitule: f.intitule || "", duree: f.duree || "", certification: f.certification || "",
+  modules: (f.modules || []).map(m => ({ code: m.code, titre: m.titre, cpf: m.cpf || "" })) } : null;
+function iaProfilSaisi(){
+  const v = id => ($(id) && $(id).value || "").trim();
+  return { domaine: (IA_DOM || {}).nom || "", nom: v("fNom"), categories: [...document.querySelectorAll("#fCats input:checked")].map(x => x.value),
+    besoin: v("fBesoin"), situation: v("fBSit"), difficulte: v("fBDif"), attente: v("fBAtt"), motsCles: v("fMotsCles") };
+}
+/* exemples réels pris dans la base, pour garder le même ton */
+function iaExemples(n){
+  const l = []; for(const p of (RAW.profils || [])) for(const x of (p.parcours || [])) if(x.pourquoi && x.argumentaire && l.length < n) l.push({ sousProfil: p.nom, formation: (rawF(x.formation) || {}).nom, pourquoi: x.pourquoi, argumentaire: x.argumentaire, modules: x.reponses || {} });
+  return l;
+}
+async function iaDemander(consigne, donnees){
+  const s = await iaSample(); if(!s) throw { message: "Assistance IA indisponible ici." };
+  const prompt = `${IA_STYLE}\n\n${consigne}\n\nDonnées :\n${JSON.stringify(donnees, null, 1)}\n\nRéponds UNIQUEMENT avec l'objet JSON demandé, sans texte autour.`;
+  if(typeof s.json === "function") return await s.json(prompt, { modelTier: "default" });
+  const r = await s(prompt, { modelTier: "default" }); const t = String(r.text || ""); return JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1));
+}
+const IA_AVANT = new WeakMap();
+function iaRemplir(btn, champs){ /* champs : [[élément, texte]] ; garde l'ancien texte pour « Annuler » */
+  IA_AVANT.set(btn, champs.map(([el]) => [el, el.value]));
+  champs.forEach(([el, t]) => { if(el && t){ el.value = t; el.classList.add("ia-rempli"); } });
+  let u = btn.nextElementSibling; if(!u || !u.classList.contains("ia-undo")){ u = document.createElement("button"); u.type = "button"; u.className = "ia-undo"; u.textContent = "↺ Annuler la suggestion"; btn.after(u); }
+  u.onclick = () => { (IA_AVANT.get(btn) || []).forEach(([el, v]) => { el.value = v; el.classList.remove("ia-rempli"); }); u.remove(); };
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-ia]"); if(!b || b.disabled) return;
+  const lib = b.innerHTML; b.disabled = true; b.innerHTML = "✨ Rédaction…";
+  try{
+    const prof = iaProfilSaisi();
+    if(b.dataset.ia === "pc"){
+      const row = b.closest(".pcrow"), f = rawF(row.querySelector("select.pcf").value);
+      const rang = [...document.querySelectorAll("#pcRows .pcrow")].indexOf(row) + 1, nb = document.querySelectorAll("#pcRows .pcrow").length;
+      const r = await iaDemander(`Rédige, pour ce sous-profil et cette formation (rang ${rang} sur ${nb} parcours proposés) :
+- "pourquoi" : UNE ligne (110 caractères max) qui dit quand proposer cette formation à ce sous-profil${rang === 1 && nb > 1 ? ` ; commence par « Le plus adapté : »` : ` ; commence par « À proposer » ou « À proposer si »`} ;
+- "argumentaire" : 1 à 3 phrases sur ce que la personne saura faire et le résultat concret dans son métier ;
+- "modules" : un objet {code du module: une phrase courte qui relie ce module au besoin du sous-profil} pour chaque module.
+Format : {"pourquoi": "...", "argumentaire": "...", "modules": {"M1": "..."}}`, { sousProfil: prof, formation: iaFormInfo(f), autresParcoursDuSousProfil: [...document.querySelectorAll("#pcRows select.pcf")].map(x => (rawF(x.value) || {}).nom).filter(Boolean), exemplesDeTon: iaExemples(4) });
+      const ch = [[row.querySelector(".pcw"), r.pourquoi], [row.querySelector(".pca"), r.argumentaire]];
+      row.querySelectorAll("textarea.pcm").forEach(t => ch.push([t, (r.modules || {})[t.dataset.m]]));
+      iaRemplir(b, ch);
+    } else if(b.dataset.ia === "cp"){
+      const row = b.closest(".cprow"), f = rawF(row.querySelector("select").value); if(!f) throw { message: "Choisissez d'abord la formation." };
+      const r = await iaDemander(`Rédige "pourquoi" : UNE ligne (100 caractères max) qui dit pourquoi suggérer cette formation complémentaire à ce sous-profil. Format : {"pourquoi": "..."}`, { sousProfil: prof, formation: iaFormInfo(f) });
+      iaRemplir(b, [[row.querySelector("input.inp"), r.pourquoi]]);
+    } else if(b.dataset.ia === "besoin"){
+      if(!prof.nom) throw { message: "Saisissez d'abord le nom du sous-profil." };
+      const r = await iaDemander(`À partir du sous-profil (et des champs déjà remplis, à reprendre et améliorer), rédige :
+- "besoin" : UNE phrase sur ce dont ce public a besoin côté compétences ;
+- "situation", "difficulte", "attente" : une phrase chacune ;
+- "motsCles" : 10 à 15 mots-clés de recherche séparés par des virgules (synonymes du métier, métiers voisins, besoins exprimés avec les mots des clients).
+Format : {"besoin": "...", "situation": "...", "difficulte": "...", "attente": "...", "motsCles": "..."}`, { sousProfil: prof, formationsDuDomaine: ((IA_DOM || {}).formations || []).map(f => f.nom) });
+      iaRemplir(b, [[$("fBesoin"), r.besoin], [$("fBSit"), r.situation], [$("fBDif"), r.difficulte], [$("fBAtt"), r.attente], [$("fMotsCles"), r.motsCles]]);
+      const det = $("fBSit") && $("fBSit").closest("details"); if(det) det.open = true;
+    }
+    toast("Suggestion de l'IA : relisez, puis Enregistrer");
+  }catch(err){ toast(err && err.code === "rate_limited" ? "IA très sollicitée : réessayez dans un instant." : (err && err.message) || "L'IA n'a pas pu répondre."); }
+  finally{ b.disabled = false; b.innerHTML = lib; }
 });
 </script>
 
