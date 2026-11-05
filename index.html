@@ -2294,7 +2294,14 @@ document.addEventListener("click", async e => {
       const rg = document.createRange(); rg.selectNodeContents(z); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg);
       const ok = document.execCommand("copy"); sel.removeAllRanges(); z.remove(); $("mlMsg").textContent = ok ? "Message copié avec le tableau : collez-le (Ctrl + V) dans Outlook." : "Copie impossible ici : utilisez l'aperçu ci-dessous (sélectionner, puis Ctrl + C)."; }
     return; }
-  if(id === "mlOpen"){ const href = "mailto:?subject=" + encodeURIComponent(objet) + "&body=" + encodeURIComponent(corps.split(MAIL_TAB).join(devisTable().txt));
+  if(id === "mlOpen"){ /* lien court (Outlook en ligne refuse les liens trop longs) : résumé des montants à la place du tableau ; le tableau mis en forme est copié pour être collé dans le brouillon */
+    const r = propCalcul(), res = [];
+    if(r.cpf.length) res.push(`Total ${r.dossiers.length > 1 ? "des dossiers" : "du dossier"} CPF : ${eur(r.totalCpf)} · prise en charge CPF : ${eur(r.priseEnCharge)} · reste à votre charge : ${eur(r.resteCpf)}.`);
+    if(r.hors.length) res.push(`Formations hors CPF : ${eur(r.totalHors)}.`);
+    if(r.cpf.length && r.hors.length) res.push(`Total à votre charge : ${eur(r.charge)}.`);
+    let copie = false; try{ const t = devisTable().html; await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([t], { type: "text/html" }), "text/plain": new Blob([devisTable().txt], { type: "text/plain" }) })]); copie = true; }catch(err){}
+    const href = "mailto:?subject=" + encodeURIComponent(objet) + "&body=" + encodeURIComponent(corps.split(MAIL_TAB).join(res.join("\n")));
+    $("mlMsg").textContent = copie ? "Le tableau mis en forme est aussi copié : dans le brouillon Outlook, cliquez où l'insérer puis Ctrl + V." : "";
     if(href.length > 1900) $("mlMsg").textContent = "Message long : s'il est coupé, utilisez « Copier le message »."; window.location.href = href; }
 });
 
