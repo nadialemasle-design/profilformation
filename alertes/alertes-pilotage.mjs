@@ -92,7 +92,8 @@ function html({ nouv, attente, lundi }, auj){
     <p style="font:12px Arial;color:#6b7280;margin-top:18px">Pour arrêter une alerte, cochez « Salle OK », « Licences OK » ou « Certif OK » dans l'onglet Pilotage de l'appli.</p></div>`;
 }
 export async function main(){
-  if(!KEY || !RESEND) throw new Error("Secrets manquants : SUPABASE_SERVICE_KEY et RESEND_API_KEY (GitHub › Settings › Secrets and variables › Actions).");
+  /* alertes pas encore activées (clés secrètes non enregistrées) : on s'arrête sans erreur, pour éviter un e-mail d'échec de GitHub chaque matin */
+  if(!KEY || !RESEND){ console.log("Alertes e-mail non activées : ajoutez SUPABASE_SERVICE_KEY et RESEND_API_KEY (GitHub › Settings › Secrets and variables › Actions)."); return; }
   const auj = process.env.TODAY || new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Paris" });
   const RAW = { domaines: await lire("domaines"), formations: await lire("formations"), pilotage: await lire("pilotage") };
   const reg = RAW.pilotage.find(x => x.id === "_reglages") || {};
