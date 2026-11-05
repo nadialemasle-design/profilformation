@@ -569,6 +569,7 @@ body.ia-on .ia-btn{display:inline-flex}.ia-btn:hover{background:var(--teal)}.ia-
 .inp.ia-rempli{border-color:var(--teal) !important;background:#F3FCFA !important}
 .field.ia-line{display:flex !important;flex-direction:row !important;justify-content:flex-end;align-items:center;gap:8px}.field.ia-line>*{width:auto !important;flex:none}
 .ml-prev{margin-top:10px;background:#fff;border:1px solid #DCE6EC;border-radius:12px;padding:14px;max-height:420px;overflow:auto}
+.ml-dl{display:flex;margin:-2px 0 6px 24px;border:1px solid var(--teal);background:var(--teal-clair);color:#12343F;font:inherit;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;cursor:pointer;width:max-content}.ml-dl[hidden]{display:none}.ml-dl:hover{background:var(--teal)}
 </style>
 </head>
 <body>
@@ -2045,15 +2046,51 @@ async function propWord(){
       avecCpf ? note(`Plafond : pour les formations menant à une certification du Répertoire spécifique, le CPF prend en charge au maximum ${eur(PLAFOND_CPF)} (décret n° 2026-127 du 24 février 2026). Montants en vigueur en 2026, susceptibles d'évoluer.`) : note("")
     ] }] });
   const blob = await Packer.toBlob(doc), nom = "Proposition-formation-" + new Date().toISOString().slice(0, 10) + ".docx";
+  return enregistrer(blob, nom);
+}
+async function enregistrer(blob, nom){
   /* version Claude : enregistrement par la capacité « downloads » ; site GitHub : téléchargement classique */
   let dl = null; try{ dl = (typeof claude !== "undefined" && claude.use) ? await claude.use("downloads") : null; }catch(e){ dl = null; }
   if(dl){
     try{ await dl.save({ filename: nom, data: blob }); }
-    catch(err){ prop.ouvert = true; renderProp(); $("propMsg").textContent = err && err.code === "declined" ? "Enregistrement annulé." : "Enregistrement impossible ici : utilisez « Copier le tableau »."; }
-    return;
+    catch(err){ toast(err && err.code === "declined" ? "Enregistrement annulé." : "Enregistrement impossible ici."); return false; }
+    return true;
   }
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nom;
   document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  return true;
+}
+/* ---------- Bulletin d'inscription prérempli (formations hors CPF) : intitulé, dates, tarif ; le reste reste à remplir par le client ---------- */
+let pdfLibP = null;
+function chargerPdfLib(){
+  if(window.PDFLib) return Promise.resolve(window.PDFLib);
+  if(!pdfLibP) pdfLibP = new Promise((ok, ko) => { const s = document.createElement("script"); s.src = "pdf-lib.min.js"; s.onload = () => window.PDFLib ? ok(window.PDFLib) : ko(); s.onerror = ko; document.head.appendChild(s); });
+  return pdfLibP;
+}
+/* un bulletin par formation (un parcours = un bulletin avec les dates de ses modules) */
+function biGroupes(){
+  const g = new Map(); propCalcul().hors.forEach(l => { if(!g.has(l.f.id)) g.set(l.f.id, { f: l.f, lignes: [] }); g.get(l.f.id).lignes.push(l); });
+  return [...g.values()];
+}
+const pdfTxt = t => String(t || "").replace(/[\u202f\u00a0]/g, " ").replace(/[’]/g, "'").replace(/[^\x20-\x7E\u00A1-\u00FF–—«»…œŒ€]/g, "");
+async function biPdf(gr){
+  const P = await chargerPdfLib();
+  const doc = await P.PDFDocument.load(await (await fetch("bi-trame.pdf")).arrayBuffer());
+  const form = doc.getForm(), font = await doc.embedFont(P.StandardFonts.Helvetica);
+  const parc = (gr.f.modules || []).length > 1, partiel = parc && gr.lignes.length < gr.f.modules.length;
+  const titre = parc ? gr.f.nom + (partiel ? " (" + gr.lignes.map(l => l.m.code).join(", ") + ")" : "") : gr.f.nom;
+  const dates = gr.lignes.map(l => (parc ? l.m.code + " : " : "") + (l.it.session || "à définir")).join(" ; ");
+  const tarif = eur(gr.lignes.reduce((t, l) => t + l.prix, 0));
+  const mettre = (nom, texte) => { try{ const tf = form.getTextField(nom), t = pdfTxt(texte), w = tf.acroField.getWidgets()[0].getRectangle().width - 4;
+    let taille = 8; while(taille > 5 && font.widthOfTextAtSize(t, taille) > w) taille -= .5;
+    tf.setText(t); tf.setFontSize(taille); tf.updateAppearances(font); }catch(e){ console.warn("Champ du bulletin introuvable :", nom); } };
+  mettre("Intitulé de la formation", titre); mettre("Dates de formation souhaitées", dates); mettre("Tarif de la formation", tarif);
+  return new Blob([await doc.save()], { type: "application/pdf" });
+}
+async function biTelecharger(){
+  const gs = biGroupes(); if(!gs.length){ toast("Aucune formation hors CPF dans la proposition."); return; }
+  try{ for(const gr of gs){ const nom = "Bulletin-inscription-" + norm(gr.f.nom).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) + ".pdf"; await enregistrer(await biPdf(gr), nom); } }
+  catch(e){ toast("Le bulletin n'a pas pu être préparé."); console.error(e); }
 }
 
 /* =====================================================================
@@ -2266,7 +2303,7 @@ function mailHtml(){
   return `<div id="mailPanel"><div class="ml-grid"><div class="ml-opts">
     <label>Prénom du client<input id="mlPrenom" value="${esc(MAILV.prenom)}" placeholder="ex. Marie"></label>
     ${r.cpf.length ? `<label>Lien Mon Compte Formation<input id="mlLien" value="${esc(MAILV.lien)}" placeholder="https://www.moncompteformation.gouv.fr/…"></label>` : ""}
-    ${r.hors.length ? `<fieldset><legend>Pièces jointes (hors CPF)</legend><label class="ck"><input type="checkbox" id="mlBul"${MAILV.bulletin ? " checked" : ""}> Bulletin d'inscription</label><label class="ck"><input type="checkbox" id="mlDev"${MAILV.devis ? " checked" : ""}> Devis</label><label class="ck"><input type="checkbox" id="mlProg"${MAILV.programme ? " checked" : ""}> Programme</label></fieldset>` : ""}
+    ${r.hors.length ? `<fieldset><legend>Pièces jointes (hors CPF)</legend><label class="ck"><input type="checkbox" id="mlBul"${MAILV.bulletin ? " checked" : ""}> Bulletin d'inscription</label><button type="button" class="ml-dl" id="mlBulDl"${MAILV.bulletin ? "" : " hidden"} title="Un bulletin par formation hors CPF, avec l'intitulé, les dates et le tarif ; le reste est à remplir par le client">⬇ Bulletin prérempli (PDF)</button><label class="ck"><input type="checkbox" id="mlDev"${MAILV.devis ? " checked" : ""}> Devis</label><button type="button" class="ml-dl" id="mlDevDl"${MAILV.devis ? "" : " hidden"}>⬇ Devis (document Word)</button><label class="ck"><input type="checkbox" id="mlProg"${MAILV.programme ? " checked" : ""}> Programme</label></fieldset>` : ""}
     <label>Ma signature (gardée sur cet ordinateur)<textarea id="mlSig" rows="4" placeholder="Prénom Nom&#10;Conseiller(ère) formation&#10;Téléphone · agence">${esc(MAILP.signature || "")}</textarea></label>
     <p class="pl-note">Le texte est modifiable à droite. La ligne [TABLEAU RÉCAPITULATIF] devient le tableau mis en forme quand vous copiez : vous pouvez la déplacer ou la supprimer.</p></div>
     <div class="ml-txt"><label>Objet<input id="mlObjet" value="${esc(t.objet)}"></label><label>Message<textarea id="mlCorps" rows="18">${esc(MAILV.texte != null ? MAILV.texte : t.corps)}</textarea></label>
@@ -2278,11 +2315,14 @@ document.addEventListener("input", e => {
   if(id === "mlCorps"){ MAILV.texte = e.target.value; return; }
   if(id === "mlPrenom") MAILV.prenom = e.target.value.trim(); else if(id === "mlLien") MAILV.lien = e.target.value.trim();
   else if(id === "mlSig"){ MAILP.signature = e.target.value; mailSave(); }
-  else if(id === "mlBul") MAILV.bulletin = e.target.checked; else if(id === "mlDev") MAILV.devis = e.target.checked; else if(id === "mlProg") MAILV.programme = e.target.checked;
+  else if(id === "mlBul"){ MAILV.bulletin = e.target.checked; $("mlBulDl").hidden = !e.target.checked; } else if(id === "mlDev"){ MAILV.devis = e.target.checked; $("mlDevDl").hidden = !e.target.checked; } else if(id === "mlProg") MAILV.programme = e.target.checked;
   if(MAILV.texte == null){ const t = mailTexte(); $("mlCorps").value = t.corps; $("mlObjet").value = t.objet; } /* tant que le texte n'a pas été retouché, il suit les options */
 });
 document.addEventListener("click", async e => {
-  const id = e.target.id; if(!/^ml(Copy|CopyObj|Open|Regen|Apercu)$/.test(id)) return;
+  const id = e.target.id;
+  if(id === "mlBulDl"){ biTelecharger(); return; }
+  if(id === "mlDevDl"){ propWord(); return; }
+  if(!/^ml(Copy|CopyObj|Open|Regen|Apercu)$/.test(id)) return;
   if(id === "mlApercu"){ const z = $("mlPrev"); z.hidden = !z.hidden; if(!z.hidden) z.innerHTML = mailCorpsHtml($("mlCorps").value); e.target.textContent = z.hidden ? "Voir l'aperçu" : "Masquer l'aperçu"; return; }
   const objet = $("mlObjet").value, corps = $("mlCorps").value;
   if(id === "mlRegen"){ MAILV.texte = null; const t = mailTexte(); $("mlCorps").value = t.corps; $("mlObjet").value = t.objet; $("mlMsg").textContent = "Texte refait."; return; }
