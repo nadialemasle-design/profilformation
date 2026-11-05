@@ -559,6 +559,8 @@ details.group[open] summary .chev{stroke:var(--teal)}
 .ac-ttl{flex:1 1 auto}.ac-head>.fo-tarifs{flex:0 0 auto;max-width:330px}
 .ac-head .fo-tarifs .fo-cpf{white-space:normal}
 .pt-min{display:block;font-size:10.5px;font-weight:600;color:#2A6F97;white-space:nowrap}
+.ac-fermer{display:inline-flex;align-items:center;gap:6px;margin:14px 0 0 -2px;padding:7px 14px;border-radius:999px;border:1px solid var(--bleu-clair3);background:#fff;color:#12343F;font:inherit;font-size:13px;font-weight:700;cursor:pointer;position:relative;z-index:1}
+.ac-fermer:hover{background:var(--teal-clair);border-color:var(--teal)}.ac-fermer i{font-style:normal}
 </style>
 </head>
 <body>
@@ -980,7 +982,7 @@ function renderDetail(){
     if(nm < 2) return `<div class="ac-card solo">${head}${modBloc(f, codes[0], false)}</div>`;
     return `<details class="ac-card parc" name="parcours" data-acc="${esc(f.id)}"${state.accOuvert === f.id ? " open" : ""}><summary>${head}
       <span class="ac-toggle"><span class="o">Voir les ${nm} modules du parcours</span><span class="c">Masquer les modules</span><i>▾</i></span></summary>
-      <div class="ac-mods">${codes.map(m => modBloc(f, m, true)).join("")}</div></details>`;
+      <div class="ac-mods">${codes.map(m => modBloc(f, m, true)).join("")}<button type="button" class="ac-fermer" data-acferme="1">Replier les modules <i>▴</i></button></div></details>`;
   }).join("");
   const facts = d.financement || d.certification;
   el.innerHTML = `
@@ -2360,6 +2362,14 @@ $("loginForm").addEventListener("submit", async e => {
   $("views").hidden = !canAdmin; renderDetail();
 })();
 renderDetail();
+
+/* bouton « Replier les modules » en bas d'un parcours ouvert : referme et ramène la carte à l'écran */
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-acferme]"); if(!b) return;
+  const d = b.closest("details.ac-card"); if(!d) return;
+  d.open = false; state.accOuvert = "";
+  const top = d.getBoundingClientRect().top; if(top < 70) window.scrollBy({ top: top - 90, behavior: "smooth" });
+});
 </script>
 
 </body>
