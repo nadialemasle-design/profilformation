@@ -594,6 +594,51 @@ body.ia-on .ia-btn{display:inline-flex}.ia-btn:hover{background:var(--teal)}.ia-
 .side details.group summary{font-size:13.5px}
 .side details.domgrp>summary.domtit{text-transform:none !important;letter-spacing:0 !important;font-size:14.5px !important}
 .side details.domgrp>details.group>summary{padding-left:10px}
+/* ===== mobile : menu dans le flux normal (plus de zone qui capte le défilement) ===== */
+@media (max-width:900px){
+  #consult .side{position:static !important;max-height:none !important;overflow:visible !important}
+  #consult .sidetop{position:static}
+}
+/* ===== contrastes renforcés : 3 niveaux de menu, cartes de résultats ===== */
+/* niveau 1 — domaine : bleu marine */
+.side details.domgrp{border:none;margin-bottom:6px}
+.side details.domgrp>summary.domtit{background:#EAF0F3 !important;border-radius:10px;border-left:5px solid #12343F}
+.side details.domgrp>summary.domtit:hover{background:#DCE6EC !important}
+.side details.domgrp[open]>summary.domtit{background:#12343F !important;color:#fff !important}
+.side details.domgrp[open]>summary .chev{stroke:#fff}
+.side details.domgrp[open]>summary .dcount{background:rgba(255,255,255,.18);color:#fff}
+.side details.domgrp.actif>summary.domtit{box-shadow:none;border-left-color:var(--teal)}
+/* niveau 2 — famille de métiers : bleu */
+.side details.group{margin:4px 0 0 10px}
+.side details.group>summary{background:#E6F2FB !important;color:#1F5A80 !important;border-radius:8px;border-bottom:none !important;padding:8px 10px !important;font-weight:700}
+.side details.group>summary:hover{background:#CFE6F7 !important}
+.side details.group[open]>summary{background:#2A6F97 !important;color:#fff !important;border-bottom:none !important}
+.side details.group[open]>summary .chev{stroke:#fff}
+/* niveau 3 — sous-profil : cartes blanches, sélection vert */
+.side details.group .profiles{padding:6px 0 8px 10px}
+.side .prof{background:#fff !important;border:1px solid #DCE6EC !important}
+.side .prof:hover{border-color:#2A6F97 !important;background:#F5FAFD !important}
+.side .prof[aria-pressed="true"]{background:var(--teal-clair) !important;border-color:var(--teal) !important;box-shadow:inset 5px 0 0 var(--teal) !important;font-weight:700}
+/* résultats : en-tête du sous-profil en bleu marine */
+#detail > .fo-head .fo-box, #detail .ff .fo-head .fo-box{background:#12343F !important;color:#fff}
+#detail .fo-head .fo-box .fo-lab, #detail .fo-head .fo-hic{color:var(--teal) !important}
+#detail .fo-head .fo-box b, #detail .fo-head .fo-box .fo-name{color:#fff}
+#detail .fo-head .fo-box small, #detail .fo-head .fo-box .pdom{color:#BFD3DC !important}
+#detail .fo-head .fo-box .fo-more summary, #detail .fo-head .fo-box a, #detail .fo-head .fo-box button{color:#fff}
+#detail .fo-head .fo-box .btn{background:transparent;border-color:rgba(255,255,255,.5)}
+/* cartes : liseré par type, le plus adapté en vert */
+.ac-card{border:1px solid #CFE6F7 !important;border-left:6px solid #2A6F97 !important;background:#fff !important}
+.ac-card.solo{border-left-color:#9CCBEA !important}
+.ac-card.parc:not([open]){background:#fff !important}
+.ac-list>.ac-card:first-child{border-left-color:var(--teal) !important}
+.ac-ttl h3{font-size:20px}
+.ac-card.parc[open]{box-shadow:0 4px 20px rgba(18,52,63,.12) !important}
+/* « Voir les modules » : vrai bouton */
+.ac-toggle{background:#E6F2FB;border:1px solid #9CCBEA;border-radius:999px;padding:6px 14px;color:#1F5A80 !important}
+.ac-card.parc > summary:hover .ac-toggle{background:#CFE6F7}
+.ac-card.parc[open] .ac-toggle{background:#fff;color:#12343F !important;border-color:#12343F}
+/* tarifs : encadré marqué */
+.ac-head>.fo-tarifs{border:1.5px solid #12343F;border-radius:14px}
 </style>
 </head>
 <body>
