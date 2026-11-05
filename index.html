@@ -570,6 +570,30 @@ body.ia-on .ia-btn{display:inline-flex}.ia-btn:hover{background:var(--teal)}.ia-
 .field.ia-line{display:flex !important;flex-direction:row !important;justify-content:flex-end;align-items:center;gap:8px}.field.ia-line>*{width:auto !important;flex:none}
 .ml-prev{margin-top:10px;background:#fff;border:1px solid #DCE6EC;border-radius:12px;padding:14px;max-height:420px;overflow:auto}
 .ml-dl{display:flex;margin:-2px 0 6px 24px;border:1px solid var(--teal);background:var(--teal-clair);color:#12343F;font:inherit;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;cursor:pointer;width:max-content}.ml-dl[hidden]{display:none}.ml-dl:hover{background:var(--teal)}
+/* ===== menu latéral simplifié ===== */
+.side{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;padding-top:0}
+.sidetop{position:sticky;top:0;z-index:3;background:#fff;padding:14px 2px 10px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.qwrap{position:relative}.qwrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;fill:none;stroke:#12343F;stroke-width:2;stroke-linecap:round;pointer-events:none}
+.qwrap #q{width:100%;box-sizing:border-box;padding:11px 12px 11px 38px;border:1.5px solid #9CCBEA;border-radius:12px;font-size:14.5px;background:#fff}
+.filtres{display:flex;gap:8px;align-items:center;margin-top:8px}
+.filtres .domsel{flex:1;min-width:0;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;background:var(--gris);color:#12343F;font-weight:600}
+.reset{border:none;background:none;color:#2A6F97;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:4px 2px;white-space:nowrap}.reset[hidden]{display:none}
+.reset.danger{background:#12343F !important;color:#fff !important;border-radius:999px;padding:5px 10px}
+.side .scope{margin-top:8px;display:flex;gap:6px}.side .scope .scbtn{font-size:12px;padding:4px 10px;border-radius:999px}
+.side details.domgrp{border-bottom:1px solid var(--line)}
+.side details.domgrp>summary.domtit{list-style:none;display:flex !important;align-items:center;gap:8px;cursor:pointer;background:transparent !important;color:#12343F !important;font-size:13px !important;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:12px 6px !important;border-radius:8px;margin:0}
+.side details.domgrp>summary.domtit::-webkit-details-marker{display:none}
+.side details.domgrp>summary.domtit>span:first-child{flex:1}
+.side details.domgrp>summary.domtit:hover{background:var(--gris) !important}
+.side .dcount{font-size:11px;font-weight:700;color:#55707a;background:var(--gris);border-radius:999px;padding:1px 8px;letter-spacing:0}
+.side details.domgrp>summary .chev{width:16px;height:16px;fill:none;stroke:#12343F;stroke-width:2;transition:transform .2s}
+.side details.domgrp[open]>summary .chev{transform:rotate(180deg)}
+.side details.domgrp.actif>summary.domtit{box-shadow:inset 3px 0 0 var(--teal)}
+.side details.domgrp>details.group{margin-left:8px}
+.side .ff-res .domtit{background:transparent !important;color:#12343F !important;padding:8px 6px !important;font-size:12px !important}
+.side details.group summary{font-size:13.5px}
+.side details.domgrp>summary.domtit{text-transform:none !important;letter-spacing:0 !important;font-size:14.5px !important}
+.side details.domgrp>details.group>summary{padding-left:10px}
 </style>
 </head>
 <body>
@@ -604,26 +628,14 @@ body.ia-on .ia-btn{display:inline-flex}.ia-btn:hover{background:var(--teal)}.ia-
   <div id="consult">
     <div class="grid">
       <div class="side">
-        <div class="sidebox">
-          <span class="sidetit">Parcourir</span>
-          <label class="searchlab" for="domSel">Domaine de formation
-            <select class="search domsel" id="domSel"></select>
-          </label>
-          <label class="searchlab" for="catSel">Famille de métiers
-            <select class="search" id="catSel"><option value="">Toutes les familles</option></select>
-          </label>
-        </div>
-        <div class="sidebox">
-          <span class="sidetit">Rechercher</span>
-          <label class="searchlab" for="q">Un métier, un besoin, un mot-clé
-            <input class="search" id="q" type="search" placeholder="ex. auto-entrepreneur, restaurateur, recrutement">
-          </label>
+        <div class="sidetop">
+          <div class="qwrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="search" id="q" type="search" placeholder="Métier, besoin, mot-clé…" aria-label="Rechercher un métier, un besoin ou un mot-clé"></div>
+          <div class="filtres"><select class="search domsel" id="domSel" aria-label="Domaine de formation"></select><button type="button" class="reset" id="resetBtn" title="Tout effacer : recherche, domaine, listes repliées" hidden>Effacer</button></div>
+          <select id="catSel" hidden aria-hidden="true" tabindex="-1"><option value=""></option></select>
           <div class="scope" id="scope" role="group" aria-label="Où chercher">
-            <span class="scopelab">Chercher dans</span>
             <button type="button" class="scbtn" data-scope="tous" aria-pressed="true">Tous les domaines</button>
-            <button type="button" class="scbtn" data-scope="domaine" aria-pressed="false">Le domaine choisi</button>
+            <button type="button" class="scbtn" data-scope="domaine" aria-pressed="false">Ce domaine</button>
           </div>
-          <button type="button" class="btn small reset" id="resetBtn" title="Revenir à tous les domaines, toutes les familles, sans recherche, tout replié">Réinitialiser</button>
         </div>
         <div id="groups" class="profgroups"></div>
       </div>
@@ -820,7 +832,8 @@ const dom = () => DOMAINES.find(d => d.id === state.dom) || DOMAINES[0];
 
 function renderDomains(){
   $("domSel").innerHTML = `<option value="*"${state.tous?" selected":""}>Tous les domaines</option>` + DOMAINES.map(d => `<option value="${esc(d.id)}"${!state.tous && state.dom===d.id?" selected":""}>${esc(d.nom)}</option>`).join("");
-  const sc = $("scope"); if(sc) sc.style.display = state.tous ? "none" : ""; /* « chercher dans » n'a de sens que pour un domaine choisi */
+  const sc = $("scope"); if(sc) sc.style.display = state.tous || !state.q.trim() ? "none" : "";
+  const rb = $("resetBtn"); if(rb && rb.dataset.ok !== "1") rb.hidden = !(state.q.trim() || !state.tous || state.cat); /* « chercher dans » n'a de sens que pour un domaine choisi */
 }
 
 const ouvertes = new Set(); /* catégories que la conseillère a dépliées */
@@ -841,9 +854,13 @@ function renderCatSel(){
   el.innerHTML = `<option value="">Toutes les familles</option>` + l.map(c => `<option${c===state.cat?" selected":""}>${esc(c)}</option>`).join("");
   document.querySelectorAll(".scbtn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.scope === (state.scope || "tous"))));
 }
+/* le sous-profil ouvert reste visible dans le menu (défilement seulement s'il est caché) */
+function voirActif(){ requestAnimationFrame(() => { const side = document.querySelector("#consult .side"), b = side && side.querySelector('.prof[aria-pressed="true"]'); if(!b) return;
+  const top = side.querySelector(".sidetop"), h = top ? top.offsetHeight : 0, rs = side.getBoundingClientRect(), rb = b.getBoundingClientRect();
+  if(rb.top < rs.top + h || rb.bottom > rs.bottom) side.scrollTop += rb.top - rs.top - h - 40; }); }
 function renderList(){
   const d = dom(); if(!d){ $("groups").innerHTML = ""; return; }
-  renderCatSel();
+  renderCatSel(); voirActif();
   if(state.tous) return renderListTous();
   const q = norm(state.q.trim()), cats = [];
   d.profils.forEach(p => {
@@ -857,7 +874,7 @@ function renderList(){
     const open = q || ouvertes.has(d.id + "|" + c.nom); /* toutes visibles, repliées par défaut ; dépliées pendant une recherche */
     return `<details class="group" data-cat="${esc(c.nom)}"${open?" open":""}><summary><span class="sum">${esc(c.nom)}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="profiles">${c.items.map(p => {
       const n = Object.keys(p.parcours).length;
-      return `<button type="button" class="prof" data-pid="${esc(p.id)}" aria-pressed="${state.pid===p.id}"><span>${esc(p.nom)}</span><span class="pend">${pkIc(p)}<span class="count" title="${n} proposition${n>1?"s":""} possible${n>1?"s":""}">${n}</span></span></button>`;
+      return `<button type="button" class="prof" data-pid="${esc(p.id)}" aria-pressed="${state.pid===p.id}"><span>${esc(p.nom)}</span><span class="pend">${pkIc(p)}<span class="count" title="${n} proposition${n>1?"s":""} de formation${pkIc(p) ? " (dont au moins un parcours)" : ""}">${n}</span></span></button>`;
     }).join("")}</div></details>`;
   }).join("") : `<p class="none">${!d.profils.length ? "Aucun profil dans ce domaine pour l'instant." : q ? `Rien dans ce domaine pour « ${esc(state.q)} »${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}.` : "Aucun sous-profil dans cette famille."}</p>`;
   if(q) $("groups").insertAdjacentHTML("afterbegin", formationsHtml(q));
@@ -898,13 +915,15 @@ function renderListTous(){
     });
     if(!cats.length) return "";
     const ordre = domCats(d); cats.sort((a, b) => ordre.indexOf(a.nom) - ordre.indexOf(b.nom));
-    return `<div class="domtit">${esc(d.nom)}</div>` + cats.map(c => {
-      const open = q || ouvertes.has(d.id + "|" + c.nom);
+    const nP = new Set(cats.flatMap(c => c.items.map(p => p.id))).size, actif = state.dom === d.id && d.profils.some(p => p.id === state.pid);
+    const ouvert = q || actif || domOuverts.has(d.id);
+    return `<details class="domgrp${actif ? " actif" : ""}" data-domg="${esc(d.id)}"${ouvert ? " open" : ""}><summary class="domtit"><span>${esc(d.nom)}</span><span class="dcount" title="${nP} sous-profil${nP > 1 ? "s" : ""}">${nP}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>` + cats.map(c => {
+      const open = q || ouvertes.has(d.id + "|" + c.nom) || (state.dom === d.id && c.items.some(p => p.id === state.pid));
       return `<details class="group" data-cat="${esc(c.nom)}" data-dom="${esc(d.id)}"${open?" open":""}><summary><span class="sum">${esc(c.nom)}</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="profiles">${c.items.map(p => {
         const n = Object.keys(p.parcours).length;
-        return `<button type="button" class="prof" data-pid="${esc(p.id)}" data-dom="${esc(d.id)}" aria-pressed="${state.dom===d.id && state.pid===p.id}"><span>${esc(p.nom)}</span><span class="pend">${pkIc(p)}<span class="count" title="${n} proposition${n>1?"s":""} possible${n>1?"s":""}">${n}</span></span></button>`;
+        return `<button type="button" class="prof" data-pid="${esc(p.id)}" data-dom="${esc(d.id)}" aria-pressed="${state.dom===d.id && state.pid===p.id}"><span>${esc(p.nom)}</span><span class="pend">${pkIc(p)}<span class="count" title="${n} proposition${n>1?"s":""} de formation${pkIc(p) ? " (dont au moins un parcours)" : ""}">${n}</span></span></button>`;
       }).join("")}</div></details>`;
-    }).join("");
+    }).join("") + `</details>`;
   }).join("");
   $("groups").innerHTML = formationsHtml(q) + (blocs || (formationsTrouvees(q).length ? "" : `<p class="none">${q ? `Rien pour « ${esc(state.q)} »${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}. Essayez un autre mot.` : "Aucun sous-profil dans cette famille."}</p>`));
 }
@@ -1114,8 +1133,12 @@ $("groups").addEventListener("click", e => {
   document.querySelector(`.prof[data-pid="${CSS.escape(state.pid)}"]`)?.focus();
   if(window.matchMedia("(max-width:900px)").matches) $("detail").scrollIntoView({behavior:"smooth", block:"start"});
 });
+const domOuverts = new Set();
+$("groups").addEventListener("click", e => { const sm = e.target.closest("summary.domtit"); if(!sm || state.q.trim()) return; const d = sm.parentElement;
+  setTimeout(() => { d.open ? domOuverts.add(d.dataset.domg) : domOuverts.delete(d.dataset.domg); }, 0); });
 $("groups").addEventListener("toggle", e => {
-  const el = e.target; if(!el.matches || !el.matches("details.group") || state.q.trim()) return;
+  const el = e.target; if(el.matches && el.matches("details.domgrp")) return; /* domaines : mémorisés au clic (voir plus bas), pas à l'ouverture automatique */
+  if(!el.matches || !el.matches("details.group") || state.q.trim()) return;
   const k = (el.dataset.dom || state.dom) + "|" + el.dataset.cat; el.open ? ouvertes.add(k) : ouvertes.delete(k);
 }, true);
 $("q").addEventListener("input", e => {
@@ -1148,12 +1171,12 @@ $("detail").addEventListener("click", e => {
 $("resetBtn").addEventListener("click", e => {
   const b = e.currentTarget;
   /* 2e clic dans les 4 s : vider aussi la proposition */
-  if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.textContent = "Réinitialiser"; b.classList.remove("danger");
+  if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.textContent = "Effacer"; b.classList.remove("danger");
     prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition vidée"); return; }
   if(prop.items.length){ b.dataset.ok = "1"; b.textContent = "Vider aussi la proposition ?"; b.classList.add("danger");
-    setTimeout(() => { if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.textContent = "Réinitialiser"; b.classList.remove("danger"); } }, 4000); }
+    setTimeout(() => { if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.textContent = "Effacer"; b.classList.remove("danger"); b.hidden = !(state.q.trim() || !state.tous || state.cat); } }, 4000); }
   state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; ouvertes.clear();
-  $("q").value = ""; renderConsult(); $("groups").scrollTop = 0;
+  $("q").value = ""; domOuverts.clear(); renderConsult(); $("groups").scrollTop = 0;
 });
 $("scope").addEventListener("click", e => { const b = e.target.closest("[data-scope]"); if(!b) return; state.scope = b.dataset.scope; renderList(); renderDetail(); });
 
