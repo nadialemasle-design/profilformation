@@ -656,6 +656,10 @@ body.ia-on .ia-btn{display:inline-flex}.ia-btn:hover{background:var(--teal)}.ia-
 .pl-subin fieldset{border:1px solid #CFE6F7;border-radius:10px;padding:6px 12px 8px;margin:0;background:#fff;display:flex;flex-wrap:wrap;gap:6px 16px}
 .pl-subin legend{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#2A6F97;padding:0 4px}
 .pl-subin label{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;white-space:nowrap}
+.ac-choix{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:4px}
+.ac-tout{font:inherit;font-size:13.5px;font-weight:800;border-radius:999px;padding:7px 16px;cursor:pointer;background:#12343F;color:#fff;border:1px solid #12343F}
+.ac-tout .c{display:none}.ac-tout.on{background:var(--teal);border-color:var(--teal);color:#12343F}.ac-tout.on .o{display:none}.ac-tout.on .c{display:inline}
+.ac-part{font-size:12.5px;font-weight:700;color:#12343F;background:var(--teal-clair);border-radius:999px;padding:3px 10px}.ac-part:empty{display:none}
 </style>
 </head>
 <body>
@@ -1071,7 +1075,8 @@ function renderDetail(){
       ${pc.pourquoi ? `<div class="ac-why">${ic("why")}<span><b>Pourquoi :</b> ${esc(pc.pourquoi)}${pc.argumentaire ? `<details class="fo-more"><summary>Argumentaire détaillé</summary><span class="fo-moretxt">${esc(pc.argumentaire)}</span></details>` : ""}</span></div>` : ""}`;
     if(nm < 2) return `<div class="ac-card solo">${head}${modBloc(f, codes[0], false)}</div>`;
     return `<details class="ac-card parc" name="parcours" data-acc="${esc(f.id)}"${state.accOuvert === f.id ? " open" : ""}><summary>${head}
-      <span class="ac-toggle"><span class="o">Voir les ${nm} modules du parcours</span><span class="c">Masquer les modules</span><i>▾</i></span></summary>
+      <span class="ac-choix"><button type="button" class="ac-tout" data-acTout="${esc(f.id)}"><span class="o">＋ Ajouter le parcours complet</span><span class="c">✓ Parcours complet ajouté</span></button>
+      <span class="ac-toggle"><span class="o">ou choisir un ou des modules</span><span class="c">Masquer les modules</span><i>▾</i></span><span class="ac-part" data-acPart="${esc(f.id)}"></span></span></summary>
       <div class="ac-mods">${codes.map(m => modBloc(f, m, true)).join("")}<button type="button" class="ac-fermer" data-acferme="1">Replier les modules <i>▴</i></button></div></details>`;
   }).join("");
   const facts = d.financement || d.certification;
@@ -2634,6 +2639,21 @@ Format : {"besoin": "...", "situation": "...", "difficulte": "...", "attente": "
   }catch(err){ toast(err && err.code === "rate_limited" ? "IA très sollicitée : réessayez dans un instant." : (err && err.message) || "L'IA n'a pas pu répondre."); }
   finally{ b.disabled = false; b.innerHTML = lib; }
 });
+
+/* prototype : parcours complet en un clic, ou module(s) au choix */
+function syncChoix(){
+  document.querySelectorAll("[data-actout]").forEach(b => { const f = rawF(b.dataset.actout); if(!f) return; const codes = (f.modules || []).map(m => m.code);
+    const n = codes.filter(c => prop.items.some(i => i.key === itemKey(f.id, c))).length;
+    b.classList.toggle("on", n === codes.length);
+    const pt = document.querySelector(`[data-acpart="${CSS.escape(f.id)}"]`); if(pt) pt.textContent = n && n < codes.length ? `${n} module${n > 1 ? "s" : ""} sur ${codes.length} choisi${n > 1 ? "s" : ""}` : ""; });
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-actout]"); if(!b) return; e.preventDefault(); e.stopPropagation();
+  const f = rawF(b.dataset.actout), codes = (f.modules || []).map(m => m.code), tous = codes.every(c => prop.items.some(i => i.key === itemKey(f.id, c)));
+  codes.forEach(c => propToggle(f.id, c, !tous)); syncChoix();
+}, true);
+document.addEventListener("change", () => setTimeout(syncChoix, 0));
+new MutationObserver(() => syncChoix()).observe(document.getElementById("detail"), { childList: true });
 </script>
 
 </body>
