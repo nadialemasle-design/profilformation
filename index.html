@@ -660,6 +660,19 @@ body.ia-on .ia-btn{display:inline-flex}.ia-btn:hover{background:var(--teal)}.ia-
 .ac-tout{font:inherit;font-size:13.5px;font-weight:800;border-radius:999px;padding:7px 16px;cursor:pointer;background:#12343F;color:#fff;border:1px solid #12343F}
 .ac-tout .c{display:none}.ac-tout.on{background:var(--teal);border-color:var(--teal);color:#12343F}.ac-tout.on .o{display:none}.ac-tout.on .c{display:inline}
 .ac-part{font-size:12.5px;font-weight:700;color:#12343F;background:var(--teal-clair);border-radius:999px;padding:3px 10px}.ac-part:empty{display:none}
+/* ===== accueil ===== */
+.accueil{max-width:900px;margin:40px auto 20px;text-align:center}
+.acc-steps{display:flex;align-items:stretch;justify-content:center;gap:6px}
+.acc-st{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 12px 18px;background:#fff;border:1px solid #CFE6F7;border-radius:18px;font:inherit;color:#12343F}
+button.acc-st{cursor:pointer}button.acc-st:hover{border-color:var(--teal);background:#F3FCFA}
+.acc-ico{position:relative;display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;background:#E6F2FB}
+.acc-ico svg{width:26px;height:26px;fill:none;stroke:#12343F;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.acc-ico b{position:absolute;top:-4px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--teal);color:#12343F;font-size:12px;display:flex;align-items:center;justify-content:center}
+.acc-st strong{font-size:16px}.acc-st small{font-size:12.5px;color:#55707a;line-height:1.35}
+.acc-fl{align-self:center;font-size:28px;color:#9CCBEA;font-weight:300}
+.acc-pied{margin-top:18px;font-size:13px;color:#55707a}
+.acc-best{display:inline-block;background:var(--teal);color:#12343F;font-weight:700;border-radius:999px;padding:1px 8px;font-size:11.5px}
+@media (max-width:700px){.acc-steps{display:grid;grid-template-columns:1fr 1fr;gap:10px}.acc-fl{display:none}.accueil{margin-top:16px}}
 </style>
 </head>
 <body>
@@ -893,13 +906,14 @@ const ready = () => RAW.domaines && RAW.formations && RAW.profils;
 let state = { dom: "rs", pid: "rs-006", q: "", view: "consult" };
 try{ Object.assign(state, JSON.parse(localStorage.getItem("assistant-profils-v4") || "{}")); }catch(e){}
 state.view = "consult"; state.tous = true; /* par défaut : la liste montre tous les domaines */
+state.pid = ""; /* à l'ouverture : aucun sous-profil choisi, menus repliés, page d'accueil */
 const save = () => { try{ localStorage.setItem("assistant-profils-v4", JSON.stringify({dom:state.dom,pid:state.pid})); }catch(e){} };
 const dom = () => DOMAINES.find(d => d.id === state.dom) || DOMAINES[0];
 
 function renderDomains(){
   $("domSel").innerHTML = `<option value="*"${state.tous?" selected":""}>Tous les domaines</option>` + DOMAINES.map(d => `<option value="${esc(d.id)}"${!state.tous && state.dom===d.id?" selected":""}>${esc(d.nom)}</option>`).join("");
   const sc = $("scope"); if(sc) sc.style.display = state.tous || !state.q.trim() ? "none" : "";
-  const rb = $("resetBtn"); if(rb && rb.dataset.ok !== "1") rb.hidden = !(state.q.trim() || !state.tous || state.cat); /* « chercher dans » n'a de sens que pour un domaine choisi */
+  majEffacer(); /* « chercher dans » n'a de sens que pour un domaine choisi */
 }
 
 const ouvertes = new Set(); /* catégories que la conseillère a dépliées */
@@ -994,15 +1008,32 @@ function renderListTous(){
   $("groups").innerHTML = formationsHtml(q) + (blocs || (formationsTrouvees(q).length ? "" : `<p class="none">${q ? `Rien pour « ${esc(state.q)} »${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}. Essayez un autre mot.` : "Aucun sous-profil dans cette famille."}</p>`));
 }
 
+/* page d'accueil : schéma en 4 étapes */
+function accueilHtml(){
+  const nP = DOMAINES.reduce((t, d) => t + d.profils.length, 0), nF = (RAW.formations || []).length;
+  const svg = p => `<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+  const E = [
+    ["1", "Chercher", "un métier, un besoin, un mot-clé", svg('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'), "q"],
+    ["2", "Choisir", "le sous-profil le plus proche", svg('<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>')],
+    ["3", "Composer", "parcours complet ou modules, dates", svg('<rect x="4" y="4" width="16" height="5" rx="1.5"/><rect x="4" y="11" width="16" height="4" rx="1.5"/><rect x="4" y="17" width="10" height="3" rx="1.5"/>')],
+    ["4", "Envoyer", "e-mail, devis Word, bulletin", svg('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>')]
+  ];
+  return `<section class="accueil" aria-label="Comment utiliser Boussole Formations">
+    <div class="acc-steps">${E.map((e, i) => `${i ? '<span class="acc-fl" aria-hidden="true">›</span>' : ""}<${e[4] ? 'button type="button" data-accq="1"' : "div"} class="acc-st"><span class="acc-ico">${e[3]}<b>${e[0]}</b></span><strong>${e[1]}</strong><small>${e[2]}</small></${e[4] ? "button" : "div"}>`).join("")}</div>
+    <p class="acc-pied">${nP} sous-profils · ${nF} formations et parcours · la pastille <span class="acc-best">Le plus adapté</span> indique le meilleur choix</p>
+  </section>`;
+}
+document.addEventListener("click", e => { if(e.target.closest("[data-accq]")){ const q = $("q"); if(q){ q.focus(); q.scrollIntoView({ block: "center", behavior: "smooth" }); } } });
+function majEffacer(){ const rb = $("resetBtn"); if(rb && rb.dataset.ok !== "1") rb.hidden = !(state.q.trim() || !state.tous || state.cat || state.pid || state.fid); }
 function renderDetail(){
-  const el = $("detail");
+  const el = $("detail"); majEffacer();
   if(state.fid && ready() && (RAW.formations || []).some(f => f.id === state.fid)) return renderFormationDetail(el);
   if(!db){ el.innerHTML = `<div class="state">Les données ne sont pas disponibles dans cet affichage. Ouvrez l'application depuis son lien Claude, en étant connecté(e).</div>`; return; }
   if(!ready()){ el.innerHTML = `<div class="state">Chargement des profils…</div>`; return; }
   const d = dom();
   if(!d){ el.innerHTML = `<div class="state">Aucun domaine pour l'instant.${canAdmin?" Créez-en un dans l'onglet Gestion.":""}</div>`; return; }
   const p = d.profils.find(x => x.id === state.pid);
-  if(!p){ el.innerHTML = `<div class="state">Choisissez un profil dans la liste.</div>`; return; }
+  if(!p){ el.innerHTML = accueilHtml(); return; }
   /* la fiche affichée doit correspondre à la recherche et à la catégorie choisies ; sinon, un message */
   const qq = norm(state.q.trim()), okP = x => (!state.cat || x.categories.includes(state.cat)) && (!qq || matchQ(hayOf(x, d), qq));
   if(!okP(p) && state.tous){
@@ -1182,7 +1213,7 @@ function fixSelection(){
   if(!DOMAINES.length) return;
   if(!DOMAINES.some(d => d.id === state.dom)) state.dom = DOMAINES[0].id;
   const d = dom();
-  if(!d.profils.some(p => p.id === state.pid)) state.pid = d.profils[0] ? d.profils[0].id : "";
+  if(state.pid && !d.profils.some(p => p.id === state.pid)) state.pid = ""; /* plus de sélection automatique : l'accueil s'affiche */
 }
 function renderConsult(){ fixSelection(); renderDomains(); renderList(); renderDetail(); }
 
@@ -1247,8 +1278,8 @@ $("resetBtn").addEventListener("click", e => {
   if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.textContent = "Effacer"; b.classList.remove("danger");
     prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition vidée"); return; }
   if(prop.items.length){ b.dataset.ok = "1"; b.textContent = "Vider aussi la proposition ?"; b.classList.add("danger");
-    setTimeout(() => { if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.textContent = "Effacer"; b.classList.remove("danger"); b.hidden = !(state.q.trim() || !state.tous || state.cat); } }, 4000); }
-  state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; ouvertes.clear();
+    setTimeout(() => { if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.textContent = "Effacer"; b.classList.remove("danger"); b.hidden = !(state.q.trim() || !state.tous || state.cat || state.pid || state.fid); } }, 4000); }
+  state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; state.pid = ""; ouvertes.clear();
   $("q").value = ""; domOuverts.clear(); renderConsult(); $("groups").scrollTop = 0;
 });
 $("scope").addEventListener("click", e => { const b = e.target.closest("[data-scope]"); if(!b) return; state.scope = b.dataset.scope; renderList(); renderDetail(); });
