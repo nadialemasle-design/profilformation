@@ -1962,7 +1962,9 @@ function propLigne(it){
   const perso = typeof it.prix === "number" && isFinite(it.prix), prix = perso ? it.prix : auto, base = Number(m.tarif) || 0;
   const remise = base > 0 && prix < base ? Math.round((base - prix) / base * 100) : 0;
   const jours = sess ? joursDe(sess.texte) : (parcours ? 0 : parseInt(f.duree, 10) || 0);
-  const minJ = Math.max(Number(f.cpfMinJours) || 0, alt ? Number(alt.f.cpfMinJours) || 0 : 0);
+  /* durée minimale CPF : champ de Gestion, ou mention « dans un parcours de N jours minimum » du module */
+  const minTxt = (/(\d+)\s*(?:j|jours?)\b[^,;)]*min/i.exec(String(m.cpf || "")) || [])[1];
+  const minJ = Math.max(Number(f.cpfMinJours) || 0, alt ? Number(alt.f.cpfMinJours) || 0 : 0, Number(minTxt) || 0);
   if(alt && it.type === "cpf") return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, minJ, eligible: true,
     certKey: "f:" + alt.f.id, certNom: "Certification " + nomCertAlt(m.titre, alt), certPrix: Number(alt.f.tarifCertification) || 0 };
   return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, minJ, eligible: cpfOk(m.cpf) || !!alt,
@@ -2174,18 +2176,18 @@ async function biPdf(gr){
   const doc = await P.PDFDocument.load(await (await fetch("bi-trame.pdf")).arrayBuffer());
   const form = doc.getForm(), font = await doc.embedFont(P.StandardFonts.Helvetica);
   const parc = (gr.f.modules || []).length > 1, partiel = parc && gr.lignes.length < gr.f.modules.length;
-  const titre = parc ? gr.f.nom + (partiel ? " (" + gr.lignes.map(l => l.m.code).join(", ") + ")" : "") : gr.f.nom;
-  const dates = gr.lignes.map(l => (parc ? l.m.code + " : " : "") + (l.it.session || "à définir")).join(" ; ");
+  const titre = partiel ? gr.lignes.map(nomLigne).join(" + ") : gr.f.nom; /* module(s) seul(s) → nom du module ; parcours complet → nom du parcours */
+  const dates = gr.lignes.map(l => (parc && gr.lignes.length > 1 ? l.m.code + " : " : "") + (l.it.session || "à définir")).join(" ; ");
   const tarif = eur(gr.lignes.reduce((t, l) => t + l.prix, 0));
   const mettre = (nom, texte) => { try{ const tf = form.getTextField(nom), t = pdfTxt(texte), w = tf.acroField.getWidgets()[0].getRectangle().width - 4;
     let taille = 8; while(taille > 5 && font.widthOfTextAtSize(t, taille) > w) taille -= .5;
     tf.setText(t); tf.setFontSize(taille); tf.updateAppearances(font); }catch(e){ console.warn("Champ du bulletin introuvable :", nom); } };
   mettre("Intitulé de la formation", titre); mettre("Dates de formation souhaitées", dates); mettre("Tarif de la formation", tarif);
-  return new Blob([await doc.save()], { type: "application/pdf" });
+  const blob = new Blob([await doc.save()], { type: "application/pdf" }); blob.titre = titre; return blob;
 }
 async function biTelecharger(){
   const gs = biGroupes(); if(!gs.length){ toast("Aucune formation hors CPF dans la proposition."); return; }
-  try{ for(const gr of gs){ const nom = "Bulletin-inscription-" + norm(gr.f.nom).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) + ".pdf"; await enregistrer(await biPdf(gr), nom); } }
+  try{ for(const gr of gs){ const bl = await biPdf(gr), nom = "Bulletin-inscription-" + norm(bl.titre || gr.f.nom).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) + ".pdf"; await enregistrer(bl, nom); } }
   catch(e){ toast("Le bulletin n'a pas pu être préparé."); console.error(e); }
 }
 
@@ -2379,8 +2381,10 @@ function mailCorpsHtml(corps){
   const blocs = corps.split(/\n{2,}/).map(b => b.trim() === MAIL_TAB ? `<div style="margin:0 0 14px">${t.html}</div>` : `<p style="${P}">${b.split("\n").map(x => esc(x).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1">$1</a>')).join("<br>")}</p>`);
   return `<div>${blocs.join("")}</div>`;
 }
+/* nom court d'une ligne : nom de la formation, ou pour un module de parcours la 1re partie de son titre */
+const nomLigne = l => { if((l.f.modules || []).length < 2) return l.f.nom; const a = String(l.m.titre).split(":")[0].split(" - ")[0].trim(); return /^réseaux sociaux$/i.test(a) ? String(l.m.titre).trim() : a; };
 function mailTexte(){
-  const r = propCalcul(), L = [], nomL = l => { if((l.f.modules || []).length < 2) return l.f.nom; const a = String(l.m.titre).split(":")[0].split(" - ")[0].trim(); return /^réseaux sociaux$/i.test(a) ? String(l.m.titre).trim() : a; };
+  const r = propCalcul(), L = [], nomL = nomLigne;
   const ligneF = l => `– ${nomL(l)}${l.it.session ? " – " + l.it.session : ""}`;
   const p = (RAW.profils || []).find(x => x.id === state.pid), noms = [...new Set(r.lignes.map(l => { const n = (l.f.modules || []).length; /* parcours complet → nom du parcours ; module(s) seul(s) → nom du module */
     return n > 1 && r.lignes.filter(x => x.f.id === l.f.id).length < n ? nomL(l) : l.f.nom; }))];
