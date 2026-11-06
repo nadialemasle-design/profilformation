@@ -639,6 +639,14 @@ body.ia-on .ia-btn{display:inline-flex}.ia-btn:hover{background:var(--teal)}.ia-
 .ac-card.parc[open] .ac-toggle{background:#fff;color:#12343F !important;border-color:#12343F}
 /* tarifs : encadré marqué */
 .ac-head>.fo-tarifs{border:1.5px solid #12343F;border-radius:14px}
+/* argumentaire détaillé du besoin : intitulés en vert comme « Besoin », lecture confortable */
+#detail .fo-head .fo-box{font-size:14px;line-height:1.5}
+#detail .fo-head .fo-box .fo-lab{font-size:11px}
+#detail .fo-sda{gap:8px;margin-top:8px;font-size:14px;line-height:1.5;color:#E8F1F4}
+#detail .fo-sda>span{display:block}
+#detail .fo-sda b{display:block;color:var(--teal) !important;font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;margin-bottom:1px}
+#detail .fo-head .fo-more>summary{color:#fff;font-size:13px;margin-top:6px;text-decoration:underline;text-underline-offset:3px}
+#detail .fo-sda b .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
 </head>
 <body>
@@ -1085,7 +1093,7 @@ function pied(m, o){
 function besoinDetailHtml(b){
   if(!b) return "";
   const l = [["Situation", b.situation], ["Difficulté", b.difficulte], ["Attente", b.attente]].filter(x => x[1]);
-  return l.length ? `<details class="fo-more"><summary>Argumentaire détaillé</summary><span class="fo-sda">${l.map(([k, v]) => `<span><b>${k} :</b> ${esc(v)}</span>`).join("")}</span></details>` : "";
+  return l.length ? `<details class="fo-more"><summary>Argumentaire détaillé</summary><span class="fo-sda">${l.map(([k, v]) => `<span><b>${k}<i class="sr"> :</i></b> ${esc(v)}</span>`).join("")}</span></details>` : "";
 }
 /* fiche formation (recherche par formation) */
 function renderFormationDetail(el){
@@ -1179,6 +1187,12 @@ $("groups").addEventListener("click", e => {
   if(window.matchMedia("(max-width:900px)").matches) $("detail").scrollIntoView({behavior:"smooth", block:"start"});
 });
 const domOuverts = new Set();
+/* une seule famille ouverte à la fois : ouvrir une famille replie les autres (hors recherche, où tout reste déplié) */
+$("groups").addEventListener("click", e => {
+  const sm = e.target.closest("details.group > summary"); if(!sm || state.q.trim()) return;
+  const d = sm.parentElement; if(d.open) return; /* on la referme : rien d'autre à faire */
+  document.querySelectorAll("#groups details.group[open]").forEach(o => { if(o !== d){ o.open = false; ouvertes.delete((o.dataset.dom || state.dom) + "|" + o.dataset.cat); } });
+});
 $("groups").addEventListener("click", e => { const sm = e.target.closest("summary.domtit"); if(!sm || state.q.trim()) return; const d = sm.parentElement;
   setTimeout(() => { d.open ? domOuverts.add(d.dataset.domg) : domOuverts.delete(d.dataset.domg); }, 0); });
 $("groups").addEventListener("toggle", e => {
