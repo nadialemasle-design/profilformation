@@ -647,6 +647,15 @@ body.ia-on .ia-btn{display:inline-flex}.ia-btn:hover{background:var(--teal)}.ia-
 #detail .fo-sda b{display:block;color:var(--teal) !important;font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;margin-bottom:1px}
 #detail .fo-head .fo-more>summary{color:#fff;font-size:13px;margin-top:6px;text-decoration:underline;text-underline-offset:3px}
 #detail .fo-sda b .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pl-com{width:190px}
+.pl-suivi{display:inline-flex;align-items:center;gap:4px;font:inherit;font-size:12px;font-weight:700;border:1px solid #9CCBEA;background:#E6F2FB;color:#1F5A80;border-radius:999px;padding:3px 10px;cursor:pointer;white-space:nowrap}
+.pl-suivi i{font-style:normal;transition:transform .2s}.pl-suivi.on i{transform:rotate(180deg)}
+.pl-suivi.ok{background:var(--teal-clair);border-color:var(--teal);color:#12343F}
+.pl-sub td{background:#F5FAFD;border-bottom:1px solid var(--line)}
+.pl-subin{display:flex;flex-wrap:wrap;gap:12px;padding:6px 4px 8px}
+.pl-subin fieldset{border:1px solid #CFE6F7;border-radius:10px;padding:6px 12px 8px;margin:0;background:#fff;display:flex;flex-wrap:wrap;gap:6px 16px}
+.pl-subin legend{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#2A6F97;padding:0 4px}
+.pl-subin label{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -2179,7 +2188,7 @@ async function biTelecharger(){
    PILOTAGE (bêta, éditrices connectées) : calendrier des sessions, inscrits par agence,
    salle / licences / certification à prévoir. Données dans la collection protégée « pilotage ».
    ===================================================================== */
-const PIL = { vue: "cal", mois: null, edits: {}, timers: {} };
+const PIL = { vue: "cal", mois: null, edits: {}, timers: {}, suivis: new Set() };
 const AG = ["B", "M", "Q"];
 const pilDoc = id => (RAW.pilotage || []).find(x => x.id === id) || {};
 const pilReg = () => pilDoc("_reglages");
@@ -2257,13 +2266,19 @@ function renderPilot(){
   }
   const chk = (id, k, lab) => `<input type="checkbox" data-plf="${esc(id)}" data-pk="${k}" aria-label="${lab}"${pilVal(id, k) ? " checked" : ""}>`;
   const txt = (id, k, lab) => `<input type="text" class="pl-t" data-plf="${esc(id)}" data-pk="${k}" aria-label="${lab}" value="${esc(pilVal(id, k) || "")}">`;
-  const rows = duMois.map(s => { const d = dateD(s.debut);
+  const SUIVI = s => ["salleOk", "licOk"].concat(s.cert ? ["certOk"] : [], ["qDeroule", "qSupport", "qProgramme"]);
+  const rows = duMois.map(s => { const d = dateD(s.debut), K = SUIVI(s), tot = K.length, fait = K.filter(k => pilVal(s.id, k)).length, ouvert = PIL.suivis.has(s.id);
     return `<tr id="pr-${esc(s.id)}" class="${s.cert ? "certrow" : ""}"><td>${d.toLocaleDateString("fr-FR")}</td><td>${d.toLocaleDateString("fr-FR", { weekday: "short" })}</td><td class="n">${s.jours.length}</td>
       <td><button type="button" class="pl-edit" data-pedit="${esc(s.fids[0])}" title="Modifier dans la Gestion (dates, tarif…) : ${esc(s.titre)}">${esc(s.nom)}</button>${s.cert ? `<span class="pl-cert">certif ${esc(s.cert)}</span>` : ""}</td><td class="pl-dt">${esc(s.texte.replace(/\s*20\d\d$/, ""))}</td><td>${txt(s.id, "formateur", "Formateur")}</td>
       <td class="n">${s.tarif ? eur(s.tarif) : ""}</td><td>${s.pos ? `<span class="pl-pos">Oui · ${esc(s.pos)}</span>` : ""}</td><td class="pl-cpf">${esc(cpfCourt(s.cpf))}</td><td class="n">${s.tp ? eur(s.tp) : ""}</td>
       <td>${txt(s.id, "lieu", "Lieu")}</td>${AG.map(a => `<td class="n"><input type="number" min="0" class="pl-n" data-plf="${esc(s.id)}" data-pk="${a}" aria-label="${esc(agNom(a))}" value="${pilVal(s.id, a) || ""}"></td>`).join("")}
       <td class="n tot" data-ptot="${esc(s.id)}">${pilTot(s.id)}</td><td class="n">${chk(s.id, "convoc", "Convocations envoyées")}</td>
-      <td class="n">${chk(s.id, "salleOk", "Salle réservée")}</td><td class="n">${chk(s.id, "licOk", "Licences prévues")}</td><td class="n">${s.cert ? chk(s.id, "certOk", "Certification prévue") : ""}</td></tr>`; }).join("");
+      <td><input type="text" class="pl-t pl-com" data-plf="${esc(s.id)}" data-pk="commentaire" aria-label="Commentaire" placeholder="Commentaire…" value="${esc(pilVal(s.id, "commentaire") || "")}"></td>
+      <td class="n"><button type="button" class="pl-suivi${ouvert ? " on" : ""}${fait === tot ? " ok" : ""}" data-psuivi="${esc(s.id)}" aria-expanded="${ouvert}" title="Salle, licences${s.cert ? ", certification" : ""}, qualité">${fait}/${tot} <i>▾</i></button></td></tr>
+      <tr class="pl-sub" data-psub="${esc(s.id)}"${ouvert ? "" : " hidden"}><td colspan="${17 + AG.length}"><div class="pl-subin">
+        <fieldset><legend>Logistique</legend><label>${chk(s.id, "salleOk", "Salle réservée")} Salle OK</label><label>${chk(s.id, "licOk", "Licences prévues")} Licences OK</label>${s.cert ? `<label>${chk(s.id, "certOk", "Certification prévue")} Certif OK</label>` : ""}</fieldset>
+        <fieldset><legend>Qualité</legend><label>${chk(s.id, "qDeroule", "Déroulé pédagogique")} Déroulé pédagogique</label><label>${chk(s.id, "qSupport", "Support de cours")} Support de cours</label><label>${chk(s.id, "qProgramme", "Programme")} Programme</label></fieldset>
+      </div></td></tr>`; }).join("");
   const A = alertesPilotage(S, auj);
   const ins = s => { const t = pilTot(s.id); return t ? `${t} inscrit${t > 1 ? "s" : ""} (${AG.map(a => a + " " + (Number(pilVal(s.id, a)) || 0)).join(" · ")})` : "aucun inscrit saisi"; };
   el.innerHTML = `
@@ -2273,10 +2288,10 @@ function renderPilot(){
       <div class="pl-vues"><button type="button" class="stab" data-pvue="cal" aria-pressed="${PIL.vue === "cal"}">Calendrier</button><button type="button" class="stab" data-pvue="liste" aria-pressed="${PIL.vue === "liste"}">Liste</button></div></div>
     <div class="pl-grid${PIL.vue === "liste" ? " large" : ""}"><div class="pl-main">
       ${PIL.vue === "cal" ? `<div class="pc">${cal}</div><div class="pl-leg"><span><i class="l1"></i>Jour de formation</span><span><i class="l2"></i>Dernier jour d'une formation certifiante (certification)</span><span><i class="l3"></i>Aujourd'hui</span><span>Cliquez sur une session pour la retrouver dans la liste.</span></div>`
-      : `<div class="pl-wrap"><table class="pl-t-tab"><thead><tr><th>Début</th><th>Jour</th><th>J</th><th>Formation</th><th>Dates</th><th>Formateur</th><th>Tarif</th><th>Positionnement</th><th>CPF</th><th>Tarif parcours</th><th>Lieu</th>${AG.map(a => `<th title="${esc(agNom(a))}">${a}</th>`).join("")}<th>Total</th><th>Convoc OK</th><th>Salle OK</th><th>Licences OK</th><th>Certif OK</th></tr></thead>
+      : `<div class="pl-wrap"><table class="pl-t-tab"><thead><tr><th>Début</th><th>Jour</th><th>J</th><th>Formation</th><th>Dates</th><th>Formateur</th><th>Tarif</th><th>Positionnement</th><th>CPF</th><th>Tarif parcours</th><th>Lieu</th>${AG.map(a => `<th title="${esc(agNom(a))}">${a}</th>`).join("")}<th>Total</th><th>Convoc OK</th><th>Commentaire</th><th title="Salle, licences, certification et qualité (cliquez pour déplier)">Suivi</th></tr></thead>
         <tbody>${rows || `<tr><td colspan="20" class="none">Aucune session ce mois-ci.</td></tr>`}</tbody></table></div><p class="pl-note">Les saisies sont enregistrées automatiquement. Cliquez sur le nom d'une formation pour la modifier dans la Gestion (dates, tarif…).</p>`}
     </div><aside class="pl-side">
-      <div class="pl-card"><h3>À prévoir</h3><p class="pl-note">Aujourd'hui, ${dateD(auj).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}. Cochez « Salle OK », « Licences OK » ou « Certif OK » pour arrêter une alerte.</p>
+      <div class="pl-card"><h3>À prévoir</h3><p class="pl-note">Aujourd'hui, ${dateD(auj).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}. Cochez « Salle OK », « Licences OK » ou « Certif OK » (colonne Suivi de la liste) pour arrêter une alerte.</p>
         ${A.length ? A.map(a => `<button type="button" class="pl-al ${a.k}" data-pgo="${esc(a.s.id)}"><b>${esc(a.txt)}</b>${esc(a.s.nom)} · ${esc(a.s.texte)} · ${ins(a.s)}</button>`).join("") : `<p class="none">Rien à prévoir pour le moment.</p>`}
         <p class="pl-note">Le même récapitulatif est envoyé par e-mail chaque matin (lundi au vendredi) si les alertes e-mail sont activées.</p></div>
       <div class="pl-card pl-reg"><h3>Réglages (contacts)</h3>
@@ -2293,11 +2308,19 @@ function pilSave(id){
     try{ await db.doc("pilotage/" + id).set(data); delete PIL.edits[id]; }catch(e){ toast("Enregistrement impossible : vérifiez votre connexion."); }
   }, 600);
 }
+document.addEventListener("click", e => {
+  const b = e.target.closest("#pilot [data-psuivi]"); if(!b) return;
+  const id = b.dataset.psuivi, sub = document.querySelector(`[data-psub="${CSS.escape(id)}"]`); if(!sub) return;
+  sub.hidden = !sub.hidden; sub.hidden ? PIL.suivis.delete(id) : PIL.suivis.add(id);
+  b.classList.toggle("on", !sub.hidden); b.setAttribute("aria-expanded", String(!sub.hidden));
+});
 document.addEventListener("input", e => {
   const t = e.target.closest("#pilot [data-plf]"); if(!t) return;
   const id = t.dataset.plf, k = t.dataset.pk;
   (PIL.edits[id] = PIL.edits[id] || {})[k] = t.type === "checkbox" ? t.checked : t.type === "number" ? (t.value === "" ? 0 : Math.max(0, parseInt(t.value, 10) || 0)) : t.value;
   const c = document.querySelector(`[data-ptot="${CSS.escape(id)}"]`); if(c) c.textContent = pilTot(id);
+  const sub = document.querySelector(`[data-psub="${CSS.escape(id)}"]`), sb = document.querySelector(`[data-psuivi="${CSS.escape(id)}"]`);
+  if(sub && sb){ const cs = [...sub.querySelectorAll("input[type=checkbox]")], f = cs.filter(x => x.checked).length; sb.firstChild.textContent = `${f}/${cs.length} `; sb.classList.toggle("ok", f === cs.length); }
   pilSave(id);
   if(t.type === "checkbox") renderPilotSoon();
 });
