@@ -2377,7 +2377,8 @@ function mailCorpsHtml(corps){
 function mailTexte(){
   const r = propCalcul(), L = [], nomL = l => { if((l.f.modules || []).length < 2) return l.f.nom; const a = String(l.m.titre).split(":")[0].split(" - ")[0].trim(); return /^réseaux sociaux$/i.test(a) ? String(l.m.titre).trim() : a; };
   const ligneF = l => `– ${nomL(l)}${l.it.session ? " – " + l.it.session : ""}`;
-  const p = (RAW.profils || []).find(x => x.id === state.pid), noms = [...new Set(r.lignes.map(l => (l.f.modules || []).length > 1 ? l.f.nom : l.f.nom))];
+  const p = (RAW.profils || []).find(x => x.id === state.pid), noms = [...new Set(r.lignes.map(l => { const n = (l.f.modules || []).length; /* parcours complet → nom du parcours ; module(s) seul(s) → nom du module */
+    return n > 1 && r.lignes.filter(x => x.f.id === l.f.id).length < n ? nomL(l) : l.f.nom; }))];
   const objet = "Votre proposition de formation – " + (noms.length <= 2 ? noms.join(" et ") : noms.slice(0, 2).join(", ") + "…");
   L.push(`Bonjour${MAILV.prenom ? " " + MAILV.prenom : ""},`, "");
   const besoin = p && p.besoin && r.lignes.some(l => l.f.domaine === p.domaine) ? " : " + p.besoin.replace(/^./, c => c.toLowerCase()).replace(/\.$/, "") : "";
@@ -2400,6 +2401,7 @@ function mailTexte(){
     const pj = [MAILV.bulletin ? "le bulletin d'inscription" : "", MAILV.devis ? "le devis" : ""].filter(Boolean);
     if(pj.length || MAILV.programme) L.push(`Vous trouverez ci-joint ${pj.length ? pj.join(" et ") : ""}${MAILV.programme ? (pj.length ? ", ainsi que le programme" : "le programme") : ""}${r.cpf.length ? " pour les formations hors CPF" : ""}.`, "");
   }
+  L.push("Pour information, la formation pourra se dérouler à Brest, au Relecq‑Kerhuon ou à Quimper, en fonction de la répartition des inscrits. Le lieu définitif vous sera confirmé environ trois semaines avant l'ouverture de la session.", "");
   L.push("Je reste à votre disposition pour toute question.", "", "Bien cordialement,", MAILP.signature || "");
   return { objet, corps: L.join("\n").replace(/\n{3,}/g, "\n\n").trim() };
 }
