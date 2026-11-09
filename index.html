@@ -673,6 +673,31 @@ button.acc-st{cursor:pointer}button.acc-st:hover{border-color:var(--teal);backgr
 .acc-pied{margin-top:18px;font-size:13px;color:#55707a}
 .acc-best{display:inline-block;background:var(--teal);color:#12343F;font-weight:700;border-radius:999px;padding:1px 8px;font-size:11.5px}
 @media (max-width:700px){.acc-steps{display:grid;grid-template-columns:1fr 1fr;gap:10px}.acc-fl{display:none}.accueil{margin-top:16px}}
+/* ===== Gestion › Modèles d'e-mail ===== */
+#admin.adm-large .adm-grid{grid-template-columns:1fr !important}#admin.adm-large .adm-list{display:none}
+.mod-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,1fr);gap:18px;align-items:start}
+.mod-side{position:sticky;top:12px}
+.mod-card{margin-bottom:16px}.mod-card h2{font-size:12px;letter-spacing:.07em;text-transform:uppercase;display:flex;align-items:center;gap:8px}.mod-card h2:before{content:"";width:14px;height:3px;background:var(--teal);border-radius:2px}
+.mod-reps{font-size:12px;color:#55707a;margin:0 0 10px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.mod-tag{font:inherit;background:var(--teal-clair);border:1px solid var(--teal);border-radius:6px;padding:1px 6px;font-weight:700;font-size:12px;color:#12343F;cursor:pointer}
+.mod-bloc{border:1px solid #CFE6F7;border-radius:12px;margin-bottom:10px;overflow:hidden;background:#fff}.mod-bloc.off{opacity:.55}
+.mod-bh{display:flex;align-items:center;gap:8px;background:#E6F2FB;padding:6px 8px}
+.mod-ord{display:flex;flex-direction:column}.mod-ord button{border:none;background:none;color:#2A6F97;font-size:9px;line-height:1;cursor:pointer;padding:1px 3px}.mod-ord button:disabled{opacity:.25;cursor:default}
+.mod-titre{flex:1;min-width:0;border:none;background:transparent;font:inherit;font-weight:700;font-size:13px;color:#1F5A80}
+.mod-bh select{font:inherit;font-size:12px;font-weight:700;border:1px solid #9CCBEA;border-radius:999px;padding:2px 8px;background:#fff;color:#12343F}
+.mod-sw{position:relative;width:32px;height:18px;flex:none}.mod-sw input{opacity:0;width:0;height:0}.mod-sw span{position:absolute;inset:0;border-radius:999px;background:#C9D3D8;cursor:pointer;transition:.2s}.mod-sw span:after{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.2s}.mod-sw input:checked+span{background:var(--teal)}.mod-sw input:checked+span:after{left:16px}
+.mod-x{border:none;background:none;color:#7a8a92;cursor:pointer;font-size:13px;padding:2px 4px}.mod-x:hover{color:#12343F}
+.mod-txt{display:block;width:100%;box-sizing:border-box;border:none;padding:8px 10px;font:inherit;font-size:13.5px;line-height:1.5;resize:vertical;min-height:44px}
+.mod-txt:focus{outline:2px solid var(--teal);outline-offset:-2px}
+.mod-add{border:none;background:none;color:#2A6F97;font:inherit;font-weight:800;font-size:13px;cursor:pointer;padding:4px 0}
+.mod-cases{width:100%;border-collapse:collapse;font-size:13px}.mod-cases th{text-align:left;font-size:11px;color:#55707a;text-transform:uppercase;letter-spacing:.04em;padding:4px;border-bottom:1px solid var(--line)}.mod-cases td{padding:5px 4px;border-bottom:1px solid #EEF2F4;vertical-align:middle}.mod-cases td.n{text-align:center}.mod-cases .inp{width:100%;box-sizing:border-box;font-size:13px;padding:5px 7px}
+.mod-ex{display:flex;gap:6px;align-items:center;font-size:12.5px;margin-bottom:10px}.mod-ex button{font:inherit;font-size:12.5px;border:1px solid #CFE6F7;background:#fff;border-radius:999px;padding:3px 10px;cursor:pointer;color:#12343F}.mod-ex button[aria-pressed="true"]{background:#12343F;color:#fff;border-color:#12343F}
+.mod-prev{border:1px solid #DCE6EC;border-radius:12px;padding:12px 14px;font-family:Calibri,Arial,sans-serif;font-size:14px;line-height:1.5;color:#222;max-height:70vh;overflow:auto;background:#fff}.mod-prev p{margin:0 0 10px}
+.mod-obj{font-weight:700;border-bottom:1px solid #EEF2F4;padding-bottom:8px;margin-bottom:10px}
+.mod-tab{border:1px dashed #84CCEC;background:#F0F8FD;border-radius:8px;padding:10px;margin:0 0 10px;color:#1F3864;font-size:12.5px;text-align:center}
+.mod-acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+@media (max-width:1000px){.mod-grid{grid-template-columns:1fr}.mod-side{position:static}}
+.mod-cases select.inp[data-mck="cond"]{min-width:118px}.mod-cases select.inp[data-mck="fichier"]{min-width:150px}.mod-cases td:nth-child(4){width:60px}
 </style>
 </head>
 <body>
@@ -732,6 +757,7 @@ button.acc-st{cursor:pointer}button.acc-st:hover{border-color:var(--teal);backgr
         <button type="button" class="stab" data-tab="domaine" aria-pressed="false">Domaine</button>
         <button type="button" class="stab" data-tab="questionnaires" aria-pressed="false">Questionnaires</button>
         <button type="button" class="stab" data-tab="comptes" aria-pressed="false">Conseillères</button>
+        <button type="button" class="stab" data-tab="modeles" aria-pressed="false">Modèles d'e-mail</button>
       </div>
       <button type="button" class="btn add" id="admNewDom">+ Nouveau domaine</button>
     </div>
@@ -852,7 +878,8 @@ const qDoc = (fid, code) => (RAW.questionnaires || []).find(x => x.id === qKey(f
 let DOMAINES = [];
 
 function buildModel(){
-  DOMAINES = (RAW.domaines || []).slice().sort(byOrdre).map(d => ({
+  MAILCFG = (RAW.domaines || []).find(d => d.id === MAIL_ID) || null;
+  DOMAINES = (RAW.domaines || []).filter(d => d.id !== MAIL_ID).slice().sort(byOrdre).map(d => ({
     id: d.id, nom: d.nom || d.id, financement: d.financement || "", certification: d.certification || "",
     ordreModules: Array.isArray(d.ordreModules) ? d.ordreModules : [],
     formations: (RAW.formations || []).filter(f => f.domaine === d.id).sort(byOrdre).map(f => ({
@@ -1310,7 +1337,9 @@ function renderAdmin(resetForm){
   if(!DOMAINES.some(d => d.id === adm.dom)) adm.dom = DOMAINES[0] ? DOMAINES[0].id : "";
   $("admDom").innerHTML = DOMAINES.map(d => `<option value="${esc(d.id)}"${d.id===adm.dom?" selected":""}>${esc(d.nom)}</option>`).join("");
   document.querySelectorAll(".stab").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.tab === adm.tab)));
-  $("admDom").closest("label").style.visibility = adm.tab === "questionnaires" || adm.tab === "comptes" ? "hidden" : "";
+  $("admDom").closest("label").style.visibility = adm.tab === "questionnaires" || adm.tab === "comptes" || adm.tab === "modeles" ? "hidden" : "";
+  $("admin").classList.toggle("adm-large", adm.tab === "modeles");
+  $("admNewDom").hidden = adm.tab === "modeles";
   renderAdmList();
   if(resetForm) renderAdmForm();
 }
@@ -1320,6 +1349,7 @@ function renderAdmList(){
   if(!d){ el.innerHTML = `<p class="none">Aucun domaine. Créez-en un avec « + Nouveau domaine ».</p>`; return; }
   if(adm.tab === "questionnaires") return listQuestionnaires(el);
   if(adm.tab === "comptes") return listComptes(el);
+  if(adm.tab === "modeles"){ el.innerHTML = ""; return; }
   if(adm.tab === "domaine"){ el.innerHTML = `<button type="button" class="adm-item" aria-pressed="true"><b>${esc(d.nom)}</b><small>${d.formations.length} parcours · ${d.profils.length} profils</small></button>`; return; }
   if(adm.tab === "categories"){
     el.innerHTML = `<button type="button" class="btn add" data-new="1">+ Nouvelle catégorie</button>` + domCats(d).map(c => {
@@ -1358,7 +1388,7 @@ $("admTabs").addEventListener("click", e => {
   if(adm.sel && adm.sel !== "new") selParOnglet[adm.tab] = { dom: adm.dom, sel: adm.sel };
   const ctx = qContexte();
   adm.tab = b.dataset.tab;
-  const m = selParOnglet[adm.tab], global = adm.tab === "questionnaires" || adm.tab === "comptes";
+  const m = selParOnglet[adm.tab], global = adm.tab === "questionnaires" || adm.tab === "comptes" || adm.tab === "modeles";
   adm.sel = adm.tab === "domaine" ? adm.dom : (m && (global || m.dom === adm.dom) ? m.sel : null);
   /* depuis une formation ou un sous-profil ouvert : l'onglet Questionnaires ouvre directement le bon questionnaire */
   if(adm.tab === "questionnaires" && ctx.length){
@@ -1385,6 +1415,7 @@ function renderAdmForm(){
   el.onclick = null; el.onchange = null; el.oninput = null; el.dataset.dirty = "";
   if(adm.tab === "questionnaires") return formQuestionnaire(el);
   if(adm.tab === "comptes") return formCompte(el);
+  if(adm.tab === "modeles") return formModeles(el);
   if(adm.tab === "domaine" || adm.sel === "new" && adm.tab === "domaine"){ return formDomaine(el); }
   if(!d){ el.innerHTML = ""; return; }
   if(!adm.sel){ el.innerHTML = `<div class="state">Choisissez un élément dans la liste, ou créez-en un nouveau.</div>`; return; }
@@ -2385,7 +2416,7 @@ document.addEventListener("click", async e => {
 /* ---------- E-mail prêt à l'emploi (à partir de la proposition) ---------- */
 const MAILP = (() => { try{ return JSON.parse(localStorage.getItem("mail-prefs-v1") || "{}"); }catch(e){ return {}; } })();
 const mailSave = () => { try{ localStorage.setItem("mail-prefs-v1", JSON.stringify({ signature: MAILP.signature || "" })); }catch(e){} };
-const MAILV = { prenom: "", lien: "", bulletin: true, devis: false, programme: true, texte: null };
+const MAILV = { prenom: "", lien: "", cases: {}, texte: null };
 const MAIL_TAB = "[TABLEAU RÉCAPITULATIF]"; /* repère remplacé par le tableau mis en forme à la copie (déplaçable ou supprimable) */
 /* tableau récapitulatif (même contenu que le document Word) : HTML avec styles en ligne pour Outlook, et version texte */
 function devisTable(){
@@ -2412,6 +2443,114 @@ function mailCorpsHtml(corps){
   const blocs = corps.split(/\n{2,}/).map(b => b.trim() === MAIL_TAB ? `<div style="margin:0 0 14px">${t.html}</div>` : `<p style="${P}">${b.split("\n").map(x => esc(x).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1">$1</a>')).join("<br>")}</p>`);
   return `<div>${blocs.join("")}</div>`;
 }
+/* ===================== Modèles d'e-mail (Gestion › Modèles d'e-mail) ===================== */
+const MAIL_ID = "_mail"; let MAILCFG = null;
+const MAIL_DEF = {
+  blocs: [
+    { id: "appel", titre: "Formule d'appel", cond: "toujours", actif: true, texte: "Bonjour {prénom}," },
+    { id: "intro", titre: "Introduction", cond: "toujours", actif: true, texte: "Suite à notre échange, je vous adresse la proposition de formation adaptée à votre besoin : {besoin}.\n\n{formations}\n\nVoici le récapitulatif de votre proposition :\n\n{tableau}" },
+    { id: "cpf", titre: "Procédure CPF", cond: "cpf", actif: true, texte: "La procédure est la suivante :\n\n1. Suivez le lien vers Mon Compte Formation : {lien CPF}\n2. Cliquez sur « Demander un devis » (zone en bas à droite de la page web)\n3. Connectez-vous à votre compte CPF à l'aide de « FranceConnect+ »\n4. Suivez les indications données jusqu'à l'étape d'envoi à l'organisme de formation.\n\nUne fois cette dernière action effectuée, ce sera à moi d'accepter votre demande." },
+    { id: "pj", titre: "Pièces jointes", cond: "toujours", actif: true, texte: "{pièces jointes}" },
+    { id: "infos", titre: "Informations pratiques", cond: "toujours", actif: true, texte: "Pour information, la formation pourra se dérouler à Brest, au Relecq‑Kerhuon ou à Quimper, en fonction de la répartition des inscrits. Le lieu définitif vous sera confirmé environ trois semaines avant l'ouverture de la session." },
+    { id: "fin", titre: "Formule de fin", cond: "toujours", actif: true, texte: "Je reste à votre disposition pour toute question.\n\nBien cordialement," }
+  ],
+  cases: [
+    { id: "bulletin", libelle: "Bulletin d'inscription", phrase: "le bulletin d'inscription", cond: "hors", defaut: true, fichier: "bulletin" },
+    { id: "devis", libelle: "Devis", phrase: "le devis", cond: "hors", defaut: false, fichier: "devis" },
+    { id: "programme", libelle: "Programme", phrase: "le programme", cond: "hors", defaut: true, fichier: "" }
+  ]
+};
+const mailCfg = () => { const c = MAILCFG || {}; return { blocs: Array.isArray(c.blocs) && c.blocs.length ? c.blocs : MAIL_DEF.blocs, cases: Array.isArray(c.cases) ? c.cases : MAIL_DEF.cases }; };
+const CONDS = { toujours: "Toujours", cpf: "Si CPF", hors: "Si hors CPF" };
+const condOk = (c, r) => c === "cpf" ? r.cpf.length > 0 : c === "hors" ? r.hors.length > 0 : true;
+const casesVisibles = (cfg, r) => cfg.cases.filter(c => c.libelle && condOk(c.cond, r));
+const caseCochee = (c, V) => V.cases && Object.prototype.hasOwnProperty.call(V.cases, c.id) ? !!V.cases[c.id] : !!c.defaut;
+const listeEt = a => a.length < 2 ? (a[0] || "") : a.slice(0, -1).join(", ") + " et " + a[a.length - 1];
+/* compose le corps du message à partir du modèle ; r = propCalcul(), V = options de l'e-mail, p = sous-profil */
+function mailCompose(cfg, r, V, p){
+  const nomL = nomLigne, ligneF = l => `– ${nomL(l)}${l.it.session ? " – " + l.it.session : ""}`, F = [];
+  const jr = r.jours ? ` (${r.jours} jour${r.jours > 1 ? "s" : ""})` : "";
+  if(r.cpf.length){ F.push(r.hors.length ? "Formations financées par votre CPF :" : `Votre parcours${jr} :`); r.cpf.forEach(l => F.push(ligneF(l))); r.certs.forEach(c => F.push("– " + (/^certification/i.test(c.nom) ? c.nom : "Certification " + c.nom))); }
+  if(r.hors.length){ if(F.length) F.push(""); F.push(r.cpf.length ? "Formations hors CPF :" : `Votre programme de formation${jr} :`); r.hors.forEach(l => F.push(ligneF(l))); }
+  const besoin = p && p.besoin && r.lignes.some(l => l.f.domaine === p.domaine) ? p.besoin.replace(/^./, c => c.toLowerCase()).replace(/\.$/, "") : "";
+  const coch = casesVisibles(cfg, r).filter(c => caseCochee(c, V) && c.phrase);
+  const pj = coch.length ? `Vous trouverez ci-joint ${listeEt(coch.map(c => c.phrase.trim()))}${r.cpf.length && r.hors.length && coch.every(c => c.cond === "hors") ? " pour les formations hors CPF" : ""}.` : "";
+  const val = { "prénom": V.prenom || "", "prenom": V.prenom || "", "besoin": besoin, "formations": F.join("\n"), "tableau": MAIL_TAB, "lien cpf": V.lien || "", "pièces jointes": pj, "pieces jointes": pj };
+  /* repère vide : on retire aussi ce qui le précède (« : » ou espace), ex. « Bonjour {prénom}, » → « Bonjour, » */
+  const remplir = t => String(t || "").replace(/([ \t]*:[ \t]*|[ \t]+)?\{([^}]+)\}/g, (all, pre, k) => { const v = val[k.trim().toLowerCase()]; if(v === undefined) return all; return v ? (pre || "") + v : ""; });
+  const B = cfg.blocs.filter(b => b.actif !== false && condOk(b.cond, r)).map(b => remplir(b.texte).replace(/[ \t]+\n/g, "\n").trim()).filter(Boolean);
+  if(MAILP.signature) B.push(MAILP.signature.trim());
+  return B.join("\n\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+/* ---------- éditeur ---------- */
+let MOD = null; /* brouillon en cours d'édition */
+const modExemple = () => { /* propositions d'exemple pour l'aperçu */
+  const l = (lab, prix, sess) => ({ f: { id: lab, nom: lab, modules: [{}], domaine: "" }, m: { titre: lab }, it: { session: sess, type: "" }, prix, d: {} });
+  const a = l("IA générative débutant", 420, "15 janvier 2027"), b = l("Parcours Réseaux & vidéo", 1750, "29 janvier 2027");
+  return { hors: { lignes: [a], hors: [a], cpf: [], certs: [], jours: 1 }, cpf: { lignes: [b], hors: [], cpf: [b], certs: [{ nom: "Certification RS7643", prix: 330 }], jours: 5 }, mixte: { lignes: [b, a], hors: [a], cpf: [b], certs: [{ nom: "Certification RS7643", prix: 330 }], jours: 6 } };
+};
+function modApercu(){
+  const z = $("modPrev"); if(!z || !MOD) return; const ex = modExemple()[MOD.ex || "hors"];
+  const corps = mailCompose(MOD, ex, { prenom: "Marie", lien: "https://www.moncompteformation.gouv.fr/…", cases: {} }, { besoin: "Acquérir une compétence recherchée et la prouver sur son CV.", domaine: "" });
+  z.innerHTML = `<div class="mod-obj">Objet : Votre proposition de formation – ${esc(ex.lignes.map(l => l.f.nom).join(" et "))}</div>` + corps.split(/\n{2,}/).map(b => b.trim() === MAIL_TAB ? `<div class="mod-tab">[ tableau récapitulatif : formations, dates, tarifs, totaux ]</div>` : `<p>${esc(b).replace(/\n/g, "<br>")}</p>`).join("");
+}
+function formModeles(el){
+  const c = mailCfg(); MOD = { blocs: c.blocs.map(b => Object.assign({}, b)), cases: c.cases.map(x => Object.assign({}, x)), ex: (MOD && MOD.ex) || "hors" };
+  const opt = (v, cur) => Object.keys(CONDS).map(k => `<option value="${k}"${k === cur ? " selected" : ""}>${CONDS[k]}</option>`).join("");
+  const FICH = { "": "—", bulletin: "Bulletin prérempli (PDF)", devis: "Devis (document Word)" };
+  el.innerHTML = `<div class="mod-grid"><div>
+    <div class="form mod-card"><h2>Texte du message</h2>
+      <p class="mod-reps">Repères remplacés automatiquement : ${["prénom", "besoin", "formations", "tableau", "lien CPF", "pièces jointes"].map(k => `<button type="button" class="mod-tag" data-modins="{${k}}" title="Insérer à l'endroit du curseur">{${k}}</button>`).join("")}</p>
+      <div id="modBlocs">${MOD.blocs.map((b, i) => `<div class="mod-bloc${b.actif === false ? " off" : ""}" data-mb="${i}">
+        <div class="mod-bh"><span class="mod-ord"><button type="button" data-mbup="${i}" title="Monter"${i ? "" : " disabled"}>▲</button><button type="button" data-mbdown="${i}" title="Descendre"${i < MOD.blocs.length - 1 ? "" : " disabled"}>▼</button></span>
+          <input class="mod-titre" data-mbk="titre" value="${esc(b.titre || "")}" aria-label="Nom du bloc">
+          <select data-mbk="cond" aria-label="Quand l'afficher">${opt(0, b.cond || "toujours")}</select>
+          <label class="mod-sw" title="Activer ou désactiver ce bloc"><input type="checkbox" data-mbk="actif"${b.actif === false ? "" : " checked"}><span></span></label>
+          <button type="button" class="mod-x" data-mbdel="${i}" title="Supprimer ce bloc">✕</button></div>
+        <textarea class="mod-txt" data-mbk="texte" rows="${Math.min(9, Math.max(2, String(b.texte || "").split("\n").length + 1))}">${esc(b.texte || "")}</textarea></div>`).join("")}</div>
+      <button type="button" class="mod-add" id="modAddBloc">＋ Ajouter un bloc</button></div>
+    <div class="form mod-card"><h2>Cases à cocher (pièces jointes)</h2>
+      <table class="mod-cases"><tr><th>Libellé de la case</th><th>Phrase ajoutée au message</th><th>Affichée</th><th>Cochée par défaut</th><th>Fichier</th><th></th></tr>
+      ${MOD.cases.map((x, i) => `<tr data-mc="${i}"><td><input class="inp" data-mck="libelle" value="${esc(x.libelle || "")}" placeholder="ex. Plan d'accès"></td><td><input class="inp" data-mck="phrase" value="${esc(x.phrase || "")}" placeholder="ex. le plan d'accès"></td>
+        <td><select class="inp" data-mck="cond">${opt(0, x.cond || "toujours")}</select></td><td class="n"><input type="checkbox" data-mck="defaut"${x.defaut ? " checked" : ""}></td>
+        <td><select class="inp" data-mck="fichier">${Object.keys(FICH).map(k => `<option value="${k}"${(x.fichier || "") === k ? " selected" : ""}>${FICH[k]}</option>`).join("")}</select></td><td><button type="button" class="mod-x" data-mcdel="${i}" title="Supprimer cette case">✕</button></td></tr>`).join("")}</table>
+      <button type="button" class="mod-add" id="modAddCase">＋ Ajouter une case</button>
+      <p class="fhint">Les cases cochées forment la phrase « Vous trouverez ci-joint … » du bloc {pièces jointes}.</p></div>
+  </div><div class="mod-side"><div class="form mod-card"><h2>Aperçu en direct</h2>
+    <div class="mod-ex">Exemple : ${["hors", "cpf", "mixte"].map(k => `<button type="button" data-modex="${k}" aria-pressed="${MOD.ex === k}">${{ hors: "Hors CPF", cpf: "CPF", mixte: "Mixte" }[k]}</button>`).join("")}</div>
+    <div id="modPrev" class="mod-prev"></div>
+    <p class="fhint">Chaque conseillère ajoute sa propre signature dans la fenêtre « Préparer l'e-mail ».</p></div>
+    <div class="actions mod-acts"><button type="button" class="btn" id="modDef" title="Remettre les textes et cases d'origine (sans enregistrer)">Textes d'origine</button><button type="button" class="btn" id="modAnn">Annuler</button><button type="button" class="btn primary" id="modSave">Enregistrer les modèles</button></div><p class="msg" id="formMsg" role="status"></p></div></div>`;
+  modApercu();
+}
+function modLire(){ /* relit le formulaire dans MOD */
+  document.querySelectorAll("#admForm [data-mb]").forEach(n => { const b = MOD.blocs[+n.dataset.mb]; if(!b) return;
+    n.querySelectorAll("[data-mbk]").forEach(x => { b[x.dataset.mbk] = x.type === "checkbox" ? x.checked : x.value; }); n.classList.toggle("off", b.actif === false); });
+  document.querySelectorAll("#admForm [data-mc]").forEach(n => { const c = MOD.cases[+n.dataset.mc]; if(!c) return;
+    n.querySelectorAll("[data-mck]").forEach(x => { c[x.dataset.mck] = x.type === "checkbox" ? x.checked : x.value; }); });
+}
+let modDernierChamp = null;
+document.addEventListener("focusin", e => { if(e.target.closest && e.target.closest("#admForm .mod-txt")) modDernierChamp = e.target; });
+document.addEventListener("input", e => { if(!MOD || !e.target.closest("#admForm .mod-grid")) return; modLire(); modApercu(); $("admForm").dataset.dirty = "1"; });
+document.addEventListener("change", e => { if(!MOD || !e.target.closest("#admForm .mod-grid")) return; modLire(); modApercu(); $("admForm").dataset.dirty = "1"; });
+document.addEventListener("click", async e => {
+  if(!MOD || !e.target.closest("#admForm")) return; const t = e.target.closest("button"); if(!t) return;
+  const re = () => { const ex = MOD.ex; const keep = MOD; formModeles($("admForm")); MOD.blocs = keep.blocs; MOD.cases = keep.cases; MOD.ex = ex; renderModFromMOD(); };
+  if(t.dataset.modins){ const z = modDernierChamp; if(!z){ toast("Cliquez d'abord dans un texte"); return; } const p = z.selectionStart ?? z.value.length; z.value = z.value.slice(0, p) + t.dataset.modins + z.value.slice(z.selectionEnd ?? p); z.focus(); z.selectionStart = z.selectionEnd = p + t.dataset.modins.length; modLire(); modApercu(); return; }
+  if(t.dataset.modex){ MOD.ex = t.dataset.modex; document.querySelectorAll("[data-modex]").forEach(x => x.setAttribute("aria-pressed", String(x === t))); modApercu(); return; }
+  if(t.dataset.mbup || t.dataset.mbdown){ modLire(); const i = +(t.dataset.mbup || t.dataset.mbdown), j = t.dataset.mbup ? i - 1 : i + 1; [MOD.blocs[i], MOD.blocs[j]] = [MOD.blocs[j], MOD.blocs[i]]; re(); return; }
+  if(t.dataset.mbdel){ modLire(); MOD.blocs.splice(+t.dataset.mbdel, 1); re(); return; }
+  if(t.dataset.mcdel){ modLire(); MOD.cases.splice(+t.dataset.mcdel, 1); re(); return; }
+  if(t.id === "modAddBloc"){ modLire(); MOD.blocs.push({ id: "b" + Date.now().toString(36), titre: "Nouveau bloc", cond: "toujours", actif: true, texte: "" }); re(); return; }
+  if(t.id === "modAddCase"){ modLire(); MOD.cases.push({ id: "c" + Date.now().toString(36), libelle: "", phrase: "", cond: "toujours", defaut: false, fichier: "" }); re(); return; }
+  if(t.id === "modDef"){ MOD.blocs = MAIL_DEF.blocs.map(b => Object.assign({}, b)); MOD.cases = MAIL_DEF.cases.map(x => Object.assign({}, x)); re(); toast("Textes d'origine remis : enregistrez pour les garder"); return; }
+  if(t.id === "modAnn"){ delete $("admForm").dataset.dirty; MOD = null; formModeles($("admForm")); return; }
+  if(t.id === "modSave"){ modLire(); const data = { nom: "Modèles d'e-mail", blocs: MOD.blocs, cases: MOD.cases.filter(c => (c.libelle || "").trim()) };
+    delete $("admForm").dataset.dirty; await write(() => db.doc("domaines/" + MAIL_ID).set(data), "Modèles d'e-mail enregistrés"); }
+});
+function renderModFromMOD(){ /* ré-affiche l'éditeur avec le brouillon MOD (ordre, ajout, suppression) */
+  const saved = MAILCFG; MAILCFG = { blocs: MOD.blocs, cases: MOD.cases }; const ex = MOD.ex; MOD = null; formModeles($("admForm")); MOD.ex = ex; MAILCFG = saved; modApercu(); $("admForm").dataset.dirty = "1";
+}
 /* nom court d'une ligne : nom de la formation, ou pour un module de parcours la 1re partie de son titre */
 const nomLigne = l => { if((l.f.modules || []).length < 2) return l.f.nom; const a = String(l.m.titre).split(":")[0].split(" - ")[0].trim(); return /^réseaux sociaux$/i.test(a) ? String(l.m.titre).trim() : a; };
 function mailTexte(){
@@ -2420,37 +2559,15 @@ function mailTexte(){
   const p = (RAW.profils || []).find(x => x.id === state.pid), noms = [...new Set(r.lignes.map(l => { const n = (l.f.modules || []).length; /* parcours complet → nom du parcours ; module(s) seul(s) → nom du module */
     return n > 1 && r.lignes.filter(x => x.f.id === l.f.id).length < n ? nomL(l) : l.f.nom; }))];
   const objet = "Votre proposition de formation – " + (noms.length <= 2 ? noms.join(" et ") : noms.slice(0, 2).join(", ") + "…");
-  L.push(`Bonjour${MAILV.prenom ? " " + MAILV.prenom : ""},`, "");
-  const besoin = p && p.besoin && r.lignes.some(l => l.f.domaine === p.domaine) ? " : " + p.besoin.replace(/^./, c => c.toLowerCase()).replace(/\.$/, "") : "";
-  L.push(`Suite à notre échange, je vous adresse la proposition de formation adaptée à votre besoin${besoin}.`, "");
-  if(r.cpf.length){
-    L.push(r.hors.length ? "Formations financées par votre CPF :" : `Votre parcours${r.jours ? ` (${r.jours} jour${r.jours > 1 ? "s" : ""})` : ""} :`);
-    r.cpf.forEach(l => L.push(ligneF(l))); r.certs.forEach(c => L.push("– " + (/^certification/i.test(c.nom) ? c.nom : "Certification " + c.nom))); L.push("");
-  }
-  if(r.hors.length){ L.push(r.cpf.length ? "Formations hors CPF :" : `Votre programme de formation${r.jours ? ` (${r.jours} jour${r.jours > 1 ? "s" : ""})` : ""} :`); r.hors.forEach(l => L.push(ligneF(l))); L.push(""); }
-  L.push("Voici le récapitulatif de votre proposition :", "", MAIL_TAB, "");
-  if(r.cpf.length){
-    L.push("La procédure est la suivante :", "",
-      `1. Suivez le lien vers Mon Compte Formation${MAILV.lien ? " : " + MAILV.lien : ""}`,
-      "2. Cliquez sur « Demander un devis » (zone en bas à droite de la page web)",
-      "3. Connectez-vous à votre compte CPF à l'aide de « FranceConnect+ »",
-      "4. Suivez les indications données jusqu'à l'étape d'envoi à l'organisme de formation.", "",
-      "Une fois cette dernière action effectuée, ce sera à moi d'accepter votre demande.", "");
-  }
-  if(r.hors.length){
-    const pj = [MAILV.bulletin ? "le bulletin d'inscription" : "", MAILV.devis ? "le devis" : ""].filter(Boolean);
-    if(pj.length || MAILV.programme) L.push(`Vous trouverez ci-joint ${pj.length ? pj.join(" et ") : ""}${MAILV.programme ? (pj.length ? ", ainsi que le programme" : "le programme") : ""}${r.cpf.length ? " pour les formations hors CPF" : ""}.`, "");
-  }
-  L.push("Pour information, la formation pourra se dérouler à Brest, au Relecq‑Kerhuon ou à Quimper, en fonction de la répartition des inscrits. Le lieu définitif vous sera confirmé environ trois semaines avant l'ouverture de la session.", "");
-  L.push("Je reste à votre disposition pour toute question.", "", "Bien cordialement,", MAILP.signature || "");
-  return { objet, corps: L.join("\n").replace(/\n{3,}/g, "\n\n").trim() };
+  return { objet, corps: mailCompose(mailCfg(), r, MAILV, p) };
 }
 function mailHtml(){
   const r = propCalcul(), t = mailTexte();
   return `<div id="mailPanel"><div class="ml-grid"><div class="ml-opts">
     <label>Prénom du client<input id="mlPrenom" value="${esc(MAILV.prenom)}" placeholder="ex. Marie"></label>
     ${r.cpf.length ? `<label>Lien Mon Compte Formation<input id="mlLien" value="${esc(MAILV.lien)}" placeholder="https://www.moncompteformation.gouv.fr/…"></label>` : ""}
-    ${r.hors.length ? `<fieldset><legend>Pièces jointes (hors CPF)</legend><label class="ck"><input type="checkbox" id="mlBul"${MAILV.bulletin ? " checked" : ""}> Bulletin d'inscription</label><button type="button" class="ml-dl" id="mlBulDl"${MAILV.bulletin ? "" : " hidden"} title="Un bulletin par formation hors CPF, avec l'intitulé, les dates et le tarif ; le reste est à remplir par le client">⬇ Bulletin prérempli (PDF)</button><label class="ck"><input type="checkbox" id="mlDev"${MAILV.devis ? " checked" : ""}> Devis</label><button type="button" class="ml-dl" id="mlDevDl"${MAILV.devis ? "" : " hidden"}>⬇ Devis (document Word)</button><label class="ck"><input type="checkbox" id="mlProg"${MAILV.programme ? " checked" : ""}> Programme</label></fieldset>` : ""}
+    ${(() => { const cv = casesVisibles(mailCfg(), r); return cv.length ? `<fieldset><legend>Pièces jointes</legend>${cv.map(c => { const on = caseCochee(c, MAILV);
+      return `<label class="ck"><input type="checkbox" data-mlcase="${esc(c.id)}"${on ? " checked" : ""}> ${esc(c.libelle)}</label>${c.fichier === "bulletin" ? `<button type="button" class="ml-dl" data-mldl="bulletin" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Un bulletin par formation hors CPF, avec l'intitulé, les dates et le tarif ; le reste est à remplir par le client">⬇ Bulletin prérempli (PDF)</button>` : c.fichier === "devis" ? `<button type="button" class="ml-dl" data-mldl="devis" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"}>⬇ Devis (document Word)</button>` : ""}`; }).join("")}</fieldset>` : ""; })()}
     <label>Ma signature (gardée sur cet ordinateur)<textarea id="mlSig" rows="4" placeholder="Prénom Nom&#10;Conseiller(ère) formation&#10;Téléphone · agence">${esc(MAILP.signature || "")}</textarea></label>
     <p class="pl-note">Le texte est modifiable à droite. La ligne [TABLEAU RÉCAPITULATIF] devient le tableau mis en forme quand vous copiez : vous pouvez la déplacer ou la supprimer.</p></div>
     <div class="ml-txt"><label>Objet<input id="mlObjet" value="${esc(t.objet)}"></label><label>Message<textarea id="mlCorps" rows="18">${esc(MAILV.texte != null ? MAILV.texte : t.corps)}</textarea></label>
@@ -2458,17 +2575,19 @@ function mailHtml(){
 }
 document.addEventListener("input", e => {
   const id = e.target.id;
-  if(!["mlPrenom", "mlLien", "mlSig", "mlBul", "mlDev", "mlProg", "mlCorps"].includes(id)) return;
+  const kc = e.target.dataset && e.target.dataset.mlcase;
+  if(kc){ MAILV.cases = MAILV.cases || {}; MAILV.cases[kc] = e.target.checked; document.querySelectorAll(`[data-mlfor="${CSS.escape(kc)}"]`).forEach(b => { b.hidden = !e.target.checked; });
+    if(MAILV.texte == null){ const t = mailTexte(); $("mlCorps").value = t.corps; $("mlObjet").value = t.objet; } return; }
+  if(!["mlPrenom", "mlLien", "mlSig", "mlCorps"].includes(id)) return;
   if(id === "mlCorps"){ MAILV.texte = e.target.value; return; }
   if(id === "mlPrenom") MAILV.prenom = e.target.value.trim(); else if(id === "mlLien") MAILV.lien = e.target.value.trim();
   else if(id === "mlSig"){ MAILP.signature = e.target.value; mailSave(); }
-  else if(id === "mlBul"){ MAILV.bulletin = e.target.checked; $("mlBulDl").hidden = !e.target.checked; } else if(id === "mlDev"){ MAILV.devis = e.target.checked; $("mlDevDl").hidden = !e.target.checked; } else if(id === "mlProg") MAILV.programme = e.target.checked;
   if(MAILV.texte == null){ const t = mailTexte(); $("mlCorps").value = t.corps; $("mlObjet").value = t.objet; } /* tant que le texte n'a pas été retouché, il suit les options */
 });
 document.addEventListener("click", async e => {
   const id = e.target.id;
-  if(id === "mlBulDl"){ biTelecharger(); return; }
-  if(id === "mlDevDl"){ propWord(); return; }
+  const dl = e.target.closest && e.target.closest("[data-mldl]");
+  if(dl){ if(dl.dataset.mldl === "bulletin") biTelecharger(); else propWord(); return; }
   if(!/^ml(Copy|CopyObj|Open|Regen|Apercu)$/.test(id)) return;
   if(id === "mlApercu"){ const z = $("mlPrev"); z.hidden = !z.hidden; if(!z.hidden) z.innerHTML = mailCorpsHtml($("mlCorps").value); e.target.textContent = z.hidden ? "Voir l'aperçu" : "Masquer l'aperçu"; return; }
   const objet = $("mlObjet").value, corps = $("mlCorps").value;
