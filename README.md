@@ -30,6 +30,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `supabase-mise-a-jour-2027-n11.sql` | Mise à jour n°11 (après la n°10) : les parcours PAO deviennent l'offre principale de 7 sous-profils PAO et PAO & IA, avec « pourquoi » et argumentaire ; les formations seules certifiantes passent en formations complémentaires. Un sous-profil qui a déjà un parcours PAO n'est pas modifié. |
 | `supabase-mise-a-jour-2027-n12.sql` | Mise à jour n°12 : onglet Pilotage (bêta). Table protégée `pilotage` (inscrits par agence, formateur, lieu, Convoc / Salle / Licences / Certif OK, réglages), lisible et modifiable par les éditrices seulement. |
 | `supabase-mise-a-jour-2027-n13.sql` | Mise à jour n°13 : Réseaux sociaux, CPF à partir de 3 jours (champ « CPF à partir de » = 3 sur les 5 parcours, mentions CPF des modules et texte Financement du domaine). Sans effet si déjà fait. |
+| `supabase-mise-a-jour-2027-n14.sql` | Mise à jour n°14 : corrige les mentions « Éligibilité CPF » saisies sous forme de simple nombre (ex. « 4 » sur le M3 du Parcours IA Administratif) ; règle « CPF à partir de » s'il était vide. Sans effet si déjà fait. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 

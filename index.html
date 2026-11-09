@@ -1635,7 +1635,10 @@ function formFormation(el, d){
       const tarif = Number(q(".mtar").value.replace(/[^\d.,]/g, "").replace(",", ".")), tp = Number(q(".mtp").value.replace(/[^\d.,]/g, "").replace(",", "."));
       if(tarif > 0) m.tarif = tarif;
       if(tp > 0) m.tarifParcours = tp;
-      [["cpf", ".mcpf"]].forEach(([k, c]) => { const v = q(c).value.trim(); if(v) m[k] = v; });
+      [["cpf", ".mcpf"]].forEach(([k, c]) => { let v = q(c).value.trim();
+        /* un simple nombre saisi ici (ex. « 4 ») veut dire « éligible dans un parcours de N jours minimum » */
+        if(/^\d+\s*(j|jours?)?$/i.test(v)){ const n = parseInt(v, 10); v = `Oui, dans un parcours de ${n} jour${n > 1 ? "s" : ""} minimum`; }
+        if(v) m[k] = v; });
       if(q(".mq").checked){
         m.questionnaire = true;
         const nq = q(".mpos").value.trim(), tq = q(".mqt").value.trim(); if(nq) m.positionnement = nq; if(tq) m.questionnaireType = tq;
