@@ -50,7 +50,7 @@ window.CONTENU = {
     {
       "id": "rs",
       "certification": "RS7643 Alternative digital : épreuve individuelle de 90 min, à distance sur PC.",
-      "financement": "Financement possible à partir de 2 jours de formation.",
+      "financement": "Financement possible à partir de 3 jours de formation.",
       "nom": "Réseaux sociaux",
       "ordre": 2,
       "ordreModules": [
@@ -1554,7 +1554,7 @@ window.CONTENU = {
           ],
           "tarif": 390,
           "tarifParcours": 350,
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 3 jours minimum"
         },
         {
           "code": "M2.1",
@@ -1580,7 +1580,7 @@ window.CONTENU = {
           "tarif": 780,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
-          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "cpf": "Oui, dans un parcours de 3 jours minimum",
           "questionnaire": true,
           "questionnaireType": "Formulaire en ligne"
         }
@@ -1623,7 +1623,7 @@ window.CONTENU = {
           ],
           "tarif": 390,
           "tarifParcours": 350,
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 3 jours minimum"
         },
         {
           "code": "M1 Base",
@@ -1648,7 +1648,7 @@ window.CONTENU = {
           ],
           "tarif": 390,
           "tarifParcours": 350,
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 3 jours minimum"
         },
         {
           "code": "M2.1",
@@ -1674,7 +1674,7 @@ window.CONTENU = {
           "tarif": 780,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
-          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "cpf": "Oui, dans un parcours de 3 jours minimum",
           "questionnaire": true,
           "questionnaireType": "Formulaire en ligne"
         }
@@ -1712,7 +1712,7 @@ window.CONTENU = {
           ],
           "tarif": 390,
           "tarifParcours": 350,
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 3 jours minimum"
         },
         {
           "code": "M2.1",
@@ -1738,7 +1738,7 @@ window.CONTENU = {
           "tarif": 780,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
-          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "cpf": "Oui, dans un parcours de 3 jours minimum",
           "questionnaire": true,
           "questionnaireType": "Formulaire en ligne"
         },
@@ -1766,7 +1766,7 @@ window.CONTENU = {
           "tarif": 390,
           "tarifParcours": 350,
           "positionnement": "Questionnaire de positionnement LinkedIn",
-          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "cpf": "Oui, dans un parcours de 3 jours minimum",
           "questionnaire": true,
           "questionnaireType": "Formulaire en ligne"
         }
@@ -1804,7 +1804,7 @@ window.CONTENU = {
           ],
           "tarif": 390,
           "tarifParcours": 350,
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 3 jours minimum"
         },
         {
           "code": "M2.1",
@@ -1830,7 +1830,7 @@ window.CONTENU = {
           "tarif": 780,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
-          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "cpf": "Oui, dans un parcours de 3 jours minimum",
           "questionnaire": true,
           "questionnaireType": "Formulaire en ligne"
         },
@@ -1857,7 +1857,7 @@ window.CONTENU = {
           ],
           "tarif": 390,
           "tarifParcours": 350,
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 3 jours minimum"
         }
       ],
       "nom": "Réseaux & ancrage local",
@@ -1893,7 +1893,7 @@ window.CONTENU = {
           ],
           "tarif": 390,
           "tarifParcours": 350,
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 3 jours minimum"
         },
         {
           "code": "M2.1",
@@ -1919,7 +1919,7 @@ window.CONTENU = {
           "tarif": 780,
           "tarifParcours": 700,
           "positionnement": "Questionnaire de positionnement Stratégie de communication réseaux sociaux",
-          "cpf": "Oui, dans un parcours de 2 jours minimum",
+          "cpf": "Oui, dans un parcours de 3 jours minimum",
           "questionnaire": true,
           "questionnaireType": "Formulaire en ligne"
         },
@@ -1951,7 +1951,7 @@ window.CONTENU = {
           ],
           "tarif": 780,
           "tarifParcours": 700,
-          "cpf": "Oui, dans un parcours de 2 jours minimum"
+          "cpf": "Oui, dans un parcours de 3 jours minimum"
         }
       ],
       "nom": "Réseaux & vidéo",
