@@ -2105,7 +2105,7 @@ function renderProp(){
       ${r.lignes.map((l, i) => ligne(l, prop.items.indexOf(l.it))).join("")}
       ${r.certs.map(c => tot(`${esc(c.nom)} <button type="button" class="btn small pt-sc" data-sanscert="${esc(c.key)}" title="Passe les modules de ce parcours en hors CPF : la certification n'est plus facturée">Retirer (pas de financement CPF)</button>`, eur(c.prix))).join("")}
       ${r.totalCpf ? tot(`<b>Total ${r.dossiers.length > 1 ? `des ${r.dossiers.length} dossiers CPF` : "dossier CPF"}</b>`, `<b>${eur(r.totalCpf)}</b>`, "st") + tot(`Prise en charge CPF (plafond ${eur(PLAFOND_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""})`, eur(r.priseEnCharge)) + tot(`Reste à charge CPF <small>(participation forfaitaire de ${eur(PARTICIPATION_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""} incluse)</small> <label class="exo"><input type="checkbox" id="propExo"${prop.exonere ? " checked" : ""}> exonéré(e) de la participation</label>`, eur(r.resteCpf)) : ""}
-      ${r.totalHors ? tot("Total formation hors CPF", eur(r.totalHors), "st") : ""}
+      ${r.totalHors && r.cpf.length ? tot("Total formation hors CPF", eur(r.totalHors), "st") : ""}
       ${tot("<b>Total à votre charge</b>", `<b>${eur(r.charge)}</b>`, "tt")}
       ${r.jours ? tot("Nombre de jours · coût par jour à votre charge", `${r.jours} j · ${eur(r.parJour)}`) : ""}
       </tbody></table>
@@ -2134,7 +2134,7 @@ function propTexte(){
   r.certs.forEach(c => L.push(["", c.nom, "", "CPF", eur(c.prix)].join("\t")));
   if(r.totalCpf) L.push(["", "Total dossier CPF", "", "", eur(r.totalCpf)].join("\t"), ["", "Prise en charge CPF (plafond " + eur(PLAFOND_CPF) + ")", "", "", eur(r.priseEnCharge)].join("\t"));
   if(r.totalCpf) L.push(["", prop.exonere ? "Reste à charge CPF (exonéré(e))" : "Reste à charge CPF (participation de 150 € incluse)", "", "", eur(r.resteCpf)].join("\t"));
-  if(r.totalHors) L.push(["", "Total formation hors CPF", "", "", eur(r.totalHors)].join("\t"));
+  if(r.totalHors && r.cpf.length) L.push(["", "Total formation hors CPF", "", "", eur(r.totalHors)].join("\t"));
   L.push(["", "Total à votre charge", "", "", eur(r.charge)].join("\t"));
   if(r.jours) L.push(["", "Nombre de jours", "", "", String(r.jours)].join("\t"), ["", "Coût par jour à votre charge", "", "", eur(r.parJour)].join("\t"));
   return L.join("\n");
@@ -2184,7 +2184,7 @@ async function propWord(){
   const nd = r.dossiers.length;
   if(avecCpf){ tots.push(ligneTot(nd > 1 ? `Total des ${nd} dossiers CPF` : "Total dossier CPF", eur(r.totalCpf), BLEU, true), ligneTot(`Prise en charge CPF (plafond ${eur(PLAFOND_CPF)}${nd > 1 ? " par dossier" : ""}, dans la limite de vos droits)`, eur(r.priseEnCharge), VERT),
       ligneTot(prop.exonere ? "Reste à charge CPF (exonéré(e) de la participation forfaitaire)" : `Reste à charge CPF, participation forfaitaire obligatoire de ${eur(PARTICIPATION_CPF)}${nd > 1 ? " par dossier" : ""} incluse **`, eur(r.resteCpf))); }
-  if(avecHors) tots.push(ligneTot("Total formation hors CPF", eur(r.totalHors), BLEU_CLAIR, true));
+  if(avecHors && r.cpf.length) tots.push(ligneTot("Total formation hors CPF", eur(r.totalHors), BLEU_CLAIR, true));
   tots.push(ligneTot("Total à votre charge", eur(r.charge), BLEU, true));
   if(r.jours){ tots.push(ligneTot("Nombre de jours de formation", String(r.jours), BLEU_CLAIR, true), ligneTot("Coût par jour à votre charge", eur(r.parJour))); }
   const bord = { style: BorderStyle.SINGLE, size: 6, color: "1F3864" };
@@ -2431,7 +2431,7 @@ function devisTable(){
   r.certs.forEach(c => T.push([c.nom, eur(c.prix)]));
   if(C) T.push([nd > 1 ? `Total des ${nd} dossiers CPF` : "Total dossier CPF", eur(r.totalCpf), "#84CCEC", 1], [`Prise en charge CPF (plafond ${eur(PLAFOND_CPF)}${nd > 1 ? " par dossier" : ""}, dans la limite de vos droits)`, eur(r.priseEnCharge), "#B7D3C8"],
     [prop.exonere ? "Reste à charge CPF (exonéré(e) de la participation forfaitaire)" : `Reste à charge CPF, participation forfaitaire obligatoire de ${eur(PARTICIPATION_CPF)}${nd > 1 ? " par dossier" : ""} incluse`, eur(r.resteCpf)]);
-  if(H) T.push(["Total formation hors CPF", eur(r.totalHors), "#DAE9F7", 1]);
+  if(H && C) T.push(["Total formation hors CPF", eur(r.totalHors), "#DAE9F7", 1]);
   T.push(["Total à votre charge", eur(r.charge), "#84CCEC", 1]);
   if(r.jours) T.push(["Nombre de jours de formation", String(r.jours), "#DAE9F7", 1], ["Coût par jour à votre charge", eur(r.parJour)]);
   const html = `<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;border:1px solid #1F3864;max-width:720px"><tr>${th("Domaine")}${th("Formation (lien vers le programme)")}${th("Dates")}${H ? th("Tarifs hors CPF") : ""}${C ? th("Tarifs préférentiels CPF") : ""}</tr>${rows.join("")}${T.map(x => tot(esc(x[0]), esc(x[1]), x[2], x[3])).join("")}</table>`;
