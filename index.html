@@ -734,6 +734,14 @@ td.a-note:after{content:"";position:absolute;top:0;right:0;border-style:solid;bo
 .fo-why{background:#FFF8E1 !important;border:1px solid #F2C94C;border-left:5px solid #F2B705;border-radius:10px;padding:8px 10px !important}
 .fo-why>svg{flex:none;width:24px;height:24px;padding:4px;border-radius:50%;background:#F2B705;stroke:#12343F;box-sizing:border-box}
 .fo-why b{color:#7a5a00;text-transform:uppercase;font-size:11.5px;letter-spacing:.06em;margin-right:4px}.fo-why .fo-more summary{color:#7a5a00 !important;font-weight:700}
+/* « Pourquoi » des modules (même code couleur que celui du parcours, en plus discret) */
+.fo-arg.why-m{display:flex;gap:8px;align-items:flex-start;background:#FFF8E1;border:1px solid #F2C94C;border-left:4px solid #F2B705;border-radius:8px;padding:6px 10px;margin:6px 0 4px;font-size:13px;line-height:1.4;color:#12343F}
+.fo-arg.why-m>svg{flex:none;width:20px;height:20px;padding:3px;border-radius:50%;background:#F2B705;stroke:#12343F;box-sizing:border-box}
+.fo-arg.why-m b{color:#7a5a00;text-transform:uppercase;font-size:11px;letter-spacing:.06em;margin-right:3px}
+/* « Détails » : signal vert vif */
+details.fo-det>summary{display:inline-flex !important;align-items:center;gap:4px;background:#27CCAD !important;color:#0B2A33 !important;font-weight:800 !important;border-radius:999px;padding:3px 12px !important;cursor:pointer;border:none !important}
+details.fo-det>summary:hover{background:#1FB497 !important}
+details.fo-det[open]>summary{background:#12343F !important;color:#fff !important}
 </style>
 </head>
 <body>
@@ -1171,7 +1179,7 @@ function renderDetail(){
     const r = k + 2, has = cols.map(f => !!f.modules[m]);
     const txts = cols.map(f => f.modules[m] ? txtOf(f, m) : null);
     const commun = n > 1 && has.every(Boolean) && txts.every(t => t === txts[0]) && cols.every(f => f.modules[m] === cols[0].modules[m]);
-    const mod = (f, extra, lab) => `<div class="fo-tab"><span class="code">${esc(m)}</span></div><div class="fo-mbody">${lab ? `<span class="fo-mlab">${lab}</span>` : ""}<span class="fo-mt">${titre(f, m)}${cpfBadge(cpfTexte(f.modules[m], (f.infos[m] || {}).cpf))}</span>${txtOf(f, m) ? `<span class="fo-arg">${esc(txtOf(f, m))}</span>` : ""}${pied(f.infos[m], Object.assign(ctxF(f), extra))}${propCtl(f.id, m)}</div>`;
+    const mod = (f, extra, lab) => `<div class="fo-tab"><span class="code">${esc(m)}</span></div><div class="fo-mbody">${lab ? `<span class="fo-mlab">${lab}</span>` : ""}<span class="fo-mt">${titre(f, m)}${cpfBadge(cpfTexte(f.modules[m], (f.infos[m] || {}).cpf))}</span>${txtOf(f, m) ? `<span class="fo-arg why-m">${ic("why")}<span><b>Pourquoi :</b> ${esc(txtOf(f, m))}</span></span>` : ""}${pied(f.infos[m], Object.assign(ctxF(f), extra))}${propCtl(f.id, m)}</div>`;
     /* module commun à tous les parcours : affiché dans chaque parcours (case à cocher propre à chacun) */
     cols.forEach((f, i) => {
       if(!f.modules[m]){ cards.push(`<div class="fo-gap" ${at(r, i+1)} aria-hidden="true"></div>`); return; }
@@ -1186,7 +1194,7 @@ function renderDetail(){
   const modBloc = (f, m, avecStep) => `<div class="ac-mod${avecStep ? "" : " solo"}">${avecStep ? `<span class="ac-step">${esc(m)}</span>` : ""}<div class="ac-mb">
       ${avecStep && partage(m) ? `<span class="fo-mlab">${ic("commun")}Commun à tous les parcours</span>` : ""}
       <span class="fo-mt">${titre(f, m)}${cpfBadge(cpfTexte(f.modules[m], (f.infos[m] || {}).cpf))}</span>
-      ${txtOf(f, m) ? `<span class="fo-arg">${esc(txtOf(f, m))}</span>` : ""}
+      ${txtOf(f, m) ? `<span class="fo-arg why-m">${ic("why")}<span><b>Pourquoi :</b> ${esc(txtOf(f, m))}</span></span>` : ""}
       ${pied(f.infos[m], Object.assign(ctxF(f), avecStep ? {} : { sansTarif: true }))}${propCtl(f.id, m)}</div></div>`;
   const acc = cols.map((f, i) => {
     const pc = p.parcours[f.id] || {}, codes = d.ordreModules.filter(m => f.modules[m]), nm = codes.length;
