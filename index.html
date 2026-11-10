@@ -724,6 +724,7 @@ td.a-note:after{content:"";position:absolute;top:0;right:0;border-style:solid;bo
 .pl-notepop b{display:block;font-size:12px;margin-bottom:6px}.pl-notepop textarea{width:100%;box-sizing:border-box;font:inherit;font-size:13px;border:1px solid #CFE6F7;border-radius:8px;padding:6px}.pl-notepop div{display:flex;gap:6px;margin-top:6px}
 .pl-qacc{display:flex;gap:6px;margin-top:3px}.pl-qacc a,.pl-qacc button{display:inline-flex;align-items:center;gap:3px;font:inherit;font-size:11.5px;font-weight:700;color:#12343F;background:var(--teal-clair);border:1px solid var(--teal);border-radius:999px;padding:1px 8px;cursor:pointer;text-decoration:none}
 .pl-qacc svg{width:11px;height:11px}.pl-qno{display:block;color:#7a8a92;font-size:10.5px;margin-top:2px}
+.metier-hint{display:flex;gap:8px;align-items:flex-start;background:var(--teal-clair);border:1px solid var(--teal);border-radius:10px;padding:8px 10px;margin:4px 0 10px;font-size:12.5px;line-height:1.4;color:#12343F}.metier-hint svg{width:16px;height:16px;flex:none;margin-top:1px}
 </style>
 </head>
 <body>
@@ -969,12 +970,33 @@ function renderDomains(){
   majEffacer(); /* « chercher dans » n'a de sens que pour un domaine choisi */
 }
 
+/* ===== Dictionnaire des métiers : un métier courant renvoie vers une famille de métiers (recherche « par métier » dans Consulter) ===== */
+const METIERS = {"Commerce, artisanat, tourisme": "boulanger/boulangère, pâtissier/pâtissière, boucher/bouchère, charcutier/charcutière, traiteur, fleuriste, coiffeur/coiffeuse, barbier, esthéticien/esthéticienne, prothésiste ongulaire, commerçant/commerçante, vendeur/vendeuse, caviste, épicier/épicière, poissonnier/poissonnière, fromager/fromagère, primeur, restaurateur/restauratrice, cuisinier/cuisinière, chef cuisinier, serveur/serveuse, barman/barmaid, gérant de bar, crêperie, crêpier/crêpière, hôtelier/hôtelière, gîte, chambre d'hôtes, camping, guide touristique, agent de voyage, artisan, plombier, électricien/électricienne, menuisier/menuisière, ébéniste, peintre en bâtiment, maçon, carreleur, couvreur, chauffagiste, serrurier, paysagiste, jardinier/jardinière, couturier/couturière, retoucheur/retoucheuse, cordonnier, bijoutier/bijoutière, horloger, opticien/opticienne, garagiste, mécanicien/mécanicienne, carrossier, taxi, vtc, déménageur, toiletteur/toiletteuse, agriculteur/agricultrice, viticulteur, maraîcher/maraîchère, producteur/productrice, brasseur, potier/potière, céramiste, tatoueur/tatoueuse, antiquaire, libraire, boutique, magasin, e-commerçant, auto-école, moniteur d'auto-école, pressing, laverie", "Santé et social": "infirmier/infirmière, aide-soignant/aide-soignante, médecin, kinésithérapeute, kiné, ostéopathe, sage-femme, pharmacien/pharmacienne, préparateur en pharmacie, dentiste, assistant dentaire, orthophoniste, psychologue, psychomotricien, ergothérapeute, diététicien/diététicienne, nutritionniste, sophrologue, naturopathe, réflexologue, praticien bien-être, masseur, coach sportif, éducateur spécialisé/éducatrice spécialisée, moniteur éducateur, assistant social/assistante sociale, travailleur social, aide à domicile, auxiliaire de vie, aesh, accompagnant éducatif, animateur/animatrice, conseiller en insertion, ehpad, ambulancier/ambulancière, puéricultrice, assistante maternelle, crèche, cadre de santé", "Administratif et commercial": "secrétaire, assistant administratif/assistante administrative, assistant de direction/assistante de direction, agent administratif, gestionnaire administratif, commercial/commerciale, technico-commercial, chargé d'affaires/chargée d'affaires, attaché commercial, télévendeur, adv, administration des ventes, acheteur/acheteuse, approvisionneur, gestionnaire de stock, logisticien, magasinier, agent immobilier, négociateur immobilier, mandataire immobilier, assistant juridique, juriste, notaire, clerc de notaire, avocat/avocate, assureur, agent d'assurance, conseiller bancaire/conseillère bancaire, chargé de clientèle bancaire, assistant commercial/assistante commerciale", "Accueil et relation client": "hôte d'accueil/hôtesse d'accueil, agent d'accueil, standardiste, réceptionniste, téléconseiller/téléconseillère, conseiller client/conseillère client, service client, chargé de clientèle/chargée de clientèle, conseiller de vente", "Comptabilité": "comptable, aide-comptable, expert-comptable, assistant comptable/assistante comptable, contrôleur de gestion/contrôleuse de gestion, trésorier/trésorière, facturier/facturière, daf, directeur financier, gestionnaire de paie, comptable fournisseurs, comptable clients", "Ressources humaines": "rh, chargé de recrutement/chargée de recrutement, recruteur/recruteuse, gestionnaire rh, responsable rh, drh, assistant rh/assistante rh, gestionnaire de paie, chargé de développement rh, talent acquisition", "Gestion et management": "manager, chef d'équipe/cheffe d'équipe, responsable d'équipe, chef de projet/cheffe de projet, directeur/directrice, chef de service/cheffe de service, cadre, responsable qualité, office manager, coordinateur/coordinatrice, responsable de site, responsable d'agence, directeur d'agence, chef de rayon, responsable de magasin, gérant de magasin, responsable administratif", "Communication et marketing": "chargé de communication/chargée de communication, community manager, social media manager, responsable marketing, chef de produit/cheffe de produit, webmarketeur/webmarketeuse, chargé de marketing digital, traffic manager, attaché de presse/attachée de presse, rédacteur web/rédactrice web, chargé d'événementiel/chargée d'événementiel, responsable communication, assistant communication/assistante communication, chargé de relations publiques", "Création et contenus": "graphiste, infographiste, maquettiste, photographe, vidéaste, monteur vidéo/monteuse vidéo, illustrateur/illustratrice, designer, webdesigner, motion designer, créateur de contenu/créatrice de contenu, youtubeur/youtubeuse, influenceur/influenceuse, artiste, musicien/musicienne, architecte d'intérieur, décorateur/décoratrice, styliste, directeur artistique/directrice artistique, podcasteur", "Dirigeants et indépendants": "chef d'entreprise/cheffe d'entreprise, gérant/gérante, dirigeant/dirigeante, auto-entrepreneur/auto-entrepreneuse, micro-entrepreneur/micro-entrepreneuse, freelance, indépendant/indépendante, consultant/consultante, créateur d'entreprise/créatrice d'entreprise, entrepreneur/entrepreneuse, profession libérale, président d'association/présidente d'association, associé", "Emploi et transition": "demandeur d'emploi/demandeuse d'emploi, chômeur/chômeuse, sans emploi, reconversion, étudiant/étudiante, jeune diplômé/jeune diplômée, alternant/alternante, senior, retraité/retraitée, en recherche d'emploi, france travail, pôle emploi, licencié, salarié en reconversion", "Formation": "formateur/formatrice, enseignant/enseignante, professeur/professeure, instituteur/institutrice, professeur des écoles, conseiller en formation/conseillère en formation, ingénieur pédagogique/ingénieure pédagogique, responsable formation, tuteur/tutrice, coach, accompagnateur vae, éducateur, intervenant, chargé de formation/chargée de formation", "Technique": "dessinateur/dessinatrice, projeteur/projeteuse, technicien bureau d'études, ingénieur/ingénieure, architecte, géomètre, conducteur de travaux/conductrice de travaux, bim, économiste de la construction, technicien de maintenance, informaticien/informaticienne, développeur/développeuse, administrateur réseau, technicien informatique, électrotechnicien, technicien/technicienne, chef de chantier, bureau d'études, menuisier agenceur, métallier, frigoriste"};
+
+/* liste des formes (masculin / féminin) → familles */
+const METIERS_IDX = (() => { const m = new Map(); Object.entries(METIERS).forEach(([fam, l]) => l.split(",").forEach(x => x.split("/").forEach(v => { const k = norm(v.trim()); if(k) m.set(k, [...new Set((m.get(k) || []).concat(fam))]); }))); return m; })();
+const metierMots = fam => METIERS[fam] ? norm(METIERS[fam].replace(/\//g, " ")) : "";
+/* métiers reconnus dans la recherche : expression entière, ou mot d'au moins 4 lettres qui commence un métier */
+function metiersDe(q){
+  const t = norm(q.trim()); if(t.length < 3) return [];
+  const out = []; METIERS_IDX.forEach((fams, k) => { if(k === t || (t.length >= 4 && (k.startsWith(t) || t.split(" ").every(w => w.length >= 3 && k.split(" ").some(x => x.startsWith(w)))))) out.push([k, fams]); });
+  return out.sort((a, b) => (a[0] === t ? -1 : 0) - (b[0] === t ? -1 : 0) || a[0].length - b[0].length).slice(0, 4);
+}
+
 const ouvertes = new Set(); /* catégories que la conseillère a dépliées */
 /* texte dans lequel on cherche : nom, besoin, catégories et leurs mots-clés, mots-clés du sous-profil, parcours et modules proposés */
+/* recherche par métier : utilisée seulement quand aucun sous-profil ne correspond directement (ex. « boulanger » → famille Commerce, artisanat, tourisme) */
+let MM_CLE = null, MM_VAL = false, MM_CALC = false;
+function modeMetier(){
+  if(MM_CALC) return false; const q = norm((state.q || "").trim()); if(q.length < 3) return false;
+  if(MM_CLE === q) return MM_VAL; MM_CALC = true;
+  try{ MM_VAL = !DOMAINES.some(d => d.profils.some(p => matchQ(hayOf(p, d), q))) && metiersDe(q).length > 0; } finally{ MM_CALC = false; }
+  MM_CLE = q; return MM_VAL;
+}
 function hayOf(p, d){
   const rd = (RAW.domaines || []).find(x => x.id === d.id) || {}, mc = rd.motsClesCategories || {};
   const fs = Object.keys(p.parcours).map(id => d.formations.find(f => f.id === id)).filter(Boolean);
-  return norm([p.nom, p.besoin, ...Object.values(p.besoinDetail || {}), p.motsCles, d.nom, ...p.categories, ...p.categories.map(c => mc[c] || ""),
+  return norm([p.nom, p.besoin, ...Object.values(p.besoinDetail || {}), p.motsCles, d.nom, ...p.categories, ...p.categories.map(c => mc[c] || ""), ...(modeMetier() ? p.categories.map(metierMots) : []),
     ...fs.map(f => f.nom + " " + f.intitule + " " + Object.values(f.modules).join(" "))].join(" "));
 }
 const matchQ = (hay, q) => q.split(/[\s,;]+/).filter(Boolean).every(w => hay.includes(w));
@@ -995,6 +1017,7 @@ function renderList(){
   const d = dom(); if(!d){ $("groups").innerHTML = ""; return; }
   renderCatSel(); voirActif();
   if(state.tous) return renderListTous();
+  queueMicrotask(() => { const h = metierHint(); if(h && !$("groups").querySelector(".metier-hint")) $("groups").insertAdjacentHTML("afterbegin", h); });
   const q = norm(state.q.trim()), cats = [];
   d.profils.forEach(p => {
     if(state.cat && !p.categories.includes(state.cat)) return;
@@ -1030,6 +1053,9 @@ function formationsTrouvees(q){
 }
 const aParcoursP = p => Object.keys(p.parcours || {}).some(fid => { const f = (RAW.formations || []).find(x => x.id === fid); return f && Array.isArray(f.modules) && f.modules.length > 1; });
 const pkIc = p => aParcoursP(p) ? `<span class="pk" title="Ce sous-profil propose au moins un parcours">${ic("modules")}</span>` : "";
+/* bandeau « métier reconnu » en tête des résultats */
+function metierHint(){ if(!modeMetier()) return ""; const l = metiersDe(state.q || ""), fams = [...new Set(l.flatMap(x => x[1]))];
+  return `<div class="metier-hint" role="status">${ic("profil")}<span>Métier « <b>${esc(state.q.trim())}</b> » : sous-profils de la famille ${fams.map(f => `<b>${esc(f)}</b>`).join(" et ")}</span></div>`; }
 function formationsHtml(q){
   const l = formationsTrouvees(q); if(!l.length) return "";
   return `<div class="ff-res"><div class="domtit">Formations (${l.length})</div>${l.map(f => {
@@ -1058,7 +1084,7 @@ function renderListTous(){
       }).join("")}</div></details>`;
     }).join("") + `</details>`;
   }).join("");
-  $("groups").innerHTML = formationsHtml(q) + (blocs || (formationsTrouvees(q).length ? "" : `<p class="none">${q ? `Rien pour « ${esc(state.q)} »${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}. Essayez un autre mot.` : "Aucun sous-profil dans cette famille."}</p>`));
+  $("groups").innerHTML = metierHint() + formationsHtml(q) + (blocs || (formationsTrouvees(q).length ? "" : `<p class="none">${q ? `Rien pour « ${esc(state.q)} »${state.cat ? ` (famille « ${esc(state.cat)} »)` : ""}. Essayez un autre mot.` : "Aucun sous-profil dans cette famille."}</p>`));
 }
 
 /* page d'accueil : schéma en 4 étapes */
