@@ -698,6 +698,30 @@ button.acc-st{cursor:pointer}button.acc-st:hover{border-color:var(--teal);backgr
 .mod-acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 @media (max-width:1000px){.mod-grid{grid-template-columns:1fr}.mod-side{position:static}}
 .mod-cases select.inp[data-mck="cond"]{min-width:118px}.mod-cases select.inp[data-mck="fichier"]{min-width:150px}.mod-cases td:nth-child(4){width:60px}
+/* ===== Pilotage › Liste façon Excel ===== */
+.pf-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:10px}
+.pf{display:flex;flex-direction:column;gap:2px;font-size:12.5px}.pf span{font-size:10.5px;font-weight:700;color:#55707a;text-transform:uppercase;letter-spacing:.04em}
+.pf select,.pf input{font:inherit;border:1px solid #CFE6F7;border-radius:8px;padding:5px 8px;background:#fff;min-width:110px;max-width:190px}
+.pf-chip{font:inherit;font-size:12.5px;font-weight:700;border:1px solid #9CCBEA;border-radius:999px;padding:5px 10px;background:#fff;color:#12343F;cursor:pointer}.pf-chip[aria-pressed="true"]{background:#12343F;color:#fff;border-color:#12343F}
+.pf-eff{border:none;background:none;color:#2A6F97;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:5px 2px}.pf-cnt{margin-left:auto;font-weight:700;font-size:12.5px;padding:5px 0}
+.pl-xl{font-size:12px}.pl-xl th{white-space:nowrap}
+.pl-xl thead th{background:#12343F;color:#fff;position:sticky;top:0;z-index:1}.pl-xl thead tr.pl-sur th{background:transparent;color:#12343F;position:static;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;padding:2px}
+.pl-xl thead th.th-g{background:#5FA84A}.pl-xl thead th.th-b{background:#2A6F97}.pl-xl thead th.th-o{background:#E9733A}
+.pl-xl thead tr.pl-sur th.th-g{background:#EAF6E5;color:#2f6b1f;border-radius:6px 6px 0 0}.pl-xl thead tr.pl-sur th.th-b{background:#E6F2FB;color:#1F5A80;border-radius:6px 6px 0 0}
+.pl-thf{font:inherit;font-weight:700;color:inherit;background:none;border:none;cursor:pointer;padding:0;white-space:nowrap}.pl-thf.on{text-decoration:underline;text-underline-offset:3px}
+.pl-mois td{background:#E6F2FB;color:#1F5A80;font-weight:800;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;padding:5px 8px !important}
+.pl-dom{font-size:11.5px;color:#55707a}
+.pl-titre{min-width:220px;max-width:320px}.pl-titre a{color:#12343F;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.pl-titre .pl-edit{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#2A6F97;border:none;background:none;padding:0;cursor:pointer;text-decoration:none}
+.pl-titre .pl-cert{display:block;margin-top:2px}
+.pl-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#E9733A;vertical-align:middle}
+.pl-typ .pl-t{background:#FDE7DA;border-color:#F5C3A6;color:#8a3d10;font-weight:700;min-width:130px}
+td.ins{background:#EAF6E5}td.pre{background:#E6F2FB}td.ins,td.pre{position:relative}
+td.ins .pl-n,td.pre .pl-n{width:38px}
+.pl-nb{position:absolute;right:1px;bottom:1px;border:none;background:none;font-size:10px;color:#7a8a92;cursor:pointer;opacity:0;padding:0 2px}td:hover>.pl-nb,.a-note>.pl-nb{opacity:1}
+td.a-note:after{content:"";position:absolute;top:0;right:0;border-style:solid;border-width:0 9px 9px 0;border-color:transparent #E9733A transparent transparent}
+.pl-notepop{position:absolute;z-index:50;width:260px;background:#fff;border:1px solid #9CCBEA;border-radius:12px;box-shadow:0 10px 30px rgba(18,52,63,.2);padding:10px}
+.pl-notepop b{display:block;font-size:12px;margin-bottom:6px}.pl-notepop textarea{width:100%;box-sizing:border-box;font:inherit;font-size:13px;border:1px solid #CFE6F7;border-radius:8px;padding:6px}.pl-notepop div{display:flex;gap:6px;margin-top:6px}
 </style>
 </head>
 <body>
@@ -1664,8 +1688,10 @@ function formFormation(el, d){
     const cmin = parseInt($("fCpfMin").value, 10); if(cmin > 0) data.cpfMinJours = cmin;
     const cp = Number($("fCertPrix").value.replace(/[^\d.,]/g, "").replace(",", ".")); if(cp > 0) data.tarifCertification = cp;
     let reportes = 0, ok = false;
+    let pilRep = 0; const ancienne = isNew ? null : JSON.parse(JSON.stringify(r));
     await write(async () => {
       await db.doc("formations/" + id).set(data);
+      try{ pilRep = await pilReporter(ancienne, data); }catch(e){ console.warn("Report Pilotage impossible", e); }
       await qEnregistrer(id, qSaisie);
       const rd = rawD(cible), om = (rd && rd.ordreModules) || [], add = modules.map(m => m.code).filter(c => !om.includes(c));
       if(add.length) await db.doc("domaines/" + cible).update({ ordreModules: om.concat(add) });
@@ -1686,6 +1712,7 @@ function formFormation(el, d){
       }
     }, "Enregistré", () => { ok = true; adm.sel = id; if(change){ adm.dom = cible; } });
     if(ok && reportes) toast(`Enregistré · reporté dans ${reportes} autre${reportes>1?"s":""} parcours`);
+    if(ok && pilRep) toast(`Enregistré · saisies du Pilotage reportées sur ${pilRep} nouvelle${pilRep > 1 ? "s" : ""} date${pilRep > 1 ? "s" : ""}`);
     if(ok && change && used.length) toast(`Enregistré · retiré de ${used.length} profil${used.length>1?"s":""} de l'ancien domaine`);
   });
 }
@@ -2261,7 +2288,7 @@ async function biTelecharger(){
    PILOTAGE (bêta, éditrices connectées) : calendrier des sessions, inscrits par agence,
    salle / licences / certification à prévoir. Données dans la collection protégée « pilotage ».
    ===================================================================== */
-const PIL = { vue: "cal", mois: null, edits: {}, timers: {}, suivis: new Set() };
+const PIL = { vue: "cal", mois: null, edits: {}, timers: {}, suivis: new Set(), f: { periode: "avenir" } };
 const AG = ["B", "M", "Q"];
 const pilDoc = id => (RAW.pilotage || []).find(x => x.id === id) || {};
 const pilReg = () => pilDoc("_reglages");
@@ -2294,10 +2321,12 @@ function sessionsPilotage(){
       const certVid = f.id === "video-ia-avatar";
       const cnom = certSeule ? String(f.certification).replace(/\s*\(.*\)\s*$/, "") : (certParc || certVid) ? (String((doms[certVid ? "ia" : f.domaine] || {}).certification || "").split(":")[0].trim() || "Certification") : "";
       const x = map.get(id) || { id, titre: m.titre, nom: par ? nomCourt(m.titre) : f.nom, texte: s.texte, jours, debut: jours[0], fin: jours[jours.length - 1],
-        tarif: m.tarif, tp: m.tarifParcours, cpf: m.cpf || "", pos: m.questionnaire ? (m.questionnaireType || "Oui") : "", cert: "" , fids: [] };
+        tarif: m.tarif, tp: m.tarifParcours, cpf: m.cpf || "", pos: m.questionnaire ? (m.questionnaireType || "Oui") : "", cert: "" , fids: [],
+        dom: d.nom || "", domId: f.domaine || "", lien: m.lien || "", typeAuto: par ? `${String(f.domaine || "").toUpperCase()} ${m.code}` : "Formation seule" };
       if(cnom && !x.cert) x.cert = cnom;
       if(!x.pos && m.questionnaire) x.pos = m.questionnaireType || "Oui";
       if(!x.tp && m.tarifParcours) x.tp = m.tarifParcours;
+      if(par && x.typeAuto === "Formation seule") x.typeAuto = `${String(f.domaine || "").toUpperCase()} ${m.code}`;
       if(par) x.fids.push(f.id); else x.fids.unshift(f.id); /* la formation seule en premier */
       map.set(id, x);
     }));
@@ -2338,31 +2367,68 @@ function renderPilot(){
     cal += `<div class="pc-d${d.getMonth() !== mo - 1 ? " out" : ""}${d.getDay() % 6 ? "" : " we"}${iso === auj ? " today" : ""}"><b>${d.getDate()}</b>${ev}</div>`;
   }
   const chk = (id, k, lab) => `<input type="checkbox" data-plf="${esc(id)}" data-pk="${k}" aria-label="${lab}"${pilVal(id, k) ? " checked" : ""}>`;
-  const txt = (id, k, lab) => `<input type="text" class="pl-t" data-plf="${esc(id)}" data-pk="${k}" aria-label="${lab}" value="${esc(pilVal(id, k) || "")}">`;
+  const txt = (id, k, lab, ph) => `<input type="text" class="pl-t" data-plf="${esc(id)}" data-pk="${k}" aria-label="${lab}"${ph ? ` placeholder="${esc(ph)}"` : ""} value="${esc(pilVal(id, k) || "")}">`;
   const SUIVI = s => ["salleOk", "licOk"].concat(s.cert ? ["certOk"] : [], ["qDeroule", "qSupport", "qProgramme"]);
-  const rows = duMois.map(s => { const d = dateD(s.debut), K = SUIVI(s), tot = K.length, fait = K.filter(k => pilVal(s.id, k)).length, ouvert = PIL.suivis.has(s.id);
-    return `<tr id="pr-${esc(s.id)}" class="${s.cert ? "certrow" : ""}"><td>${d.toLocaleDateString("fr-FR")}</td><td>${d.toLocaleDateString("fr-FR", { weekday: "short" })}</td><td class="n">${s.jours.length}</td>
-      <td><button type="button" class="pl-edit" data-pedit="${esc(s.fids[0])}" title="Modifier dans la Gestion (dates, tarif…) : ${esc(s.titre)}">${esc(s.nom)}</button>${s.cert ? `<span class="pl-cert">certif ${esc(s.cert)}</span>` : ""}</td><td class="pl-dt">${esc(s.texte.replace(/\s*20\d\d$/, ""))}</td><td>${txt(s.id, "formateur", "Formateur")}</td>
+  /* ---------- liste : filtres ---------- */
+  const F = PIL.f, typeDe = s => pilVal(s.id, "typeParcours") || s.typeAuto, A0 = alertesPilotage(S, auj), enAlerte = new Set(A0.map(a => a.s.id));
+  const mois0 = auj.slice(0, 7);
+  const garde = s => {
+    if(F.periode === "avenir" ? s.fin < auj : F.periode !== "tout" && !s.jours.some(d => d.startsWith(F.periode))) return false;
+    if(F.dom && s.domId !== F.dom) return false; if(F.form && (pilVal(s.id, "formateur") || "") !== F.form) return false;
+    if(F.lieu && (pilVal(s.id, "lieu") || "") !== F.lieu) return false; if(F.type && typeDe(s) !== F.type) return false;
+    if(F.cert && !s.cert) return false; if(F.traiter && !enAlerte.has(s.id)) return false; if(F.convoc && (pilVal(s.id, "convoc") || !pilTot(s.id))) return false;
+    if(F.vide && pilTot(s.id)) return false;
+    if(F.q){ const q = norm(F.q); if(!norm([s.nom, s.titre, s.dom, pilVal(s.id, "ancienTitre"), pilVal(s.id, "formateur"), pilVal(s.id, "lieu"), pilVal(s.id, "commentaire"), typeDe(s)].join(" ")).includes(q)) return false; }
+    return true; };
+  const liste = S.filter(garde);
+  const valeurs = k => [...new Set(S.map(s => k === "type" ? typeDe(s) : (pilVal(s.id, k) || "")).filter(Boolean))].sort((x, y) => x.localeCompare(y, "fr"));
+  const moisL = [...new Set(S.flatMap(s => s.jours.map(d => d.slice(0, 7))))].sort();
+  const libM = m => { const [yy, mm] = m.split("-").map(Number); return new Date(yy, mm - 1, 1).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }); };
+  const sel = (k, lab, opts, tous) => `<label class="pf"><span>${lab}</span><select data-pfil="${k}"><option value="">${tous}</option>${opts.map(o => `<option value="${esc(o[0])}"${F[k] === o[0] ? " selected" : ""}>${esc(o[1])}</option>`).join("")}</select></label>`;
+  const puce = (k, lab, t) => `<button type="button" class="pf-chip" data-pfchip="${k}" aria-pressed="${!!F[k]}" title="${t}">${lab}</button>`;
+  const actifs = ["dom", "form", "lieu", "type", "q", "cert", "traiter", "convoc", "vide"].some(k => F[k]) || F.periode !== "avenir";
+  const filtres = `<div class="pf-bar">
+    <label class="pf"><span>Période</span><select data-pfil="periode"><option value="avenir"${F.periode === "avenir" ? " selected" : ""}>À venir</option><option value="tout"${F.periode === "tout" ? " selected" : ""}>Tout</option>${moisL.map(m => `<option value="${m}"${F.periode === m ? " selected" : ""}>${libM(m)}</option>`).join("")}</select></label>
+    ${sel("dom", "Domaine", DOMAINES.map(d => [d.id, d.nom]), "Tous")}${sel("form", "Formateur", valeurs("formateur").map(v => [v, v]), "Tous")}${sel("lieu", "Lieu", valeurs("lieu").map(v => [v, v]), "Tous")}${sel("type", "Type de parcours", valeurs("type").map(v => [v, v]), "Tous")}
+    <label class="pf"><span>Recherche</span><input type="search" data-pfil="q" value="${esc(F.q || "")}" placeholder="Titre, formateur, commentaire…"></label>
+    ${puce("cert", "🎓 Certifiantes", "Sessions avec certification")}${puce("traiter", "● À traiter", "Une alerte salle, licences ou certification est en cours")}${puce("convoc", "Convoc à envoyer", "Des inscrits, mais convocation pas cochée")}${puce("vide", "Sans inscrit", "Aucun inscrit saisi")}
+    ${actifs ? `<button type="button" class="pf-eff" data-pfreset="1">Effacer les filtres</button>` : ""}<span class="pf-cnt">${liste.length} session${liste.length > 1 ? "s" : ""} sur ${S.length}</span></div>`;
+  /* ---------- liste : lignes ---------- */
+  const nb = (s, k, cls) => { const note = pilVal(s.id, "note_" + k) || "";
+    return `<td class="n ${cls}${note ? " a-note" : ""}"${note ? ` title="${esc(note)}"` : ""}><input type="number" min="0" class="pl-n" data-plf="${esc(s.id)}" data-pk="${k}" aria-label="${k}" value="${pilVal(s.id, k) || ""}"><button type="button" class="pl-nb" data-pnote="${esc(s.id)}|${k}" title="${note ? "Note : " + esc(note) : "Ajouter une note"}">✎</button></td>`; };
+  const PR = AG.map(a => "p" + a), totP = id => PR.reduce((t, k) => t + (Number(pilVal(id, k)) || 0), 0);
+  let moisCourant = "";
+  const rows = liste.map(s => { const d = dateD(s.debut), K = SUIVI(s), tot = K.length, fait = K.filter(k => pilVal(s.id, k)).length, ouvert = PIL.suivis.has(s.id), u = safeUrl(s.lien);
+    const m = s.debut.slice(0, 7), entete = m !== moisCourant ? `<tr class="pl-mois"><td colspan="${24 + 2 * AG.length}">${libM(m)}</td></tr>` : ""; moisCourant = m;
+    return entete + `<tr id="pr-${esc(s.id)}" class="${s.cert ? "certrow" : ""}"><td>${d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "2-digit" })}</td><td>${d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}</td><td class="n">${s.jours.length}</td>
+      <td class="pl-dom">${esc(s.dom)}</td><td>${txt(s.id, "ancienTitre", "Ancien titre", "—")}</td>
+      <td class="pl-titre">${u ? `<a href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir le programme">${esc(s.titre)}</a>` : esc(s.titre)}${enAlerte.has(s.id) ? ` <span class="pl-dot" title="Alerte en cours"></span>` : ""}<button type="button" class="pl-edit" data-pedit="${esc(s.fids[0])}" title="Modifier dans la Gestion (dates, tarif…)">✎ Gestion</button>${s.cert ? `<span class="pl-cert">🎓 certif ${esc(s.cert)} · ${dateD(s.fin).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span>` : ""}</td>
+      <td class="pl-dt">${esc(s.texte.replace(/\s*20\d\d$/, ""))}</td><td>${txt(s.id, "formateur", "Formateur")}</td>
       <td class="n">${s.tarif ? eur(s.tarif) : ""}</td><td>${s.pos ? `<span class="pl-pos">Oui · ${esc(s.pos)}</span>` : ""}</td><td class="pl-cpf">${esc(cpfCourt(s.cpf))}</td><td class="n">${s.tp ? eur(s.tp) : ""}</td>
-      <td>${txt(s.id, "lieu", "Lieu")}</td>${AG.map(a => `<td class="n"><input type="number" min="0" class="pl-n" data-plf="${esc(s.id)}" data-pk="${a}" aria-label="${esc(agNom(a))}" value="${pilVal(s.id, a) || ""}"></td>`).join("")}
+      <td class="pl-typ">${txt(s.id, "typeParcours", "Type de parcours", s.typeAuto)}</td>
+      <td>${txt(s.id, "lieu", "Lieu")}</td>${AG.map(a => nb(s, a, "ins")).join("")}
       <td class="n tot" data-ptot="${esc(s.id)}">${pilTot(s.id)}</td><td class="n">${chk(s.id, "convoc", "Convocations envoyées")}</td>
+      ${PR.map(k => nb(s, k, "pre")).join("")}<td class="n tot pre" data-ptotp="${esc(s.id)}">${totP(s.id)}</td>
       <td><input type="text" class="pl-t pl-com" data-plf="${esc(s.id)}" data-pk="commentaire" aria-label="Commentaire" placeholder="Commentaire…" value="${esc(pilVal(s.id, "commentaire") || "")}"></td>
       <td class="n"><button type="button" class="pl-suivi${ouvert ? " on" : ""}${fait === tot ? " ok" : ""}" data-psuivi="${esc(s.id)}" aria-expanded="${ouvert}" title="Salle, licences${s.cert ? ", certification" : ""}, qualité">${fait}/${tot} <i>▾</i></button></td></tr>
-      <tr class="pl-sub" data-psub="${esc(s.id)}"${ouvert ? "" : " hidden"}><td colspan="${17 + AG.length}"><div class="pl-subin">
+      <tr class="pl-sub" data-psub="${esc(s.id)}"${ouvert ? "" : " hidden"}><td colspan="${24 + 2 * AG.length}"><div class="pl-subin">
         <fieldset><legend>Logistique</legend><label>${chk(s.id, "salleOk", "Salle réservée")} Salle OK</label><label>${chk(s.id, "licOk", "Licences prévues")} Licences OK</label>${s.cert ? `<label>${chk(s.id, "certOk", "Certification prévue")} Certif OK</label>` : ""}</fieldset>
         <fieldset><legend>Qualité</legend><label>${chk(s.id, "qDeroule", "Déroulé pédagogique")} Déroulé pédagogique</label><label>${chk(s.id, "qSupport", "Support de cours")} Support de cours</label><label>${chk(s.id, "qProgramme", "Programme")} Programme</label></fieldset>
       </div></td></tr>`; }).join("");
+  const thF = (lab, k, cls) => `<th class="${cls || ""}">${k ? `<button type="button" class="pl-thf${F[k] ? " on" : ""}" data-pthf="${k}" title="Filtrer">${lab} ▾</button>` : lab}</th>`;
+  const tete = `<tr>${thF("Date début", "periode")}<th>Jour</th><th>J</th>${thF("Domaine", "dom")}<th>Ancien titre</th><th>Titre (lien vers le programme)</th><th>Dates</th>${thF("Formateur", "form")}<th>Tarif</th><th>Positionnement</th><th>Éligible CPF</th><th>Tarif parcours</th>${thF("Type de parcours", "type", "th-o")}${thF("Lieu", "lieu")}${AG.map(a => `<th class="th-g" title="Inscrits · ${esc(agNom(a))}">${a}</th>`).join("")}<th class="th-g">Total</th><th>Convoc OK</th>${AG.map(a => `<th class="th-b" title="Pré-réservations · ${esc(agNom(a))}">${a}</th>`).join("")}<th class="th-b">Total</th><th>Commentaire</th><th title="Salle, licences, certification et qualité (cliquez pour déplier)">Suivi</th></tr>`;
+  const sur = `<tr class="pl-sur"><th colspan="14"></th><th colspan="${AG.length + 1}" class="th-g">Inscrits</th><th></th><th colspan="${AG.length + 1}" class="th-b">Pré-réservations</th><th colspan="2"></th></tr>`;
   const A = alertesPilotage(S, auj);
   const ins = s => { const t = pilTot(s.id); return t ? `${t} inscrit${t > 1 ? "s" : ""} (${AG.map(a => a + " " + (Number(pilVal(s.id, a)) || 0)).join(" · ")})` : "aucun inscrit saisi"; };
   el.innerHTML = `
     <div class="pl-top"><h2>Pilotage des sessions <span class="pl-beta">BÊTA · éditrices uniquement</span></h2>
-      <div class="pl-nav"><button type="button" class="btn small" data-pmois="-1" aria-label="Mois précédent">◀</button><b>${lib}</b><button type="button" class="btn small" data-pmois="1" aria-label="Mois suivant">▶</button>
+      <div class="pl-nav"${PIL.vue === "liste" ? " hidden" : ""}><button type="button" class="btn small" data-pmois="-1" aria-label="Mois précédent">◀</button><b>${lib}</b><button type="button" class="btn small" data-pmois="1" aria-label="Mois suivant">▶</button>
       <button type="button" class="btn small" data-pmois="0">Aujourd'hui</button></div>
       <div class="pl-vues"><button type="button" class="stab" data-pvue="cal" aria-pressed="${PIL.vue === "cal"}">Calendrier</button><button type="button" class="stab" data-pvue="liste" aria-pressed="${PIL.vue === "liste"}">Liste</button></div></div>
     <div class="pl-grid${PIL.vue === "liste" ? " large" : ""}"><div class="pl-main">
       ${PIL.vue === "cal" ? `<div class="pc">${cal}</div><div class="pl-leg"><span><i class="l1"></i>Jour de formation</span><span><i class="l2"></i>Dernier jour d'une formation certifiante (certification)</span><span><i class="l3"></i>Aujourd'hui</span><span>Cliquez sur une session pour la retrouver dans la liste.</span></div>`
-      : `<div class="pl-wrap"><table class="pl-t-tab"><thead><tr><th>Début</th><th>Jour</th><th>J</th><th>Formation</th><th>Dates</th><th>Formateur</th><th>Tarif</th><th>Positionnement</th><th>CPF</th><th>Tarif parcours</th><th>Lieu</th>${AG.map(a => `<th title="${esc(agNom(a))}">${a}</th>`).join("")}<th>Total</th><th>Convoc OK</th><th>Commentaire</th><th title="Salle, licences, certification et qualité (cliquez pour déplier)">Suivi</th></tr></thead>
-        <tbody>${rows || `<tr><td colspan="20" class="none">Aucune session ce mois-ci.</td></tr>`}</tbody></table></div><p class="pl-note">Les saisies sont enregistrées automatiquement. Cliquez sur le nom d'une formation pour la modifier dans la Gestion (dates, tarif…).</p>`}
+      : `${filtres}<div class="pl-wrap"><table class="pl-t-tab pl-xl"><thead>${sur}${tete}</thead>
+        <tbody>${rows || `<tr><td colspan="30" class="none">Aucune session ne correspond aux filtres.</td></tr>`}</tbody></table></div><p class="pl-note">Les saisies sont enregistrées automatiquement. ✎ sur un chiffre : ajouter une note (coin orange quand il y en a une, lisible au survol). « ✎ Gestion » : modifier les dates ou le tarif.</p>`}
     </div><aside class="pl-side">
       <div class="pl-card"><h3>À prévoir</h3><p class="pl-note">Aujourd'hui, ${dateD(auj).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}. Cochez « Salle OK », « Licences OK » ou « Certif OK » (colonne Suivi de la liste) pour arrêter une alerte.</p>
         ${A.length ? A.map(a => `<button type="button" class="pl-al ${a.k}" data-pgo="${esc(a.s.id)}"><b>${esc(a.txt)}</b>${esc(a.s.nom)} · ${esc(a.s.texte)} · ${ins(a.s)}</button>`).join("") : `<p class="none">Rien à prévoir pour le moment.</p>`}
@@ -2392,6 +2458,7 @@ document.addEventListener("input", e => {
   const id = t.dataset.plf, k = t.dataset.pk;
   (PIL.edits[id] = PIL.edits[id] || {})[k] = t.type === "checkbox" ? t.checked : t.type === "number" ? (t.value === "" ? 0 : Math.max(0, parseInt(t.value, 10) || 0)) : t.value;
   const c = document.querySelector(`[data-ptot="${CSS.escape(id)}"]`); if(c) c.textContent = pilTot(id);
+  const cp = document.querySelector(`[data-ptotp="${CSS.escape(id)}"]`); if(cp) cp.textContent = AG.reduce((t, a) => t + (Number(pilVal(id, "p" + a)) || 0), 0);
   const sub = document.querySelector(`[data-psub="${CSS.escape(id)}"]`), sb = document.querySelector(`[data-psuivi="${CSS.escape(id)}"]`);
   if(sub && sb){ const cs = [...sub.querySelectorAll("input[type=checkbox]")], f = cs.filter(x => x.checked).length; sb.firstChild.textContent = `${f}/${cs.length} `; sb.classList.toggle("ok", f === cs.length); }
   pilSave(id);
@@ -2812,6 +2879,47 @@ document.addEventListener("click", e => {
 }, true);
 document.addEventListener("change", () => setTimeout(syncChoix, 0));
 new MutationObserver(() => syncChoix()).observe(document.getElementById("detail"), { childList: true });
+
+/* ===== Pilotage › Liste : filtres et notes ===== */
+let pilFilTimer = null;
+document.addEventListener("change", e => { const t = e.target.closest && e.target.closest("#pilot [data-pfil]"); if(!t || t.dataset.pfil === "q") return; PIL.f[t.dataset.pfil] = t.value || (t.dataset.pfil === "periode" ? "avenir" : ""); renderPilot(); });
+document.addEventListener("input", e => { const t = e.target.closest && e.target.closest('#pilot [data-pfil="q"]'); if(!t) return; clearTimeout(pilFilTimer);
+  pilFilTimer = setTimeout(() => { PIL.f.q = t.value.trim(); renderPilot(); const z = document.querySelector('#pilot [data-pfil="q"]'); if(z){ z.focus(); z.selectionStart = z.selectionEnd = z.value.length; } }, 300); });
+document.addEventListener("click", e => {
+  const c = e.target.closest("#pilot [data-pfchip]"); if(c){ PIL.f[c.dataset.pfchip] = !PIL.f[c.dataset.pfchip]; renderPilot(); return; }
+  if(e.target.closest("#pilot [data-pfreset]")){ PIL.f = { periode: "avenir" }; renderPilot(); return; }
+  const h = e.target.closest("#pilot [data-pthf]"); if(h){ e.stopPropagation(); const z = document.querySelector(`#pilot [data-pfil="${h.dataset.pthf}"]`); if(z){ z.scrollIntoView({ block: "nearest" }); z.focus(); try{ z.showPicker && z.showPicker(); }catch(_){ } } return; }
+  const n = e.target.closest("#pilot [data-pnote]"); if(n){ e.stopPropagation(); pilNoteOuvrir(n); return; }
+  const pop = document.getElementById("pilNote"); if(pop && !e.target.closest("#pilNote")) pop.remove();
+});
+function pilNoteOuvrir(btn){
+  document.getElementById("pilNote")?.remove();
+  const [id, k] = btn.dataset.pnote.split("|"), cle = "note_" + k, r = btn.getBoundingClientRect();
+  const p = document.createElement("div"); p.id = "pilNote"; p.className = "pl-notepop";
+  p.innerHTML = `<b>Note · ${k.startsWith("p") ? "pré-réservation " + k.slice(1) : "inscrits " + k}</b><textarea rows="3" placeholder="ex. 2 personnes de la société X, en attente du devis">${esc(pilVal(id, cle) || "")}</textarea><div><button type="button" class="btn small primary" data-pnok="1">Enregistrer</button>${pilVal(id, cle) ? `<button type="button" class="btn small" data-pnsup="1">Supprimer</button>` : ""}</div>`;
+  p.style.left = Math.max(8, Math.min(window.innerWidth - 280, r.left + window.scrollX - 120)) + "px"; p.style.top = (r.bottom + window.scrollY + 6) + "px";
+  document.body.appendChild(p); const ta = p.querySelector("textarea"); ta.focus();
+  const fin = v => { PIL.edits[id] = Object.assign(PIL.edits[id] || {}, { [cle]: v }); pilSave(id); p.remove(); renderPilot(); };
+  p.addEventListener("click", ev => { if(ev.target.dataset.pnok) fin(ta.value.trim()); if(ev.target.dataset.pnsup) fin(""); });
+}
+/* report des saisies du Pilotage quand une date ou un titre de module change dans la Gestion */
+async function pilReporter(ancienne, nouvelle){
+  if(!Array.isArray(RAW.pilotage) || !ancienne || !Array.isArray(ancienne.modules)) return 0;
+  const sid = (titre, texte) => { const j = joursSession(texte || ""); return j.length ? norm(titre || "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) + "__" + j[0] : ""; };
+  let n = 0;
+  for(const m of (nouvelle.modules || [])){
+    const om = ancienne.modules.find(x => x.code === m.code) || ancienne.modules.find(x => norm(x.titre || "") === norm(m.titre || "")); if(!om) continue;
+    const avant = (om.sessions || []).map(x => sid(om.titre, x.texte)).filter(Boolean), apres = (m.sessions || []).map(x => sid(m.titre, x.texte)).filter(Boolean);
+    const partis = avant.filter(x => !apres.includes(x)), arrives = apres.filter(x => !avant.includes(x));
+    if(!partis.length || partis.length !== arrives.length) continue; /* date ajoutée ou retirée : rien à reporter */
+    for(let i = 0; i < partis.length; i++){
+      const src = (RAW.pilotage || []).find(x => x.id === partis[i]), dst = (RAW.pilotage || []).find(x => x.id === arrives[i]);
+      if(!src || dst) continue; const data = Object.assign({}, src); delete data.id;
+      await db.doc("pilotage/" + arrives[i]).set(data); await db.doc("pilotage/" + partis[i]).delete(); n++;
+    }
+  }
+  return n;
+}
 </script>
 
 </body>
