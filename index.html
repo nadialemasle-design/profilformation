@@ -722,6 +722,8 @@ td.ins .pl-n,td.pre .pl-n{width:38px}
 td.a-note:after{content:"";position:absolute;top:0;right:0;border-style:solid;border-width:0 9px 9px 0;border-color:transparent #E9733A transparent transparent}
 .pl-notepop{position:absolute;z-index:50;width:260px;background:#fff;border:1px solid #9CCBEA;border-radius:12px;box-shadow:0 10px 30px rgba(18,52,63,.2);padding:10px}
 .pl-notepop b{display:block;font-size:12px;margin-bottom:6px}.pl-notepop textarea{width:100%;box-sizing:border-box;font:inherit;font-size:13px;border:1px solid #CFE6F7;border-radius:8px;padding:6px}.pl-notepop div{display:flex;gap:6px;margin-top:6px}
+.pl-qacc{display:flex;gap:6px;margin-top:3px}.pl-qacc a,.pl-qacc button{display:inline-flex;align-items:center;gap:3px;font:inherit;font-size:11.5px;font-weight:700;color:#12343F;background:var(--teal-clair);border:1px solid var(--teal);border-radius:999px;padding:1px 8px;cursor:pointer;text-decoration:none}
+.pl-qacc svg{width:11px;height:11px}.pl-qno{display:block;color:#7a8a92;font-size:10.5px;margin-top:2px}
 </style>
 </head>
 <body>
@@ -2325,6 +2327,7 @@ function sessionsPilotage(){
         dom: d.nom || "", domId: f.domaine || "", lien: m.lien || "", typeAuto: par ? `${String(f.domaine || "").toUpperCase()} ${m.code}` : "Formation seule" };
       if(cnom && !x.cert) x.cert = cnom;
       if(!x.pos && m.questionnaire) x.pos = m.questionnaireType || "Oui";
+      if(m.questionnaire && !x.qid){ const qd = qDoc(f.id, m.code); if(qd && (qd.lien || qd.fichier)) x.qid = qd.id; } /* questionnaire de positionnement (table protégée) */
       if(!x.tp && m.tarifParcours) x.tp = m.tarifParcours;
       if(par && x.typeAuto === "Formation seule") x.typeAuto = `${String(f.domaine || "").toUpperCase()} ${m.code}`;
       if(par) x.fids.push(f.id); else x.fids.unshift(f.id); /* la formation seule en premier */
@@ -2404,7 +2407,8 @@ function renderPilot(){
       <td class="pl-dom">${esc(s.dom)}</td><td>${txt(s.id, "ancienTitre", "Ancien titre", "—")}</td>
       <td class="pl-titre">${u ? `<a href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir le programme">${esc(s.titre)}</a>` : esc(s.titre)}${enAlerte.has(s.id) ? ` <span class="pl-dot" title="Alerte en cours"></span>` : ""}<button type="button" class="pl-edit" data-pedit="${esc(s.fids[0])}" title="Modifier dans la Gestion (dates, tarif…)">✎ Gestion</button>${s.cert ? `<span class="pl-cert">🎓 certif ${esc(s.cert)} · ${dateD(s.fin).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span>` : ""}</td>
       <td class="pl-dt">${esc(s.texte.replace(/\s*20\d\d$/, ""))}</td><td>${txt(s.id, "formateur", "Formateur")}</td>
-      <td class="n">${s.tarif ? eur(s.tarif) : ""}</td><td>${s.pos ? `<span class="pl-pos">Oui · ${esc(s.pos)}</span>` : ""}</td><td class="pl-cpf">${esc(cpfCourt(s.cpf))}</td><td class="n">${s.tp ? eur(s.tp) : ""}</td>
+      <td class="n">${s.tarif ? eur(s.tarif) : ""}</td><td>${s.pos ? (() => { const q = s.qid && (RAW.questionnaires || []).find(x => x.id === s.qid), u = q && safeUrl(q.lien);
+        return `<span class="pl-pos">Oui · ${esc(s.pos)}</span>${q ? `<span class="pl-qacc">${u ? `<a href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir le questionnaire">${ic("ext")}Ouvrir</a>` : ""}${q.fichier ? `<button type="button" data-qf="${esc(q.id)}" title="Télécharger le questionnaire">${ic("ext")}Télécharger</button>` : ""}</span>` : `<small class="pl-qno">questionnaire à déposer (Gestion › Questionnaires)</small>`}`; })() : ""}</td><td class="pl-cpf">${esc(cpfCourt(s.cpf))}</td><td class="n">${s.tp ? eur(s.tp) : ""}</td>
       <td class="pl-typ">${txt(s.id, "typeParcours", "Type de parcours", s.typeAuto)}</td>
       <td>${txt(s.id, "lieu", "Lieu")}</td>${AG.map(a => nb(s, a, "ins")).join("")}
       <td class="n tot" data-ptot="${esc(s.id)}">${pilTot(s.id)}</td><td class="n">${chk(s.id, "convoc", "Convocations envoyées")}</td>
