@@ -742,6 +742,7 @@ td.a-note:after{content:"";position:absolute;top:0;right:0;border-style:solid;bo
 details.fo-det>summary{display:inline-flex !important;align-items:center;gap:4px;background:#27CCAD !important;color:#0B2A33 !important;font-weight:800 !important;border-radius:999px;padding:3px 12px !important;cursor:pointer;border:none !important}
 details.fo-det>summary:hover{background:#1FB497 !important}
 details.fo-det[open]>summary{background:#12343F !important;color:#fff !important}
+.mpj{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:#55707a;margin-top:6px}.mpj .mpjn{width:56px;text-align:center;padding:4px 6px}
 </style>
 </head>
 <body>
@@ -1706,6 +1707,7 @@ function formFormation(el, d){
       const tarif = Number(q(".mtar").value.replace(/[^\d.,]/g, "").replace(",", ".")), tp = Number(q(".mtp").value.replace(/[^\d.,]/g, "").replace(",", "."));
       if(tarif > 0) m.tarif = tarif;
       if(tp > 0) m.tarifParcours = tp;
+      const pj = parseInt(q(".mpjn").value, 10); if(pj > 0) m.prefJours = pj;
       [["cpf", ".mcpf"]].forEach(([k, c]) => { let v = q(c).value.trim();
         /* un simple nombre saisi ici (ex. « 4 ») veut dire « éligible dans un parcours de N jours minimum » */
         if(/^\d+\s*(j|jours?)?$/i.test(v)){ const n = parseInt(v, 10); v = `Oui, dans un parcours de ${n} jour${n > 1 ? "s" : ""} minimum`; }
@@ -1864,7 +1866,7 @@ const modLine = (m, fid) => `<div class="modline"><input class="inp mc" value="$
   <details class="mextra"><summary>Dates, tarifs, positionnement, CPF${(m.sessions||[]).length ? ` · ${aVenir(m).length} date${aVenir(m).length>1?"s":""} à venir` : ""}</summary><div class="fgrid">
     ${field("Dates (une session par ligne, avec l'année)", `<textarea class="inp mses" placeholder="ex. 18-19 et 25-26 janvier 2027&#10;15 avril 2027">${esc((m.sessions || []).map(x => x.texte).join("\n"))}</textarea>`, true)}
     ${field("Tarif (€)", `<input class="inp mtar" inputmode="decimal" value="${esc(m.tarif ?? "")}" placeholder="ex. 780">`)}
-    ${field("Tarif préférentiel (€) — en parcours, ou dès 2 formations dans une proposition", `<input class="inp mtp" inputmode="decimal" value="${esc(m.tarifParcours ?? "")}" placeholder="ex. 700">`)}
+    ${field("Tarif préférentiel (€)", `<input class="inp mtp" inputmode="decimal" value="${esc(m.tarifParcours ?? "")}" placeholder="ex. 700"><span class="mpj">en parcours, ou dès <input class="inp mpjn" inputmode="numeric" value="${esc(m.prefJours ?? "")}" placeholder="—" aria-label="Nombre de jours"> jours de formation dans la proposition</span><span class="fhint">Jours vides : dès 2 formations ou modules dans la proposition.</span>`)}
     ${qFields(m, fid)}
     ${field("Éligibilité CPF", `<input class="inp mcpf" value="${esc(m.cpf || "")}" placeholder="ex. Oui (certification Tosa) ; Non ; Oui, dans un parcours de 4 jours minimum">`, true)}
   </div></details></div>`;
@@ -2086,6 +2088,11 @@ function joursDe(t){
 /* Un même module (ex. Photoshop) peut figurer dans plusieurs parcours avec des règles CPF différentes :
    on retient le parcours qui contient le plus d'autres modules de la proposition ; seul, on retient la formation seule si elle existe. */
 function propContexte(it){ return rawFm(it.fid, it.code); } /* le module retenu est celui du parcours où il a été coché */
+/* jours de formation de toute la proposition (session choisie, sinon la prochaine) */
+function propJoursTotal(){ return prop.items.reduce((t, it) => { const x = propContexte(it); if(!x || !x.m) return t;
+  const s = (x.m.sessions || []).find(y => y.texte === it.session) || aVenir(x.m)[0]; return t + (s ? joursDe(s.texte) : 0); }, 0); }
+/* tous les modules d'un parcours sont dans la proposition */
+const propParcoursComplet = f => (f.modules || []).length > 1 && f.modules.every(mm => prop.items.some(i => i.key === itemKey(f.id, mm.code)));
 function propLigne(it){
   const x = propContexte(it); if(!x || !x.m) return null;
   const { f, m } = x, d = (RAW.domaines || []).find(y => y.id === f.domaine) || {}, parcours = (f.modules || []).length > 1;
@@ -2096,7 +2103,10 @@ function propLigne(it){
   const sess = (m.sessions || []).find(s => s.texte === it.session) || null;
   /* tarif préférentiel (« en parcours ») : seulement quand la proposition compte au moins 2 formations ou modules
      (parcours ou non) ; une seule case cochée = tarif plein, même pour un module de parcours */
-  const pref = Number(m.tarifParcours) > 0 && prop.items.length >= 2;
+  /* « en parcours, ou dès N jours » (Gestion) : parcours complet retenu, ou au moins N jours de formation dans la proposition ;
+     sans N : dès 2 formations ou modules (règle d'origine) */
+  const nPJ = Number(m.prefJours) || 0;
+  const pref = Number(m.tarifParcours) > 0 && (nPJ ? (propParcoursComplet(f) || propJoursTotal() >= nPJ) : prop.items.length >= 2);
   const auto = pref ? Number(m.tarifParcours) : Number(m.tarif) || 0;
   /* tarif modifié à la main dans le détail de la proposition ; remise calculée par rapport au tarif plein de la formation */
   const perso = typeof it.prix === "number" && isFinite(it.prix), prix = perso ? it.prix : auto, base = Number(m.tarif) || 0;
