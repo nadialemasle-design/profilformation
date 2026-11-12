@@ -2257,6 +2257,13 @@ function chargerDocx(){
   docxLib = new Promise((ok, ko) => { const s = document.createElement("script"); s.src = "docx.iife.js"; s.onload = () => window.docx ? ok(window.docx) : ko(); s.onerror = ko; document.head.appendChild(s); });
   return docxLib;
 }
+/* notes de bas de tableau (CPF) : mêmes textes dans le document Word et dans le tableau de l'e-mail */
+const NOTES_CPF = () => [
+  ["* Pourquoi une certification ? Le CPF ne finance que des formations préparant à une certification enregistrée auprès de France Compétences. Le passage de la certification est donc une condition du financement, et non une option : c'est elle qui rend le parcours éligible.", false],
+  ["** La participation forfaitaire obligatoire", true],
+  ["Depuis le 2 avril 2026 (décret n° 2026-234 du 30 mars 2026), toute personne qui mobilise son CPF doit verser une participation forfaitaire de 150 €, quel que soit le montant de ses droits. Elle fait partie du reste à charge : lorsque le dépassement du plafond est supérieur à 150 €, elle y est déjà incluse et ne s'ajoute pas. Le reste à charge est réglé directement sur la plateforme Mon Compte Formation au moment de la validation de l'inscription. Vous en êtes exonéré(e) si vous êtes demandeur d'emploi, ou si votre employeur complète votre financement par un abondement.", false],
+  [`Plafond : pour les formations menant à une certification du Répertoire spécifique, le CPF prend en charge au maximum ${eur(PLAFOND_CPF)} (décret n° 2026-127 du 24 février 2026). Montants en vigueur en 2026, susceptibles d'évoluer.`, false]
+];
 async function propWord(){
   let D;
   try{ D = await chargerDocx(); }catch(e){ prop.ouvert = true; renderProp(); $("propMsg").textContent = "Le module Word n'a pas pu se charger. Utilisez « Copier le tableau »."; return; }
@@ -2310,10 +2317,7 @@ async function propWord(){
       para(run(""), { spacing: { after: 120 } }),
       table,
       para(run(""), { spacing: { after: 160 } }),
-      avecCpf ? note("* Pourquoi une certification ? Le CPF ne finance que des formations préparant à une certification enregistrée auprès de France Compétences. Le passage de la certification est donc une condition du financement, et non une option : c'est elle qui rend le parcours éligible.") : note(""),
-      avecCpf ? note("** La participation forfaitaire obligatoire", true) : note(""),
-      avecCpf ? note("Depuis le 2 avril 2026 (décret n° 2026-234 du 30 mars 2026), toute personne qui mobilise son CPF doit verser une participation forfaitaire de 150 €, quel que soit le montant de ses droits. Elle fait partie du reste à charge : lorsque le dépassement du plafond est supérieur à 150 €, elle y est déjà incluse et ne s'ajoute pas. Le reste à charge est réglé directement sur la plateforme Mon Compte Formation au moment de la validation de l'inscription. Vous en êtes exonéré(e) si vous êtes demandeur d'emploi, ou si votre employeur complète votre financement par un abondement.") : note(""),
-      avecCpf ? note(`Plafond : pour les formations menant à une certification du Répertoire spécifique, le CPF prend en charge au maximum ${eur(PLAFOND_CPF)} (décret n° 2026-127 du 24 février 2026). Montants en vigueur en 2026, susceptibles d'évoluer.`) : note("")
+      ...(avecCpf ? NOTES_CPF().map(([t, g]) => note(t, g)) : [note("")])
     ] }] });
   const blob = await Packer.toBlob(doc), nom = "Proposition-formation-" + new Date().toISOString().slice(0, 10) + ".docx";
   return enregistrer(blob, nom);
@@ -2587,15 +2591,17 @@ function devisTable(){
   const rows = r.lignes.map(l => { const u = safeUrl(l.m.lien); return `<tr>${td(`<b>${esc(l.d.nom || "")}</b>`)}${td(u ? `<a href="${esc(u)}" style="color:#2E74B5">${esc(l.m.titre)}</a>` : esc(l.m.titre))}${td(`<b style="color:#2E74B5">${esc(l.it.session || "à définir")}</b>`, "background:#DAE9F7")}${H ? td(l.it.type !== "cpf" ? eur(l.prix) : "", "text-align:center") : ""}${C ? td(l.it.type === "cpf" ? eur(l.prix) : "", "text-align:center;background:#B7D3C8") : ""}</tr>`; });
   const tot = (lab, val, fond, gras) => `<tr><td colspan="${nbCol - 1}" style="${B};text-align:right;${fond ? "background:" + fond + ";" : ""}${gras ? "font-weight:bold" : ""}">${lab}</td><td style="${B};text-align:center;${fond ? "background:" + fond + ";" : ""}${gras ? "font-weight:bold" : ""}">${val}</td></tr>`;
   const T = [];
-  r.certs.forEach(c => T.push([c.nom, eur(c.prix)]));
+  r.certs.forEach(c => T.push([c.nom + " *", eur(c.prix)]));
   if(C) T.push([nd > 1 ? `Total des ${nd} dossiers CPF` : "Total dossier CPF", eur(r.totalCpf), "#84CCEC", 1], [`Prise en charge CPF (plafond ${eur(PLAFOND_CPF)}${nd > 1 ? " par dossier" : ""}, dans la limite de vos droits)`, eur(r.priseEnCharge), "#B7D3C8"],
-    [prop.exonere ? "Reste à charge CPF (exonéré(e) de la participation forfaitaire)" : `Reste à charge CPF, participation forfaitaire obligatoire de ${eur(PARTICIPATION_CPF)}${nd > 1 ? " par dossier" : ""} incluse`, eur(r.resteCpf)]);
+    [prop.exonere ? "Reste à charge CPF (exonéré(e) de la participation forfaitaire)" : `Reste à charge CPF, participation forfaitaire obligatoire de ${eur(PARTICIPATION_CPF)}${nd > 1 ? " par dossier" : ""} incluse **`, eur(r.resteCpf)]);
   if(H && C) T.push(["Total formation hors CPF", eur(r.totalHors), "#DAE9F7", 1]);
   T.push([C ? "Total à votre charge" : "Total", eur(r.charge), "#84CCEC", 1]);
   if(r.jours) T.push(["Nombre de jours de formation", String(r.jours), "#DAE9F7", 1], [C ? "Coût par jour à votre charge" : "Coût par jour", eur(r.parJour)]);
   const html = `<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;border:1px solid #1F3864;max-width:720px"><tr>${th("Domaine")}${th("Formation (lien vers le programme)")}${th("Dates")}${H ? th(C ? "Tarifs hors CPF" : "Tarif") : ""}${C ? th("Tarifs préférentiels CPF") : ""}</tr>${rows.join("")}${T.map(x => tot(esc(x[0]), esc(x[1]), x[2], x[3])).join("")}</table>`;
+  const notes = C ? NOTES_CPF() : [];
+  const notesHtml = notes.length ? `<div style="margin-top:8px;max-width:720px">${notes.map(([t, g]) => `<p style="margin:0 0 6px;font-family:Calibri,Arial,sans-serif;font-size:11.5px;line-height:1.35;color:#555">${g ? `<b>${esc(t)}</b>` : esc(t)}</p>`).join("")}</div>` : "";
   const txt = r.lignes.map(l => `– ${l.m.titre} · ${l.it.session || "dates à définir"}${C ? (l.it.type === "cpf" ? " · CPF" : " · hors CPF") : ""} · ${eur(l.prix)}`).concat(T.map(x => `${x[0]} : ${x[1]}`)).join("\n");
-  return { html, txt };
+  return { html: html + notesHtml, txt: txt + (notes.length ? "\n\n" + notes.map(n => n[0]).join("\n") : "") };
 }
 function mailCorpsHtml(corps){
   const t = devisTable(), P = "margin:0 0 10px;font-family:Calibri,Arial,sans-serif;font-size:15px;color:#222";
