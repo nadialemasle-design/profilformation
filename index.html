@@ -750,6 +750,7 @@ details.fo-det[open]>summary{background:#12343F !important;color:#fff !important
 .fmt-bar{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:4px 0 6px}.fmt-bar button{font:inherit;font-size:12.5px;min-width:30px;height:28px;padding:0 8px;border:1px solid #CFE6F7;border-radius:7px;background:#fff;color:#12343F;cursor:pointer}.fmt-bar button:hover{background:#E6F2FB;border-color:#2A6F97}
 .fmt-aide{font-size:11.5px;color:#7a8a92;margin-left:4px}.mod-notes{border-top:1px dashed #DCE6EC;margin-top:8px;padding-top:6px;font-size:11.5px;color:#555}.mod-notes p{margin:0 0 4px}
 .mod-prev ul{margin:0 0 10px 18px}
+.mod-split{font:inherit;font-size:11px;font-weight:700;border:1px solid #9CCBEA;background:#fff;color:#1F5A80;border-radius:999px;padding:2px 8px;cursor:pointer;white-space:nowrap}.mod-split:hover{background:#E6F2FB}
 </style>
 </head>
 <body>
@@ -2668,8 +2669,8 @@ const MAIL_DEF = {
   ]
 };
 const mailCfg = () => { const c = MAILCFG || {}; return { blocs: Array.isArray(c.blocs) && c.blocs.length ? c.blocs : MAIL_DEF.blocs, cases: Array.isArray(c.cases) ? c.cases : MAIL_DEF.cases }; };
-const CONDS = { toujours: "Toujours", cpf: "Si CPF", hors: "Si hors CPF" };
-const condOk = (c, r) => c === "cpf" ? r.cpf.length > 0 : c === "hors" ? r.hors.length > 0 : true;
+const CONDS = { toujours: "Toujours (CPF et hors CPF)", cpf: "Si CPF", hors: "Si hors CPF (même mixte)", horsseul: "Seulement sans CPF" };
+const condOk = (c, r) => c === "cpf" ? r.cpf.length > 0 : c === "hors" ? r.hors.length > 0 : c === "horsseul" ? r.cpf.length === 0 : true;
 const casesVisibles = (cfg, r) => cfg.cases.filter(c => c.libelle && condOk(c.cond, r));
 const caseCochee = (c, V) => V.cases && Object.prototype.hasOwnProperty.call(V.cases, c.id) ? !!V.cases[c.id] : !!c.defaut;
 const listeEt = a => a.length < 2 ? (a[0] || "") : a.slice(0, -1).join(", ") + " et " + a[a.length - 1];
@@ -2715,7 +2716,7 @@ function formModeles(el){
           <input class="mod-titre" data-mbk="titre" value="${esc(b.titre || "")}" aria-label="Nom du bloc">
           <select data-mbk="cond" aria-label="Quand l'afficher">${opt(0, b.cond || "toujours")}</select>
           <label class="mod-sw" title="Activer ou désactiver ce bloc"><input type="checkbox" data-mbk="actif"${b.actif === false ? "" : " checked"}><span></span></label>
-          <button type="button" class="mod-x" data-mbdel="${i}" title="Supprimer ce bloc">✕</button></div>
+          ${(b.cond || "toujours") === "toujours" ? `<button type="button" class="mod-split" data-mbsplit="${i}" title="Créer deux versions de ce bloc : une pour les propositions avec CPF, une pour celles sans CPF">Séparer CPF / sans CPF</button>` : ""}<button type="button" class="mod-x" data-mbdel="${i}" title="Supprimer ce bloc">✕</button></div>
         <textarea class="mod-txt" data-mbk="texte" rows="${Math.min(9, Math.max(2, String(b.texte || "").split("\n").length + 1))}">${esc(b.texte || "")}</textarea></div>`).join("")}</div>
       <button type="button" class="mod-add" id="modAddBloc">＋ Ajouter un bloc</button></div>
     <div class="form mod-card"><h2>Cases à cocher (pièces jointes)</h2>
@@ -2759,6 +2760,9 @@ document.addEventListener("click", async e => {
   if(t.dataset.modex){ MOD.ex = t.dataset.modex; document.querySelectorAll("[data-modex]").forEach(x => x.setAttribute("aria-pressed", String(x === t))); modApercu(); return; }
   if(t.dataset.mbup || t.dataset.mbdown){ modLire(); const i = +(t.dataset.mbup || t.dataset.mbdown), j = t.dataset.mbup ? i - 1 : i + 1; [MOD.blocs[i], MOD.blocs[j]] = [MOD.blocs[j], MOD.blocs[i]]; re(); return; }
   if(t.dataset.mbdel){ modLire(); MOD.blocs.splice(+t.dataset.mbdel, 1); re(); return; }
+  if(t.dataset.mbsplit){ modLire(); const i = +t.dataset.mbsplit, b = MOD.blocs[i];
+    const a1 = Object.assign({}, b, { id: b.id + "-cpf", titre: (b.titre || "Bloc") + " (CPF)", cond: "cpf" }), a2 = Object.assign({}, b, { id: b.id + "-hors", titre: (b.titre || "Bloc") + " (sans CPF)", cond: "horsseul" });
+    MOD.blocs.splice(i, 1, a1, a2); re(); toast("Deux versions créées : modifiez chacune, puis enregistrez"); return; }
   if(t.dataset.mcdel){ modLire(); MOD.cases.splice(+t.dataset.mcdel, 1); re(); return; }
   if(t.id === "modAddBloc"){ modLire(); MOD.blocs.push({ id: "b" + Date.now().toString(36), titre: "Nouveau bloc", cond: "toujours", actif: true, texte: "" }); re(); return; }
   if(t.dataset.mndel){ modLire(); MOD.mentions.notes.splice(+t.dataset.mndel, 1); re(); return; }
