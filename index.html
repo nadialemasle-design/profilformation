@@ -743,6 +743,8 @@ details.fo-det>summary{display:inline-flex !important;align-items:center;gap:4px
 details.fo-det>summary:hover{background:#1FB497 !important}
 details.fo-det[open]>summary{background:#12343F !important;color:#fff !important}
 .mpj{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:#55707a;margin-top:6px}.mpj .mpjn{width:56px;text-align:center;padding:4px 6px}
+.pl-ctrl{border-radius:10px;padding:7px 12px;margin:0 0 10px;font-size:12.5px}.pl-ctrl.ok{background:var(--teal-clair);color:#12343F}
+.pl-ctrl.ko{background:#FFF4D6;border:1px solid #F2C94C;color:#5c4300}.pl-ctrl.ko summary{font-weight:800;cursor:pointer}.pl-ctrl ul{margin:6px 0;padding-left:18px}.pl-ctrl li{margin:2px 0}
 </style>
 </head>
 <body>
@@ -2498,9 +2500,16 @@ function renderPilot(){
   const tete = `<tr>${thF("Date début", "periode")}<th>Jour</th><th>J</th>${thF("Domaine", "dom")}<th>Ancien titre</th><th>Titre (lien vers le programme)</th><th>Dates</th>${thF("Formateur", "form")}<th>Tarif</th><th>Positionnement</th><th>Éligible CPF</th><th>Tarif parcours</th>${thF("Type de parcours", "type", "th-o")}${thF("Lieu", "lieu")}${AG.map(a => `<th class="th-g" title="Inscrits · ${esc(agNom(a))}">${a}</th>`).join("")}<th class="th-g">Total</th><th>Convoc OK</th>${AG.map(a => `<th class="th-b" title="Pré-réservations · ${esc(agNom(a))}">${a}</th>`).join("")}<th class="th-b">Total</th><th>Commentaire</th><th title="Salle, licences, certification et qualité (cliquez pour déplier)">Suivi</th></tr>`;
   const sur = `<tr class="pl-sur"><th colspan="14"></th><th colspan="${AG.length + 1}" class="th-g">Inscrits</th><th></th><th colspan="${AG.length + 1}" class="th-b">Pré-réservations</th><th colspan="2"></th></tr>`;
   const A = alertesPilotage(S, auj);
+  /* contrôle : toutes les dates saisies dans Gestion sont-elles dans le calendrier ? */
+  let nbDates = 0; const illisibles = [];
+  (RAW.formations || []).forEach(f => (f.modules || []).forEach(m => (m.sessions || []).forEach(x => { nbDates++;
+    if(!joursSession(x.texte || "").length) illisibles.push({ f, m, t: x.texte || "(sans texte)" }); })));
+  const ctrl = illisibles.length
+    ? `<details class="pl-ctrl ko" open><summary>⚠ ${illisibles.length} date${illisibles.length > 1 ? "s" : ""} sur ${nbDates} non lisible${illisibles.length > 1 ? "s" : ""} : absente${illisibles.length > 1 ? "s" : ""} du calendrier</summary><ul>${illisibles.map(x => `<li><b>${esc(x.f.nom)}</b> · ${esc(x.m.code || "")} : « ${esc(x.t)} » <button type="button" class="pl-edit" data-pedit="${esc(x.f.id)}">✎ corriger dans la Gestion</button></li>`).join("")}</ul><small>Format conseillé : « 16-17 mars 2027 », « 5 et 12 février 2027 », « 18 au 20 octobre 2027 ».</small></details>`
+    : `<p class="pl-ctrl ok">✓ ${nbDates} dates de session saisies dans la Gestion : toutes sont dans le calendrier (${S.length} sessions distinctes, les modules communs à plusieurs parcours ne comptent qu'une fois).</p>`;
   const ins = s => { const t = pilTot(s.id); return t ? `${t} inscrit${t > 1 ? "s" : ""} (${AG.map(a => a + " " + (Number(pilVal(s.id, a)) || 0)).join(" · ")})` : "aucun inscrit saisi"; };
   el.innerHTML = `
-    <div class="pl-top"><h2>Pilotage des sessions <span class="pl-beta">BÊTA · éditrices uniquement</span></h2>
+    ${ctrl}<div class="pl-top"><h2>Pilotage des sessions <span class="pl-beta">BÊTA · éditrices uniquement</span></h2>
       <div class="pl-nav"${PIL.vue === "liste" ? " hidden" : ""}><button type="button" class="btn small" data-pmois="-1" aria-label="Mois précédent">◀</button><b>${lib}</b><button type="button" class="btn small" data-pmois="1" aria-label="Mois suivant">▶</button>
       <button type="button" class="btn small" data-pmois="0">Aujourd'hui</button></div>
       <div class="pl-vues"><button type="button" class="stab" data-pvue="cal" aria-pressed="${PIL.vue === "cal"}">Calendrier</button><button type="button" class="stab" data-pvue="liste" aria-pressed="${PIL.vue === "liste"}">Liste</button></div></div>
