@@ -14,8 +14,17 @@ const dateD = s => { const [y, m, j] = s.split("-").map(Number); return new Date
 const ajouter = (iso, n) => { const d = dateD(iso); d.setDate(d.getDate() + n); return isoD(d); };
 const ecart = (a, b) => Math.round((dateD(b) - dateD(a)) / 864e5);
 function ouvresAvant(iso, n){ const d = dateD(iso); let k = 0; while(k < n){ d.setDate(d.getDate() - 1); if(d.getDay() % 6) k++; } return isoD(d); }
+/* dates saisies en chiffres (12/04/2027, 12.04.27, 12/04) → « 12 avril 2027 » ; année absente → prochaine occurrence */
+const MOIS_NOMS = ["", "janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "decembre"];
+function prepDate(t){
+  let s = String(t || "").replace(/(\d{4})-(\d{1,2})-(\d{1,2})/g, (x, y, m, d) => `${+d} ${MOIS_NOMS[+m] || m} ${y}`)
+    .replace(/\b(\d{1,2})[\/.](\d{1,2})(?:[\/.](\d{2,4}))?\b/g, (x, d, m, y) => `${+d} ${MOIS_NOMS[+m] || m}${y ? " " + (y.length === 2 ? "20" + y : y) : ""}`);
+  if(!/\b(19|20)\d{2}\b/.test(s)){ const n = norm(s), mm = (n.match(/[a-z]+/g) || []).map(k => MOISN[k]).find(Boolean);
+    if(mm){ const now = new Date(), y = mm < now.getMonth() + 1 ? now.getFullYear() + 1 : now.getFullYear(); s += " " + y; } }
+  return s;
+}
 function joursSession(t){
-  const s = norm(t).replace(/(\d+)\s*(?:er)?\s*au\s*(\d+)/g, (x, a, b) => { const r = []; for(let i = +a; i <= +b && r.length < 31; i++) r.push(i); return r.join(" "); });
+  const s = norm(prepDate(t)).replace(/(\d+)\s*(?:er)?\s*au\s*(\d+)/g, (x, a, b) => { const r = []; for(let i = +a; i <= +b && r.length < 31; i++) r.push(i); return r.join(" "); });
   let an = null, pend = [], jours = [];
   (s.match(/\d+|[a-z]+/g) || []).forEach(k => {
     if(/^\d{4}$/.test(k)) an = +k; else if(/^\d{1,2}$/.test(k)) pend.push(+k);
@@ -26,7 +35,17 @@ function joursSession(t){
 }
 const nomCourt = t => { const [a, ...b] = String(t).split(":"); const x = a.split(" - ")[0].trim();
   return (x.split(/\s+/).length <= 2 && b.length) ? b.join(":").split(/[-–,]/)[0].trim().replace(/^./, c => c.toUpperCase()) : x; };
-export function sessionsPilotage(RAW){ /* même calcul que l'onglet Pilotage de l'appli */
+/* session saisie directement dans la base avec seulement « debut » / « fin » : on fabrique son texte (ex. « 12 avril 2027 », « 12 au 14 avril 2027 ») */
+function texteDeDates(s){
+  if(!s || s.texte || !/^\d{4}-\d{2}-\d{2}$/.test(String(s.debut || ""))) return s;
+  const [y1, m1, d1] = s.debut.split("-").map(Number), f = /^\d{4}-\d{2}-\d{2}$/.test(String(s.fin || "")) ? s.fin : s.debut, [y2, m2, d2] = f.split("-").map(Number);
+  const M = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+  s.texte = f === s.debut ? `${d1} ${M[m1]} ${y1}` : (m1 === m2 && y1 === y2 ? `${d1} au ${d2} ${M[m2]} ${y2}` : `${d1} ${M[m1]}${y1 !== y2 ? " " + y1 : ""} au ${d2} ${M[m2]} ${y2}`);
+  return s;
+}
+const completerSessions = formations => (formations || []).forEach(f => (f.modules || []).forEach(m => { if(Array.isArray(m.sessions)) m.sessions.forEach(texteDeDates); }));
+export function sessionsPilotage(RAW){
+  completerSessions(RAW.formations); /* même calcul que l'onglet Pilotage de l'appli */
   const map = new Map(), doms = Object.fromEntries((RAW.domaines || []).map(d => [d.id, d]));
   (RAW.formations || []).forEach(f => {
     const par = (f.modules || []).length > 1;
