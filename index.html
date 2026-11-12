@@ -745,6 +745,8 @@ details.fo-det[open]>summary{background:#12343F !important;color:#fff !important
 .mpj{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:#55707a;margin-top:6px}.mpj .mpjn{width:56px;text-align:center;padding:4px 6px}
 .pl-ctrl{border-radius:10px;padding:7px 12px;margin:0 0 10px;font-size:12.5px}.pl-ctrl.ok{background:var(--teal-clair);color:#12343F}
 .pl-ctrl.ko{background:#FFF4D6;border:1px solid #F2C94C;color:#5c4300}.pl-ctrl.ko summary{font-weight:800;cursor:pointer}.pl-ctrl ul{margin:6px 0;padding-left:18px}.pl-ctrl li{margin:2px 0}
+.mod-mt{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}.mod-mt label{display:flex;flex-direction:column;gap:3px;font-size:12px;font-weight:700;color:#55707a}.mod-mt .inp{width:120px}
+.mod-gras{font-size:12px;color:#1F5A80;display:flex;align-items:center;gap:4px;font-weight:600}
 </style>
 </head>
 <body>
@@ -945,6 +947,7 @@ const completerSessions = formations => (formations || []).forEach(f => (f.modul
 function buildModel(){
   completerSessions(RAW.formations);
   MAILCFG = (RAW.domaines || []).find(d => d.id === MAIL_ID) || null;
+  { const mc = (MAILCFG && MAILCFG.mentions) || {}; PLAFOND_CPF = Number(mc.plafond) > 0 ? Number(mc.plafond) : 1500; PARTICIPATION_CPF = Number(mc.participation) >= 0 && mc.participation !== "" && mc.participation != null ? Number(mc.participation) : 150; }
   DOMAINES = (RAW.domaines || []).filter(d => d.id !== MAIL_ID).slice().sort(byOrdre).map(d => ({
     id: d.id, nom: d.nom || d.id, financement: d.financement || "", certification: d.certification || "",
     ordreModules: Array.isArray(d.ordreModules) ? d.ordreModules : [],
@@ -2088,7 +2091,7 @@ async function write(fn, okText, after){
 /* =====================================================================
    PROPOSITION : cases à cocher sur les modules, récapitulatif chiffré, document Word
    ===================================================================== */
-const PLAFOND_CPF = 1500, PARTICIPATION_CPF = 150;
+let PLAFOND_CPF = 1500, PARTICIPATION_CPF = 150; /* modifiables dans Gestion › Modèles d'e-mail › Mentions CPF */
 const prop = { items: [], exonere: false, ouvert: false, mail: false };
 /* la proposition dure le temps de l'onglet (sessionStorage) : on repart d'une page vide à chaque ouverture */
 try{ localStorage.removeItem("proposition-v1"); }catch(e){}
@@ -2258,12 +2261,14 @@ function chargerDocx(){
   return docxLib;
 }
 /* notes de bas de tableau (CPF) : mêmes textes dans le document Word et dans le tableau de l'e-mail */
-const NOTES_CPF = () => [
+const NOTES_DEF = [
   ["* Pourquoi une certification ? Le CPF ne finance que des formations préparant à une certification enregistrée auprès de France Compétences. Le passage de la certification est donc une condition du financement, et non une option : c'est elle qui rend le parcours éligible.", false],
   ["** La participation forfaitaire obligatoire", true],
-  ["Depuis le 2 avril 2026 (décret n° 2026-234 du 30 mars 2026), toute personne qui mobilise son CPF doit verser une participation forfaitaire de 150 €, quel que soit le montant de ses droits. Elle fait partie du reste à charge : lorsque le dépassement du plafond est supérieur à 150 €, elle y est déjà incluse et ne s'ajoute pas. Le reste à charge est réglé directement sur la plateforme Mon Compte Formation au moment de la validation de l'inscription. Vous en êtes exonéré(e) si vous êtes demandeur d'emploi, ou si votre employeur complète votre financement par un abondement.", false],
-  [`Plafond : pour les formations menant à une certification du Répertoire spécifique, le CPF prend en charge au maximum ${eur(PLAFOND_CPF)} (décret n° 2026-127 du 24 février 2026). Montants en vigueur en 2026, susceptibles d'évoluer.`, false]
+  ["Depuis le 2 avril 2026 (décret n° 2026-234 du 30 mars 2026), toute personne qui mobilise son CPF doit verser une participation forfaitaire de {participation}, quel que soit le montant de ses droits. Elle fait partie du reste à charge : lorsque le dépassement du plafond est supérieur à {participation}, elle y est déjà incluse et ne s'ajoute pas. Le reste à charge est réglé directement sur la plateforme Mon Compte Formation au moment de la validation de l'inscription. Vous en êtes exonéré(e) si vous êtes demandeur d'emploi, ou si votre employeur complète votre financement par un abondement.", false],
+  ["Plafond : pour les formations menant à une certification du Répertoire spécifique, le CPF prend en charge au maximum {plafond} (décret n° 2026-127 du 24 février 2026). Montants en vigueur en 2026, susceptibles d'évoluer.", false]
 ];
+const notesBrutes = () => { const n = MAILCFG && MAILCFG.mentions && Array.isArray(MAILCFG.mentions.notes) ? MAILCFG.mentions.notes : null; return n && n.length ? n : NOTES_DEF; };
+const NOTES_CPF = () => notesBrutes().filter(x => x && String(x[0] || "").trim()).map(([t, g]) => [String(t).replace(/\{plafond\}/gi, eur(PLAFOND_CPF)).replace(/\{participation\}/gi, eur(PARTICIPATION_CPF)), !!g]);
 async function propWord(){
   let D;
   try{ D = await chargerDocx(); }catch(e){ prop.ouvert = true; renderProp(); $("propMsg").textContent = "Le module Word n'a pas pu se charger. Utilisez « Copier le tableau »."; return; }
@@ -2660,7 +2665,9 @@ function modApercu(){
   z.innerHTML = `<div class="mod-obj">Objet : Votre proposition de formation – ${esc(ex.lignes.map(l => l.f.nom).join(" et "))}</div>` + corps.split(/\n{2,}/).map(b => b.trim() === MAIL_TAB ? `<div class="mod-tab">[ tableau récapitulatif : formations, dates, tarifs, totaux ]</div>` : `<p>${esc(b).replace(/\n/g, "<br>")}</p>`).join("");
 }
 function formModeles(el){
-  const c = mailCfg(); MOD = { blocs: c.blocs.map(b => Object.assign({}, b)), cases: c.cases.map(x => Object.assign({}, x)), ex: (MOD && MOD.ex) || "hors" };
+  const c = mailCfg(), mc = (MAILCFG && MAILCFG.mentions) || {};
+  MOD = { blocs: c.blocs.map(b => Object.assign({}, b)), cases: c.cases.map(x => Object.assign({}, x)), ex: (MOD && MOD.ex) || "hors",
+    mentions: { plafond: mc.plafond ?? PLAFOND_CPF, participation: mc.participation ?? PARTICIPATION_CPF, notes: notesBrutes().map(x => [x[0], !!x[1]]) } };
   const opt = (v, cur) => Object.keys(CONDS).map(k => `<option value="${k}"${k === cur ? " selected" : ""}>${CONDS[k]}</option>`).join("");
   const FICH = { "": "—", bulletin: "Bulletin prérempli (PDF)", devis: "Devis (document Word)" };
   el.innerHTML = `<div class="mod-grid"><div>
@@ -2681,6 +2688,13 @@ function formModeles(el){
         <td><select class="inp" data-mck="fichier">${Object.keys(FICH).map(k => `<option value="${k}"${(x.fichier || "") === k ? " selected" : ""}>${FICH[k]}</option>`).join("")}</select></td><td><button type="button" class="mod-x" data-mcdel="${i}" title="Supprimer cette case">✕</button></td></tr>`).join("")}</table>
       <button type="button" class="mod-add" id="modAddCase">＋ Ajouter une case</button>
       <p class="fhint">Les cases cochées forment la phrase « Vous trouverez ci-joint … » du bloc {pièces jointes}.</p></div>
+    <div class="form mod-card"><h2>Mentions CPF (notes * et ** du tableau)</h2>
+      <p class="fhint" style="margin-top:0">Utilisées dans le document Word et dans le tableau de l'e-mail, seulement quand la proposition contient du CPF. Les montants servent aussi au calcul.</p>
+      <div class="mod-mt"><label>Plafond de prise en charge CPF (€) <input class="inp" data-mmk="plafond" inputmode="numeric" value="${esc(MOD.mentions.plafond)}"></label>
+        <label>Participation forfaitaire (€) <input class="inp" data-mmk="participation" inputmode="numeric" value="${esc(MOD.mentions.participation)}"></label></div>
+      <p class="mod-reps">Repères : <button type="button" class="mod-tag" data-modins="{plafond}">{plafond}</button><button type="button" class="mod-tag" data-modins="{participation}">{participation}</button></p>
+      ${MOD.mentions.notes.map((n, i) => `<div class="mod-bloc"><div class="mod-bh"><span class="mod-titre" style="flex:1">Note ${i + 1}</span><label class="mod-gras"><input type="checkbox" data-mnb="${i}"${n[1] ? " checked" : ""}> en gras (titre)</label><button type="button" class="mod-x" data-mndel="${i}" title="Supprimer cette note">✕</button></div><textarea class="mod-txt" data-mn="${i}" rows="${n[1] ? 1 : Math.min(8, Math.ceil(String(n[0]).length / 95) + 1)}">${esc(n[0])}</textarea></div>`).join("")}
+      <button type="button" class="mod-add" id="modAddNote">＋ Ajouter une note</button></div>
   </div><div class="mod-side"><div class="form mod-card"><h2>Aperçu en direct</h2>
     <div class="mod-ex">Exemple : ${["hors", "cpf", "mixte"].map(k => `<button type="button" data-modex="${k}" aria-pressed="${MOD.ex === k}">${{ hors: "Hors CPF", cpf: "CPF", mixte: "Mixte" }[k]}</button>`).join("")}</div>
     <div id="modPrev" class="mod-prev"></div>
@@ -2689,32 +2703,38 @@ function formModeles(el){
   modApercu();
 }
 function modLire(){ /* relit le formulaire dans MOD */
+  if(MOD.mentions){ document.querySelectorAll("#admForm [data-mmk]").forEach(x => { MOD.mentions[x.dataset.mmk] = x.value.replace(/[^\d]/g, ""); });
+    document.querySelectorAll("#admForm [data-mn]").forEach(x => { const n = MOD.mentions.notes[+x.dataset.mn]; if(n) n[0] = x.value; });
+    document.querySelectorAll("#admForm [data-mnb]").forEach(x => { const n = MOD.mentions.notes[+x.dataset.mnb]; if(n) n[1] = x.checked; }); }
   document.querySelectorAll("#admForm [data-mb]").forEach(n => { const b = MOD.blocs[+n.dataset.mb]; if(!b) return;
     n.querySelectorAll("[data-mbk]").forEach(x => { b[x.dataset.mbk] = x.type === "checkbox" ? x.checked : x.value; }); n.classList.toggle("off", b.actif === false); });
   document.querySelectorAll("#admForm [data-mc]").forEach(n => { const c = MOD.cases[+n.dataset.mc]; if(!c) return;
     n.querySelectorAll("[data-mck]").forEach(x => { c[x.dataset.mck] = x.type === "checkbox" ? x.checked : x.value; }); });
 }
 let modDernierChamp = null;
-document.addEventListener("focusin", e => { if(e.target.closest && e.target.closest("#admForm .mod-txt")) modDernierChamp = e.target; });
+document.addEventListener("focusin", e => { if(e.target.closest && e.target.closest("#admForm .mod-txt")) modDernierChamp = e.target; }); /* blocs du message et notes CPF */
 document.addEventListener("input", e => { if(!MOD || !e.target.closest("#admForm .mod-grid")) return; modLire(); modApercu(); $("admForm").dataset.dirty = "1"; });
 document.addEventListener("change", e => { if(!MOD || !e.target.closest("#admForm .mod-grid")) return; modLire(); modApercu(); $("admForm").dataset.dirty = "1"; });
 document.addEventListener("click", async e => {
   if(!MOD || !e.target.closest("#admForm")) return; const t = e.target.closest("button"); if(!t) return;
-  const re = () => { const ex = MOD.ex; const keep = MOD; formModeles($("admForm")); MOD.blocs = keep.blocs; MOD.cases = keep.cases; MOD.ex = ex; renderModFromMOD(); };
+  const re = () => { const ex = MOD.ex; const keep = MOD; formModeles($("admForm")); MOD.blocs = keep.blocs; MOD.cases = keep.cases; MOD.mentions = keep.mentions; MOD.ex = ex; renderModFromMOD(); };
   if(t.dataset.modins){ const z = modDernierChamp; if(!z){ toast("Cliquez d'abord dans un texte"); return; } const p = z.selectionStart ?? z.value.length; z.value = z.value.slice(0, p) + t.dataset.modins + z.value.slice(z.selectionEnd ?? p); z.focus(); z.selectionStart = z.selectionEnd = p + t.dataset.modins.length; modLire(); modApercu(); return; }
   if(t.dataset.modex){ MOD.ex = t.dataset.modex; document.querySelectorAll("[data-modex]").forEach(x => x.setAttribute("aria-pressed", String(x === t))); modApercu(); return; }
   if(t.dataset.mbup || t.dataset.mbdown){ modLire(); const i = +(t.dataset.mbup || t.dataset.mbdown), j = t.dataset.mbup ? i - 1 : i + 1; [MOD.blocs[i], MOD.blocs[j]] = [MOD.blocs[j], MOD.blocs[i]]; re(); return; }
   if(t.dataset.mbdel){ modLire(); MOD.blocs.splice(+t.dataset.mbdel, 1); re(); return; }
   if(t.dataset.mcdel){ modLire(); MOD.cases.splice(+t.dataset.mcdel, 1); re(); return; }
   if(t.id === "modAddBloc"){ modLire(); MOD.blocs.push({ id: "b" + Date.now().toString(36), titre: "Nouveau bloc", cond: "toujours", actif: true, texte: "" }); re(); return; }
+  if(t.dataset.mndel){ modLire(); MOD.mentions.notes.splice(+t.dataset.mndel, 1); re(); return; }
+  if(t.id === "modAddNote"){ modLire(); MOD.mentions.notes.push(["", false]); re(); return; }
   if(t.id === "modAddCase"){ modLire(); MOD.cases.push({ id: "c" + Date.now().toString(36), libelle: "", phrase: "", cond: "toujours", defaut: false, fichier: "" }); re(); return; }
-  if(t.id === "modDef"){ MOD.blocs = MAIL_DEF.blocs.map(b => Object.assign({}, b)); MOD.cases = MAIL_DEF.cases.map(x => Object.assign({}, x)); re(); toast("Textes d'origine remis : enregistrez pour les garder"); return; }
+  if(t.id === "modDef"){ MOD.blocs = MAIL_DEF.blocs.map(b => Object.assign({}, b)); MOD.cases = MAIL_DEF.cases.map(x => Object.assign({}, x)); MOD.mentions = { plafond: 1500, participation: 150, notes: NOTES_DEF.map(x => [x[0], x[1]]) }; re(); toast("Textes d'origine remis : enregistrez pour les garder"); return; }
   if(t.id === "modAnn"){ delete $("admForm").dataset.dirty; MOD = null; formModeles($("admForm")); return; }
-  if(t.id === "modSave"){ modLire(); const data = { nom: "Modèles d'e-mail", blocs: MOD.blocs, cases: MOD.cases.filter(c => (c.libelle || "").trim()) };
+  if(t.id === "modSave"){ modLire(); const data = { nom: "Modèles d'e-mail", blocs: MOD.blocs, cases: MOD.cases.filter(c => (c.libelle || "").trim()),
+      mentions: { plafond: Number(MOD.mentions.plafond) || 1500, participation: Number(MOD.mentions.participation) || 0, notes: MOD.mentions.notes.filter(n => String(n[0] || "").trim()).map(n => [n[0], !!n[1]]) } };
     delete $("admForm").dataset.dirty; await write(() => db.doc("domaines/" + MAIL_ID).set(data), "Modèles d'e-mail enregistrés"); }
 });
 function renderModFromMOD(){ /* ré-affiche l'éditeur avec le brouillon MOD (ordre, ajout, suppression) */
-  const saved = MAILCFG; MAILCFG = { blocs: MOD.blocs, cases: MOD.cases }; const ex = MOD.ex; MOD = null; formModeles($("admForm")); MOD.ex = ex; MAILCFG = saved; modApercu(); $("admForm").dataset.dirty = "1";
+  const saved = MAILCFG; MAILCFG = { blocs: MOD.blocs, cases: MOD.cases, mentions: MOD.mentions }; const ex = MOD.ex; MOD = null; formModeles($("admForm")); MOD.ex = ex; MAILCFG = saved; modApercu(); $("admForm").dataset.dirty = "1";
 }
 /* nom court d'une ligne : nom de la formation, ou pour un module de parcours la 1re partie de son titre */
 const nomLigne = l => { if((l.f.modules || []).length < 2) return l.f.nom; const a = String(l.m.titre).split(":")[0].split(" - ")[0].trim(); return /^réseaux sociaux$/i.test(a) ? String(l.m.titre).trim() : a; };
