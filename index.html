@@ -747,6 +747,9 @@ details.fo-det[open]>summary{background:#12343F !important;color:#fff !important
 .pl-ctrl.ko{background:#FFF4D6;border:1px solid #F2C94C;color:#5c4300}.pl-ctrl.ko summary{font-weight:800;cursor:pointer}.pl-ctrl ul{margin:6px 0;padding-left:18px}.pl-ctrl li{margin:2px 0}
 .mod-mt{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}.mod-mt label{display:flex;flex-direction:column;gap:3px;font-size:12px;font-weight:700;color:#55707a}.mod-mt .inp{width:120px}
 .mod-gras{font-size:12px;color:#1F5A80;display:flex;align-items:center;gap:4px;font-weight:600}
+.fmt-bar{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:4px 0 6px}.fmt-bar button{font:inherit;font-size:12.5px;min-width:30px;height:28px;padding:0 8px;border:1px solid #CFE6F7;border-radius:7px;background:#fff;color:#12343F;cursor:pointer}.fmt-bar button:hover{background:#E6F2FB;border-color:#2A6F97}
+.fmt-aide{font-size:11.5px;color:#7a8a92;margin-left:4px}.mod-notes{border-top:1px dashed #DCE6EC;margin-top:8px;padding-top:6px;font-size:11.5px;color:#555}.mod-notes p{margin:0 0 4px}
+.mod-prev ul{margin:0 0 10px 18px}
 </style>
 </head>
 <body>
@@ -2313,7 +2316,9 @@ async function propWord(){
   const table = new Table({ width: { size: total, type: WidthType.DXA }, columnWidths: cols, rows: [head].concat(lignes, tots),
     borders: { top: bord, bottom: bord, left: bord, right: bord, insideHorizontal: { style: BorderStyle.SINGLE, size: 4, color: "8EAADB" }, insideVertical: { style: BorderStyle.SINGLE, size: 4, color: "8EAADB" } } });
   const champ = lab => para([run(lab + " : ", { bold: true }), run("……………………………………………………………")], { spacing: { after: 80 } });
-  const note = (t, gras) => para(run(t, { size: 16, bold: !!gras }), { spacing: { after: 40 } });
+  const note = (t, gras) => { /* **gras** *italique* __souligné__ dans les notes */
+    const parts = String(t || "").replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, "$1 ($2)").split(/(\*\*.+?\*\*|__.+?__|\*[^*\s][^*]*?\*)/g).filter(x => x !== "");
+    return new Paragraph({ spacing: { after: 40 }, children: (parts.length ? parts : [""]).map(x => /^\*\*.+\*\*$/.test(x) ? run(x.slice(2, -2), { size: 16, bold: true }) : /^__.+__$/.test(x) ? run(x.slice(2, -2), { size: 16, bold: !!gras, underline: {} }) : /^\*.+\*$/.test(x) ? run(x.slice(1, -1), { size: 16, bold: !!gras, italics: true }) : run(x, { size: 16, bold: !!gras })) }); };
   const doc = new Document({ styles: { default: { document: { run: { font: "Calibri", size: 20 } } } }, sections: [{
     properties: { page: { size: { orientation: PageOrientation.PORTRAIT, width: 11906, height: 16838 }, margin: { top: 900, bottom: 900, left: 900, right: 900 } } },
     children: [
@@ -2604,13 +2609,45 @@ function devisTable(){
   if(r.jours) T.push(["Nombre de jours de formation", String(r.jours), "#DAE9F7", 1], [C ? "Coût par jour à votre charge" : "Coût par jour", eur(r.parJour)]);
   const html = `<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;border:1px solid #1F3864;max-width:720px"><tr>${th("Domaine")}${th("Formation (lien vers le programme)")}${th("Dates")}${H ? th(C ? "Tarifs hors CPF" : "Tarif") : ""}${C ? th("Tarifs préférentiels CPF") : ""}</tr>${rows.join("")}${T.map(x => tot(esc(x[0]), esc(x[1]), x[2], x[3])).join("")}</table>`;
   const notes = C ? NOTES_CPF() : [];
-  const notesHtml = notes.length ? `<div style="margin-top:8px;max-width:720px">${notes.map(([t, g]) => `<p style="margin:0 0 6px;font-family:Calibri,Arial,sans-serif;font-size:11.5px;line-height:1.35;color:#555">${g ? `<b>${esc(t)}</b>` : esc(t)}</p>`).join("")}</div>` : "";
+  const notesHtml = notes.length ? `<div style="margin-top:8px;max-width:720px">${notes.map(([t, g]) => `<p style="margin:0 0 6px;font-family:Calibri,Arial,sans-serif;font-size:11.5px;line-height:1.35;color:#555">${g ? `<b>${fmtLigne(t)}</b>` : fmtLigne(t)}</p>`).join("")}</div>` : "";
   const txt = r.lignes.map(l => `– ${l.m.titre} · ${l.it.session || "dates à définir"}${C ? (l.it.type === "cpf" ? " · CPF" : " · hors CPF") : ""} · ${eur(l.prix)}`).concat(T.map(x => `${x[0]} : ${x[1]}`)).join("\n");
-  return { html: html + notesHtml, txt: txt + (notes.length ? "\n\n" + notes.map(n => n[0]).join("\n") : "") };
+  return { html: html + notesHtml, txt: txt + (notes.length ? "\n\n" + notes.map(n => fmtTxt(n[0])).join("\n") : "") };
 }
+/* ===== Mise en forme légère des textes (modèles d'e-mail, notes, message) =====
+   **gras**  *italique*  __souligné__  [texte du lien](https://…)  lignes « - » = liste à puces */
+function fmtLigne(x){
+  return esc(x).replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2">$1</a>')
+    .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/__(.+?)__/g, "<u>$1</u>").replace(/(^|[^*])\*([^*\s][^*]*?)\*(?!\*)/g, "$1<i>$2</i>")
+    .replace(/(^|[\s(])(https?:\/\/[^\s<]+)/g, '$1<a href="$2">$2</a>');
+}
+function fmtHtml(bloc, styleP){ /* un paragraphe (lignes séparées par \n) → HTML ; lignes « - » regroupées en liste */
+  const L = String(bloc).split("\n"), out = []; let ul = [];
+  const flush = () => { if(ul.length){ out.push(`<ul style="margin:0 0 10px 18px;padding:0">${ul.map(t => `<li>${fmtLigne(t)}</li>`).join("")}</ul>`); ul = []; } };
+  let p = [];
+  const flushP = () => { if(p.length){ out.push(`<p style="${styleP || "margin:0 0 10px"}">${p.map(fmtLigne).join("<br>")}</p>`); p = []; } };
+  L.forEach(l => { const m = /^\s*[-•]\s+(.*)$/.exec(l); if(m){ flushP(); ul.push(m[1]); } else { flush(); p.push(l); } });
+  flushP(); flush(); return out.join("");
+}
+const fmtTxt = t => String(t || "").replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, "$1 ($2)").replace(/\*\*(.+?)\*\*/g, "$1").replace(/__(.+?)__/g, "$1").replace(/(^|[^*])\*([^*\s][^*]*?)\*(?!\*)/g, "$1$2").replace(/^\s*[-•]\s+/gm, "• ");
+/* barre d'outils : agit sur le dernier champ de texte cliqué */
+const fmtBar = () => `<div class="fmt-bar" role="toolbar" aria-label="Mise en forme"><button type="button" data-fmt="b" title="Gras"><b>G</b></button><button type="button" data-fmt="i" title="Italique"><i>I</i></button><button type="button" data-fmt="u" title="Souligné"><u>S</u></button><button type="button" data-fmt="li" title="Liste à puces">• Liste</button><button type="button" data-fmt="a" title="Lien">🔗 Lien</button><span class="fmt-aide">sélectionnez le texte, puis cliquez</span></div>`;
+let FMT_TA = null;
+document.addEventListener("focusin", e => { const t = e.target; if(t && t.matches && t.matches("textarea.mod-txt, #mlCorps")) FMT_TA = t; });
+document.addEventListener("mousedown", e => { if(e.target.closest && e.target.closest(".fmt-bar button")) e.preventDefault(); }); /* garde la sélection */
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-fmt]"); if(!b) return;
+  const ta = FMT_TA; if(!ta || !document.body.contains(ta)){ toast("Cliquez d'abord dans le texte à mettre en forme"); return; }
+  const a = ta.selectionStart, z = ta.selectionEnd, sel = ta.value.slice(a, z), k = b.dataset.fmt; let ins = sel, dec = 0;
+  if(k === "b") ins = `**${sel || "texte"}**`; else if(k === "i") ins = `*${sel || "texte"}*`; else if(k === "u") ins = `__${sel || "texte"}__`;
+  else if(k === "li") ins = (sel || "élément").split("\n").map(l => /^\s*[-•]\s/.test(l) ? l : "- " + l).join("\n");
+  else if(k === "a"){ const u = (window.prompt("Adresse du lien (https://…)", "https://") || "").trim(); if(!/^https?:\/\/\S+$/.test(u)) return; ins = `[${sel || "texte du lien"}](${u})`; }
+  if(k === "li" && a > 0 && ta.value[a - 1] !== "\n"){ ins = "\n" + ins; }
+  ta.value = ta.value.slice(0, a) + ins + ta.value.slice(z); ta.focus(); ta.selectionStart = a; ta.selectionEnd = a + ins.length;
+  ta.dispatchEvent(new Event("input", { bubbles: true }));
+});
 function mailCorpsHtml(corps){
   const t = devisTable(), P = "margin:0 0 10px;font-family:Calibri,Arial,sans-serif;font-size:15px;color:#222";
-  const blocs = corps.split(/\n{2,}/).map(b => b.trim() === MAIL_TAB ? `<div style="margin:0 0 14px">${t.html}</div>` : `<p style="${P}">${b.split("\n").map(x => esc(x).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1">$1</a>')).join("<br>")}</p>`);
+  const blocs = corps.split(/\n{2,}/).map(b => b.trim() === MAIL_TAB ? `<div style="margin:0 0 14px">${t.html}</div>` : fmtHtml(b, P));
   return `<div>${blocs.join("")}</div>`;
 }
 /* ===================== Modèles d'e-mail (Gestion › Modèles d'e-mail) ===================== */
@@ -2662,7 +2699,7 @@ const modExemple = () => { /* propositions d'exemple pour l'aperçu */
 function modApercu(){
   const z = $("modPrev"); if(!z || !MOD) return; const ex = modExemple()[MOD.ex || "hors"];
   const corps = mailCompose(MOD, ex, { prenom: "Marie", lien: "https://www.moncompteformation.gouv.fr/…", cases: {} }, { besoin: "Acquérir une compétence recherchée et la prouver sur son CV.", domaine: "" });
-  z.innerHTML = `<div class="mod-obj">Objet : Votre proposition de formation – ${esc(ex.lignes.map(l => l.f.nom).join(" et "))}</div>` + corps.split(/\n{2,}/).map(b => b.trim() === MAIL_TAB ? `<div class="mod-tab">[ tableau récapitulatif : formations, dates, tarifs, totaux ]</div>` : `<p>${esc(b).replace(/\n/g, "<br>")}</p>`).join("");
+  z.innerHTML = `<div class="mod-obj">Objet : Votre proposition de formation – ${esc(ex.lignes.map(l => l.f.nom).join(" et "))}</div>` + corps.split(/\n{2,}/).map(b => b.trim() === MAIL_TAB ? `<div class="mod-tab">[ tableau récapitulatif : formations, dates, tarifs, totaux ]</div>` : fmtHtml(b)).join("") + (MOD.mentions && MOD.mentions.notes.length ? `<div class="mod-notes">${MOD.mentions.notes.filter(n => String(n[0]).trim()).map(n => `<p>${n[1] ? "<b>" : ""}${fmtLigne(String(n[0]).replace(/\{plafond\}/gi, eur(Number(MOD.mentions.plafond) || 0)).replace(/\{participation\}/gi, eur(Number(MOD.mentions.participation) || 0)))}${n[1] ? "</b>" : ""}</p>`).join("")}</div>` : "");
 }
 function formModeles(el){
   const c = mailCfg(), mc = (MAILCFG && MAILCFG.mentions) || {};
@@ -2672,7 +2709,7 @@ function formModeles(el){
   const FICH = { "": "—", bulletin: "Bulletin prérempli (PDF)", devis: "Devis (document Word)" };
   el.innerHTML = `<div class="mod-grid"><div>
     <div class="form mod-card"><h2>Texte du message</h2>
-      <p class="mod-reps">Repères remplacés automatiquement : ${["prénom", "besoin", "formations", "tableau", "lien CPF", "pièces jointes"].map(k => `<button type="button" class="mod-tag" data-modins="{${k}}" title="Insérer à l'endroit du curseur">{${k}}</button>`).join("")}</p>
+      ${fmtBar()}<p class="mod-reps">Repères remplacés automatiquement : ${["prénom", "besoin", "formations", "tableau", "lien CPF", "pièces jointes"].map(k => `<button type="button" class="mod-tag" data-modins="{${k}}" title="Insérer à l'endroit du curseur">{${k}}</button>`).join("")}</p>
       <div id="modBlocs">${MOD.blocs.map((b, i) => `<div class="mod-bloc${b.actif === false ? " off" : ""}" data-mb="${i}">
         <div class="mod-bh"><span class="mod-ord"><button type="button" data-mbup="${i}" title="Monter"${i ? "" : " disabled"}>▲</button><button type="button" data-mbdown="${i}" title="Descendre"${i < MOD.blocs.length - 1 ? "" : " disabled"}>▼</button></span>
           <input class="mod-titre" data-mbk="titre" value="${esc(b.titre || "")}" aria-label="Nom du bloc">
@@ -2692,7 +2729,7 @@ function formModeles(el){
       <p class="fhint" style="margin-top:0">Utilisées dans le document Word et dans le tableau de l'e-mail, seulement quand la proposition contient du CPF. Les montants servent aussi au calcul.</p>
       <div class="mod-mt"><label>Plafond de prise en charge CPF (€) <input class="inp" data-mmk="plafond" inputmode="numeric" value="${esc(MOD.mentions.plafond)}"></label>
         <label>Participation forfaitaire (€) <input class="inp" data-mmk="participation" inputmode="numeric" value="${esc(MOD.mentions.participation)}"></label></div>
-      <p class="mod-reps">Repères : <button type="button" class="mod-tag" data-modins="{plafond}">{plafond}</button><button type="button" class="mod-tag" data-modins="{participation}">{participation}</button></p>
+      ${fmtBar()}<p class="mod-reps">Repères : <button type="button" class="mod-tag" data-modins="{plafond}">{plafond}</button><button type="button" class="mod-tag" data-modins="{participation}">{participation}</button></p>
       ${MOD.mentions.notes.map((n, i) => `<div class="mod-bloc"><div class="mod-bh"><span class="mod-titre" style="flex:1">Note ${i + 1}</span><label class="mod-gras"><input type="checkbox" data-mnb="${i}"${n[1] ? " checked" : ""}> en gras (titre)</label><button type="button" class="mod-x" data-mndel="${i}" title="Supprimer cette note">✕</button></div><textarea class="mod-txt" data-mn="${i}" rows="${n[1] ? 1 : Math.min(8, Math.ceil(String(n[0]).length / 95) + 1)}">${esc(n[0])}</textarea></div>`).join("")}
       <button type="button" class="mod-add" id="modAddNote">＋ Ajouter une note</button></div>
   </div><div class="mod-side"><div class="form mod-card"><h2>Aperçu en direct</h2>
@@ -2755,7 +2792,7 @@ function mailHtml(){
       return `<label class="ck"><input type="checkbox" data-mlcase="${esc(c.id)}"${on ? " checked" : ""}> ${esc(c.libelle)}</label>${c.fichier === "bulletin" ? `<button type="button" class="ml-dl" data-mldl="bulletin" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Un bulletin par formation hors CPF, avec l'intitulé, les dates et le tarif ; le reste est à remplir par le client">⬇ Bulletin prérempli (PDF)</button>` : c.fichier === "devis" ? `<button type="button" class="ml-dl" data-mldl="devis" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"}>⬇ Devis (document Word)</button>` : ""}`; }).join("")}</fieldset>` : ""; })()}
     <label>Ma signature (gardée sur cet ordinateur)<textarea id="mlSig" rows="4" placeholder="Prénom Nom&#10;Conseiller(ère) formation&#10;Téléphone · agence">${esc(MAILP.signature || "")}</textarea></label>
     <p class="pl-note">Le texte est modifiable à droite. La ligne [TABLEAU RÉCAPITULATIF] devient le tableau mis en forme quand vous copiez : vous pouvez la déplacer ou la supprimer.</p></div>
-    <div class="ml-txt"><label>Objet<input id="mlObjet" value="${esc(t.objet)}"></label><label>Message<textarea id="mlCorps" rows="18">${esc(MAILV.texte != null ? MAILV.texte : t.corps)}</textarea></label>
+    <div class="ml-txt"><label>Objet<input id="mlObjet" value="${esc(t.objet)}"></label><label>Message${fmtBar()}<textarea id="mlCorps" rows="18">${esc(MAILV.texte != null ? MAILV.texte : t.corps)}</textarea></label>
     <div class="pb-acts"><button type="button" class="btn small primary" id="mlCopy">Copier le message (avec le tableau)</button><button type="button" class="btn small" id="mlCopyObj">Copier l'objet</button><button type="button" class="btn small" id="mlApercu">Voir l'aperçu</button><button type="button" class="btn small" id="mlOpen" title="Sans mise en forme : le tableau y est en texte simple">Ouvrir dans ma messagerie</button><button type="button" class="btn small" id="mlRegen" title="Refaire le texte à partir des options (vos modifications seront perdues)">Régénérer le texte</button><span class="msg" id="mlMsg" role="status"></span></div><div id="mlPrev" class="ml-prev" hidden></div></div></div></div>`;
 }
 document.addEventListener("input", e => {
@@ -2779,7 +2816,7 @@ document.addEventListener("click", async e => {
   if(id === "mlRegen"){ MAILV.texte = null; const t = mailTexte(); $("mlCorps").value = t.corps; $("mlObjet").value = t.objet; $("mlMsg").textContent = "Texte refait."; return; }
   if(id === "mlCopyObj"){ try{ await navigator.clipboard.writeText(objet); $("mlMsg").textContent = "Objet copié."; }catch(err){ $("mlObjet").select(); $("mlMsg").textContent = "Faites Ctrl + C."; } return; }
   if(id === "mlCopy"){ /* copie mise en forme : le repère [TABLEAU RÉCAPITULATIF] devient le tableau */
-    const html = mailCorpsHtml(corps), txt = corps.split(MAIL_TAB).join(devisTable().txt);
+    const html = mailCorpsHtml(corps), txt = fmtTxt(corps.split(MAIL_TAB).join(devisTable().txt));
     try{ await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([txt], { type: "text/plain" }) })]); $("mlMsg").textContent = "Message copié avec le tableau : collez-le (Ctrl + V) dans le corps de l'e-mail Outlook."; }
     catch(err){ const z = document.createElement("div"); z.contentEditable = "true"; z.style.cssText = "position:fixed;left:-9999px;top:0"; z.innerHTML = html; document.body.appendChild(z);
       const rg = document.createRange(); rg.selectNodeContents(z); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg);
@@ -2791,7 +2828,7 @@ document.addEventListener("click", async e => {
     if(r.hors.length) res.push(r.cpf.length ? `Formations hors CPF : ${eur(r.totalHors)}.` : `Total : ${eur(r.totalHors)}${r.jours ? ` (${r.jours} jour${r.jours > 1 ? "s" : ""})` : ""}.`);
     if(r.cpf.length && r.hors.length) res.push(`Total à votre charge : ${eur(r.charge)}.`);
     let copie = false; try{ const t = devisTable().html; await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([t], { type: "text/html" }), "text/plain": new Blob([devisTable().txt], { type: "text/plain" }) })]); copie = true; }catch(err){}
-    const href = "mailto:?subject=" + encodeURIComponent(objet) + "&body=" + encodeURIComponent(corps.split(MAIL_TAB).join(res.join("\n")));
+    const href = "mailto:?subject=" + encodeURIComponent(objet) + "&body=" + encodeURIComponent(fmtTxt(corps.split(MAIL_TAB).join(res.join("\n"))));
     $("mlMsg").textContent = copie ? "Le tableau mis en forme est aussi copié : dans le brouillon Outlook, cliquez où l'insérer puis Ctrl + V." : "";
     if(href.length > 1900) $("mlMsg").textContent = "Message long : s'il est coupé, utilisez « Copier le message »."; window.location.href = href; }
 });
