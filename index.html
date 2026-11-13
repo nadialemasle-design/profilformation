@@ -2754,7 +2754,7 @@ async function pilEcrire(id){
   PIL_ATTENTE++; pilEtat("Enregistrement…", "en");
   try{ await db.doc("pilotage/" + id).set(data); delete PIL.edits[id]; PIL_ATTENTE--; if(!PIL_ATTENTE) pilEtat("✓ Enregistré", "ok"); }
   catch(e){ PIL_ATTENTE--; pilEtat("⚠ Non enregistré", "ko"); toast("Saisie du Pilotage NON enregistrée : vérifiez votre connexion.");
-    try{ alert("Attention : la saisie du Pilotage n'a pas pu être enregistrée.\n\nVérifiez que vous êtes connectée, puis réessayez. Si le problème continue (version en ligne), la table « pilotage » n'existe peut-être pas encore dans Supabase : lancez le script supabase-mise-a-jour-2027-n12.sql."); }catch(_){} }
+    try{ alert("Attention : la saisie du Pilotage n'a pas pu être enregistrée.\n\nVérifiez que vous êtes connectée, puis réessayez. Si le problème continue (version en ligne), la table « pilotage » n'existe peut-être pas encore dans Supabase : lancez le script supabase-mise-a-jour-2027-n16.sql."); }catch(_){} }
 }
 function pilSave(id){
   clearTimeout(PIL.timers[id]); pilEtat("Modifié…", "en");

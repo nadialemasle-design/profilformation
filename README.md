@@ -32,6 +32,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `supabase-mise-a-jour-2027-n13.sql` | Mise à jour n°13 : Réseaux sociaux, CPF à partir de 3 jours (champ « CPF à partir de » = 3 sur les 5 parcours, mentions CPF des modules et texte Financement du domaine). Sans effet si déjà fait. |
 | `supabase-mise-a-jour-2027-n14.sql` | Mise à jour n°14 : corrige les mentions « Éligibilité CPF » saisies sous forme de simple nombre (ex. « 4 » sur le M3 du Parcours IA Administratif) ; règle « CPF à partir de » s'il était vide. Sans effet si déjà fait. |
 | `supabase-mise-a-jour-2027-n15.sql` | Mise à jour n°15 : ajoute le Parcours IA Webmaster au sous-profil « Auto-entrepreneur, indépendant(e) » et crée le sous-profil « Assistant(e) commercial(e) » (Parcours IA Administratif puis IA Webmaster), avec leurs arguments. Sans effet si déjà fait. |
+| `supabase-mise-a-jour-2027-n16.sql` | Mise à jour n°16 : répare l'enregistrement du Pilotage (crée ou remet en état la table protégée « pilotage », ses règles d'accès et la reconnaissance des éditrices). Sans effet si tout est déjà en place. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 
