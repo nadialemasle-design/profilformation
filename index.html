@@ -465,17 +465,7 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
 .pchead select{flex:1 1 240px;min-width:0}
 .modrow{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px;align-items:start}
 .modrow .code{justify-self:start;margin-top:8px}
-.mlab{display:flex;flex-direction:column;gap:3px;margin-top:6px}.mlab .code{margin-top:0;align-self:flex-start}.mlab small{font-size:11px;line-height:1.25;color:var(--muted,#5d7380)}
-.modrow:has(.mlab){grid-template-columns:150px minmax(0,1fr)}
-.arg-regle{background:#EAF7F4;border:1px solid #bfe9de;border-radius:10px;padding:10px 14px;font-size:13px;color:#12313F;margin-bottom:10px}
-.arg-regle ol{margin:6px 0 6px 18px;padding:0}
-.arg-sous{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#5d7380;margin-top:4px;border-top:1px dashed var(--line);padding-top:8px}
-.arg-info,.arg-etat{font-size:12px;margin-top:4px}
-.ai-l{margin:2px 0 0;padding-left:16px}.ai-l li{margin:1px 0}
-.ai-gris{color:#7a8e98}
-.ai-tag{display:inline-block;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px}
-.ai-tag.ok{background:#E5F7F1;color:#13795f}.ai-tag.pr{background:#E7F1FB;color:#1d4f86}.ai-tag.vide{background:#f1f1f1;color:#777}
-.ai-warn{margin:2px 0 4px;color:#9a5300;background:#FFF4E5;border:1px solid #F2B705;border-radius:8px;padding:4px 8px;font-weight:600}
+.arg-sous{font-size:12px;font-weight:700;color:var(--orange);margin-top:4px;border-top:1px dashed var(--line);padding-top:8px}.arg-sous span{font-weight:400;color:#7a8e98}
 .modline{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:8px;align-items:center}
 .modline.repris{border-left:4px solid #27CCAD;padding-left:8px}
 .rp-btns{display:flex;gap:8px;flex-wrap:wrap}
@@ -594,6 +584,10 @@ body.ia-on .ia-btn{display:inline-flex}.ia-btn:hover{background:var(--teal)}.ia-
 .cprow .ia-btn{margin-left:0;white-space:nowrap}
 .ia-undo{border:none;background:none;color:#2A6F97;font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:4px 6px;white-space:nowrap}
 .inp.ia-rempli{border-color:var(--teal) !important;background:#F3FCFA !important}
+.ia-wrap{position:relative;min-width:0}.ia-wrap>.inp{width:100%}
+body.ia-on .ia-wrap>.inp{padding-right:46px}
+.ia-btn.ia-mini{position:absolute;right:7px;top:7px;margin:0;padding:3px 8px;font-size:13px;line-height:1.1}
+.ia-wrap .ia-undo{display:block;margin-left:auto}
 .field.ia-line{display:flex !important;flex-direction:row !important;justify-content:flex-end;align-items:center;gap:8px}.field.ia-line>*{width:auto !important;flex:none}
 .ml-prev{margin-top:10px;background:#fff;border:1px solid #DCE6EC;border-radius:12px;padding:14px;max-height:420px;overflow:auto}
 .ml-dl{display:flex;margin:-2px 0 6px 24px;border:1px solid var(--teal);background:var(--teal-clair);color:#12343F;font:inherit;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;cursor:pointer;width:max-content}.ml-dl[hidden]{display:none}.ml-dl:hover{background:var(--teal)}
@@ -2101,14 +2095,12 @@ function formProfil(el, d){
       ${field("Mots-clés pour la recherche <small class=\"fhint\">— séparés par des virgules : synonymes, métiers voisins, besoins exprimés (invisibles pour le conseiller)</small>", ta("fMotsCles", r.motsCles || "", "ex. boulanger, pâtissier, traiteur, attirer des clients"), true)}
       ${!isNew && METIERS_PROFILS[r.id] ? `<p class="fhint full mp-hint"><b>Métiers déjà reconnus automatiquement :</b> ${esc(METIERS_PROFILS[r.id])}. Ajoutez dans les mots-clés ceux qui manqueraient.</p>` : ""}
     </div>
-    <div class="fsec"><h3>Arguments communs à tous ses parcours</h3>
-      <div class="arg-regle"><b>Comment l'outil choisit le texte d'un module sur la fiche :</b>
-        <ol><li>le texte saisi <b>dans le parcours</b> (cadres plus bas) s'il existe ;</li><li>sinon l'<b>argument commun</b> ci-dessous, pour le même code ;</li><li>sinon rien.</li></ol>
-        Sous chaque code : à quels modules il s'applique, et où il est réellement affiché.</div>
-      ${d.ordreModules.map(m => `<div class="modrow com-row"><span class="code">${esc(m)}</span><div><textarea class="inp com" data-m="${esc(m)}" aria-label="Argument commun ${esc(m)}">${esc((r.reponses||{})[m] || "")}</textarea><div class="arg-info" data-cominfo="${esc(m)}"></div></div></div>`).join("")}
+    <div class="fsec"><h3>Arguments module communs</h3>
+      <p class="fhint">Un texte par module, affiché dans tous les parcours de ce sous-profil qui contiennent ce module, sauf si un « argument parcours » est saisi plus bas. Laissez vide si l'argument change selon le parcours.</p>
+      ${d.ordreModules.map(m => `<div class="modrow"><span class="code">${esc(m)}</span><div class="ia-wrap"><textarea class="inp com" data-m="${esc(m)}" aria-label="Argument module commun ${esc(m)}">${esc((r.reponses||{})[m] || "")}</textarea><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="com" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>`).join("")}
     </div>
     <div class="fsec"><h3>Parcours possibles</h3>
-      <p class="fhint">Du plus adapté au moins adapté. Pour chaque parcours : pourquoi le proposer, et l'argument de chacun de ses modules. Un module laissé vide affiche l'argument commun (indiqué en gris dans le cadre).</p>
+      <p class="fhint">Du plus adapté au moins adapté. Pour chaque parcours : pourquoi le proposer, l'argumentaire détaillé, et les « arguments parcours » de ses modules.</p>
       <div id="pcRows">${pc.map((x,i) => pcRow(d, x, i)).join("")}</div>
       <div><button type="button" class="btn add small" id="addPc">+ Ajouter un parcours</button></div>
     </div>
@@ -2120,8 +2112,7 @@ function formProfil(el, d){
     ${formActions(!isNew)}</div>`;
   $("addCp").onclick = () => $("cpRows").insertAdjacentHTML("beforeend", cpRow(d, { formation: "", pourquoi: "" }));
   $("cpRows").addEventListener("click", e => { if(e.target.closest("[data-rm]")) e.target.closest(".cprow").remove(); });
-  const renum = () => { [...document.querySelectorAll("#pcRows .pcrow")].forEach((row, i) => row.querySelector(".rank").textContent = "#" + (i + 1)); argsMaj(); };
-  setTimeout(argsMaj, 0);
+  const renum = () => [...document.querySelectorAll("#pcRows .pcrow")].forEach((row, i) => row.querySelector(".rank").textContent = "#" + (i + 1));
   $("addPc").onclick = () => { const free = d.formations.find(f => ![...document.querySelectorAll("#pcRows select")].some(s => s.value === f.id)); $("pcRows").insertAdjacentHTML("beforeend", pcRow(d, { formation: free ? free.id : (d.formations[0]||{}).id, pourquoi: "", reponses: {} }, 0)); renum(); };
   $("pcRows").addEventListener("click", e => {
     const row = e.target.closest(".pcrow"); if(!row) return;
@@ -2164,43 +2155,14 @@ function formProfil(el, d){
     await write(() => db.doc("profils/" + id).set(data), "Profil enregistré", () => { adm.sel = id; });
   });
 }
-/* titre court d'un module (avant « : » ou « - »), pour l'étiquette en Gestion */
-function modCourt(fid, code){
-  const f = rawF(fid), m = f && (f.modules || []).find(x => x.code === code);
-  let t = ((m && m.titre) || "").trim(); const c = t.search(/\s[:\-–]\s|\s:/); if(c > 8) t = t.slice(0, c);
-  return t.length > 48 ? t.slice(0, 46) + "…" : t;
-}
-/* Gestion › sous-profil : rend lisible le lien entre arguments communs et arguments des parcours */
-function argsMaj(){
-  const coms = {}; document.querySelectorAll("textarea.com").forEach(t => coms[t.dataset.m] = t.value.trim());
-  const rows = [...document.querySelectorAll("#pcRows .pcrow")].map(r => ({ r, fid: r.querySelector("select.pcf").value }));
-  document.querySelectorAll("[data-cominfo]").forEach(box => {
-    const code = box.dataset.cominfo, items = [];
-    rows.forEach(({ r, fid }) => { const t = r.querySelector(`textarea.pcm[data-m="${CSS.escape(code)}"]`); if(!t) return;
-      items.push({ parc: (rawF(fid) || {}).nom || fid, mod: modCourt(fid, code), propre: !!t.value.trim() }); });
-    if(!items.length){ box.innerHTML = `<span class="ai-gris">Aucun parcours de ce sous-profil n'a de module ${esc(code)}.</span>`; return; }
-    const titres = [...new Set(items.map(x => norm(x.mod)))];
-    const lignes = items.map(x => `<li>${esc(x.mod)} <span class="ai-gris">· ${esc(x.parc)}</span> → ${x.propre ? `<span class="ai-tag pr">texte du parcours</span>` : coms[code] ? `<span class="ai-tag ok">affiché ici</span>` : `<span class="ai-tag vide">rien d'affiché</span>`}</li>`).join("");
-    box.innerHTML = (titres.length > 1 ? `<p class="ai-warn">⚠ ${esc(code)} désigne ${titres.length} modules différents selon le parcours : écrivez plutôt l'argument dans chaque parcours.</p>` : "")
-      + `<ul class="ai-l">${lignes}</ul>`;
-  });
-  rows.forEach(({ r }) => r.querySelectorAll("textarea.pcm").forEach(t => {
-    const code = t.dataset.m, e = r.querySelector(`[data-etat="${CSS.escape(code)}"]`); if(!e) return;
-    if(t.value.trim()){ e.innerHTML = `<span class="ai-tag pr">texte du parcours</span>${coms[code] ? ` <span class="ai-gris">(remplace l'argument commun ${esc(code)})</span>` : ""}`; t.placeholder = ""; }
-    else if(coms[code]){ e.innerHTML = `<span class="ai-tag ok">argument commun affiché</span>`; t.placeholder = "Vide : l'argument commun s'affiche → « " + coms[code] + " »"; }
-    else { e.innerHTML = `<span class="ai-tag vide">rien d'affiché</span>`; t.placeholder = "Vide, et pas d'argument commun : aucun texte ne s'affiche pour ce module."; }
-  }));
-}
-document.addEventListener("input", e => { if(e.target.matches && e.target.matches("textarea.com, textarea.pcm")) argsMaj(); });
-document.addEventListener("change", e => { if(e.target.matches && e.target.matches("select.pcf")) setTimeout(argsMaj, 0); });
 function pcRow(d, x, i){
   const f = d.formations.find(f => f.id === x.formation);
   return `<div class="pcrow"><div class="pchead"><span class="rank">#${i+1}</span>
       <select class="pcf" aria-label="Parcours">${d.formations.map(o => `<option value="${esc(o.id)}"${o.id===x.formation?" selected":""}>${esc(o.nom)}</option>`).join("")}</select>
       <button type="button" class="btn small" data-up="1">Monter</button><button type="button" class="btn small" data-down="1">Descendre</button><button type="button" class="btn small danger" data-rm="1">Retirer</button><button type="button" class="ia-btn" data-ia="pc" title="Rédiger le pourquoi, l'argumentaire détaillé et l'argument de chaque module pour ce sous-profil">✨ Rédiger avec l'IA</button></div>
-    <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Pourquoi</span><input class="inp pcw" value="${esc(x.pourquoi || "")}" placeholder="ex. Si sa clientèle est locale. (une ligne, affichée d'emblée)"></div>
-    <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Argumentaire détaillé</span><textarea class="inp pca" placeholder="Replié sur la fiche : ce que chaque module apporte, le résultat concret. Laisser vide si inutile.">${esc(x.argumentaire || "")}</textarea></div>
-    ${f ? `<div class="arg-sous">Argument de chaque module, dans ce parcours</div>` + Object.keys(f.modules).map(m => `<div class="modrow"><span class="mlab"><span class="code">${esc(m)}</span><small>${esc(modCourt(f.id, m))}</small></span><div><textarea class="inp pcm" data-m="${esc(m)}" placeholder="Laisser vide pour utiliser l'argument commun">${esc((x.reponses||{})[m] || "")}</textarea><div class="arg-etat" data-etat="${esc(m)}"></div></div></div>`).join("") : ""}
+    <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Pourquoi</span><div class="ia-wrap inl"><input class="inp pcw" value="${esc(x.pourquoi || "")}" placeholder="ex. Si sa clientèle est locale. (une ligne, affichée d'emblée)"><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="pourquoi" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>
+    <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Argumentaire détaillé</span><div class="ia-wrap"><textarea class="inp pca" placeholder="Replié sur la fiche : ce que chaque module apporte, le résultat concret. Laisser vide si inutile.">${esc(x.argumentaire || "")}</textarea><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="argumentaire" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>
+    ${f ? `<div class="arg-sous">Arguments parcours <span>— propres à ce parcours ; vide = l'argument module commun s'affiche</span></div>` + Object.keys(f.modules).map(m => `<div class="modrow"><span class="code">${esc(m)}</span><div class="ia-wrap"><textarea class="inp pcm" data-m="${esc(m)}" placeholder="Vide : l'argument module commun ${esc(m)} s'affiche">${esc((x.reponses||{})[m] || "")}</textarea><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="pcm" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>`).join("") : ""}
   </div>`;
 }
 function cpRow(d, c){
@@ -3023,6 +2985,7 @@ async function refreshAuth(){
     const c = ok ? null : await SB.from("conseilleres").select("email").limit(1); lit = ok || (!!c && !c.error && c.data && c.data.length > 0);
   }
   canAdmin = ok; canRead = lit; if(ok && adm.tab === "comptes") chargerComptes();
+  if(ok) setTimeout(iaSbTester, 0);
   if(ok){ const { data: pl, error: pe } = await SB.from("pilotage").select("id,data").limit(5000); RAW.pilotage = pe ? [] : (pl || []).map(x => Object.assign({ id: x.id }, x.data || {})); }
   else RAW.pilotage = [];
   if(lit){ const { data: q, error } = await SB.from("questionnaires").select("id,data").limit(5000); RAW.questionnaires = error ? [] : (q || []).map(x => Object.assign({ id: x.id }, x.data || {})); }
@@ -3091,12 +3054,25 @@ document.addEventListener("click", e => {
 });
 
 /* ===== Assistance IA dans Gestion (version Claude uniquement : capacité « sample ») ===== */
-let IA_SAMPLE, IA_DOM = null;
+let IA_SAMPLE, IA_DOM = null, IA_SB = null, IA_SB_TEST = false;
 async function iaSample(){
   if(IA_SAMPLE === undefined){ try{ IA_SAMPLE = (!window.SUPABASE_CONFIG && typeof claude !== "undefined" && claude.use) ? await claude.use("sample") : null; }catch(e){ IA_SAMPLE = null; } }
+  if(!IA_SAMPLE && window.SUPABASE_CONFIG && typeof SB !== "undefined" && SB && canAdmin && IA_SB) return IA_SB;
   return IA_SAMPLE;
 }
 iaSample().then(x => { if(x) document.body.classList.add("ia-on"); });
+/* version en ligne : l'IA passe par la fonction Supabase « ia » (clé Anthropic gardée côté serveur) */
+async function iaSbTester(){
+  if(IA_SB_TEST || !window.SUPABASE_CONFIG || typeof SB === "undefined" || !SB || !canAdmin) return;
+  IA_SB_TEST = true;
+  try{
+    const { data, error } = await SB.functions.invoke("ia", { body: { ping: true } });
+    if(error || !data || !data.ok) return;
+    IA_SB = async prompt => { const { data: d, error: e } = await SB.functions.invoke("ia", { body: { prompt } });
+      if(e || !d || d.error) throw { message: (d && d.error) || "L'IA n'a pas pu répondre." }; return { text: d.text || "" }; };
+    document.body.classList.add("ia-on");
+  }catch(e){}
+}
 const IA_STYLE = `Tu aides une conseillère d'un centre de formation continue à rédiger les textes d'un outil d'orientation (sous-profils métiers → formations).
 Règles : français ; phrases courtes, concrètes, orientées résultat pour la personne ; pas de jargon marketing ni de superlatifs ; écriture inclusive sobre (« la personne », « il ou elle » à éviter : préférer des tournures neutres) ;
 n'invente JAMAIS de tarif, de date, de durée, de certification ou de financement ; n'utilise que les informations fournies.`;
@@ -3145,6 +3121,29 @@ Format : {"pourquoi": "...", "argumentaire": "...", "modules": {"M1": "..."}}`, 
       const row = b.closest(".cprow"), f = rawF(row.querySelector("select").value); if(!f) throw { message: "Choisissez d'abord la formation." };
       const r = await iaDemander(`Rédige "pourquoi" : UNE ligne (100 caractères max) qui dit pourquoi suggérer cette formation complémentaire à ce sous-profil. Format : {"pourquoi": "..."}`, { sousProfil: prof, formation: iaFormInfo(f) });
       iaRemplir(b, [[row.querySelector("input.inp"), r.pourquoi]]);
+    } else if(b.dataset.ia === "champ"){
+      const kind = b.dataset.kind, wrap = b.closest(".ia-wrap"), el = wrap.querySelector(".inp"), actuel = el.value.trim();
+      const base = actuel ? `Voici le texte actuel : améliore-le (plus clair, plus concret, plus court si possible) en gardant ses idées et ses formulations réussies.` : `Le champ est vide : rédige-le.`;
+      let consigne, donnees = { sousProfil: prof, texteActuel: actuel, exemplesDeTon: iaExemples(3) };
+      if(kind === "com"){
+        const code = el.dataset.m, mods = [];
+        document.querySelectorAll("#pcRows .pcrow").forEach(r => { const f = rawF(r.querySelector("select.pcf").value), m = f && (f.modules || []).find(x => x.code === code); if(m) mods.push({ parcours: f.nom, module: m.titre }); });
+        consigne = `${base}\nChamp : « argument module commun » du module ${code} pour ce sous-profil. Il s'affiche sous ce module dans tous les parcours du sous-profil qui le contiennent (liste fournie). UNE phrase (160 caractères max) qui relie ce module au besoin du sous-profil${new Set(mods.map(x => norm(x.module))).size > 1 ? " ; attention, le code désigne des modules différents selon le parcours : reste valable pour tous" : ""}.\nFormat : {"texte": "..."}`;
+        donnees.modulesConcernes = mods;
+      } else {
+        const row = b.closest(".pcrow"), f = rawF(row.querySelector("select.pcf").value);
+        const rang = [...document.querySelectorAll("#pcRows .pcrow")].indexOf(row) + 1, nb = document.querySelectorAll("#pcRows .pcrow").length;
+        donnees.parcours = iaFormInfo(f); donnees.rang = `${rang} sur ${nb}`;
+        donnees.autresChampsDuParcours = { pourquoi: row.querySelector(".pcw").value.trim(), argumentaire: row.querySelector(".pca").value.trim(),
+          argumentsParcours: Object.fromEntries([...row.querySelectorAll("textarea.pcm")].map(t => [t.dataset.m, t.value.trim()])) };
+        if(kind === "pourquoi") consigne = `${base}\nChamp : « Pourquoi », UNE ligne (110 caractères max) qui dit quand proposer ce parcours à ce sous-profil${rang === 1 && nb > 1 ? ` ; commence par « Le plus adapté : »` : ""}.\nFormat : {"texte": "..."}`;
+        else if(kind === "argumentaire") consigne = `${base}\nChamp : « Argumentaire détaillé » de ce parcours pour ce sous-profil : 1 à 3 phrases sur ce que la personne saura faire, module par module si utile, et le résultat concret dans son métier.\nFormat : {"texte": "..."}`;
+        else { const code = el.dataset.m, m = f && (f.modules || []).find(x => x.code === code);
+          donnees.module = m ? { code, titre: m.titre } : { code };
+          consigne = `${base}\nChamp : « argument parcours » du module ${code}${m ? ` (« ${m.titre} »)` : ""}, propre à ce parcours : UNE phrase (160 caractères max) qui dit ce que ce module apporte à ce sous-profil.\nFormat : {"texte": "..."}`; }
+      }
+      const r = await iaDemander(consigne, donnees);
+      iaRemplir(b, [[el, r.texte]]);
     } else if(b.dataset.ia === "besoin"){
       if(!prof.nom) throw { message: "Saisissez d'abord le nom du sous-profil." };
       const r = await iaDemander(`À partir du sous-profil (et des champs déjà remplis, à reprendre et améliorer), rédige :

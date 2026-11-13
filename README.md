@@ -148,3 +148,8 @@ Alertes : salle à J-25 avant le début, licences à J-15, certification à J-10
 3. Dans GitHub › Settings › Secrets and variables › Actions › New repository secret : `SUPABASE_SERVICE_KEY` (clé service_role) et `RESEND_API_KEY` (clé Resend).
 4. Dans l'appli, Pilotage › Réglages : renseigner l'e-mail qui reçoit les alertes (le même que le compte Resend tant qu'aucun domaine n'est vérifié chez Resend).
 5. Test : GitHub › Actions › « Alertes Pilotage (e-mail) » › Run workflow.
+
+## Assistance IA dans Gestion (version en ligne)
+
+Les boutons ✨ de Gestion passent par la fonction Supabase `ia` (`supabase/functions/ia/index.ts`). La clé Anthropic est un secret Supabase (`ANTHROPIC_API_KEY`) : elle n'est jamais dans le site ni sur GitHub. Seules les personnes de la table `editeurs` peuvent l'utiliser. Sans fonction ni clé, les boutons ✨ restent simplement cachés.
+Modèle par défaut : `claude-sonnet-5-5` (modifiable avec le secret `IA_MODELE`, par exemple `claude-haiku-5-5`, moins cher).
