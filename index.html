@@ -1485,7 +1485,31 @@ $("views").addEventListener("click", e => {
   if(state.view === "admin"){ if(!adm.dom) adm.dom = state.dom; renderAdmin(true); } else if(state.view === "pilot") renderPilot(); else renderConsult();
   renderProp();
   renderDomains();
+  setTimeout(navPousser, 0);
 });
+
+/* ---------- Bouton « retour » du navigateur : revenir à l'écran précédent de l'application (Consulter / Gestion / Pilotage) ---------- */
+let NAV_RESTAURE = false;
+const navCle = () => state.view === "admin" ? ["gestion", adm.dom || "", adm.tab || "", adm.sel || ""].map(encodeURIComponent).join("/") : (state.view === "pilot" ? "pilotage" : "consulter");
+function navPousser(){
+  if(NAV_RESTAURE) return;
+  const h = "#" + navCle(); if(location.hash === h) return;
+  try{ history.pushState(null, "", h); }catch(e){ /* navigateur ou cadre qui refuse : on ne gère pas l'historique */ }
+}
+try{ if(!location.hash) history.replaceState(null, "", "#consulter"); }catch(e){}
+function navRestaurer(){
+  const p = decodeURIComponent(location.hash.slice(1)).split("/"), v = p[0];
+  const vue = v === "gestion" ? "admin" : v === "pilotage" ? "pilot" : v === "consulter" ? "consult" : null; if(!vue) return;
+  if(vue === "admin" && !canAdmin) return;
+  NAV_RESTAURE = true;
+  try{
+    if(vue === "admin"){ adm.dom = p[1] || adm.dom; adm.tab = p[2] || "profils"; adm.sel = p[3] || null; }
+    if(vue === "admin" && state.view === "admin") renderAdmin(true);
+    else document.querySelector(`.vbtn[data-view="${vue}"]`).click();
+    window.scrollTo(0, 0);
+  } finally { setTimeout(() => { NAV_RESTAURE = false; }, 0); }
+}
+window.addEventListener("popstate", navRestaurer);
 
 function toast(msg){ const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2400); }
 
@@ -1577,6 +1601,7 @@ const formActions = (canDelete) => `<div class="actions"><button type="button" c
 const setMsg = (t, ok) => { const m = $("fmsg"); if(m){ m.textContent = t; m.className = "msg " + (ok ? "ok" : "err"); } };
 
 function renderAdmForm(){
+  setTimeout(navPousser, 0);
   const el = $("admForm"), d = admDom();
   el.onclick = null; el.onchange = null; el.oninput = null; el.dataset.dirty = "";
   if(adm.tab === "questionnaires") return formQuestionnaire(el);
