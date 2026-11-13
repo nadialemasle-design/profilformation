@@ -14,10 +14,16 @@ const json = (o: unknown, status = 200) => new Response(JSON.stringify(o), { sta
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   try {
-    const auth = req.headers.get("Authorization") || "";
-    const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: auth } } });
-    const { data: ed, error: ee } = await sb.from("editeurs").select("email").limit(1);
-    if (ee || !ed || !ed.length) return json({ error: "Réservé aux personnes qui gèrent l'outil." }, 403);
+    // qui appelle ? (jeton de la personne connectée) → doit figurer dans la table « editeurs »
+    const jeton = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+    const url = Deno.env.get("SUPABASE_URL")!;
+    const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_SECRET_KEY") || "";
+    const sb = createClient(url, service, { auth: { persistSession: false } });
+    const { data: u } = await sb.auth.getUser(jeton);
+    const email = (u && u.user && u.user.email || "").toLowerCase();
+    if (!email) return json({ error: "Connectez-vous d'abord." }, 401);
+    const { data: ed } = await sb.from("editeurs").select("email").ilike("email", email).limit(1);
+    if (!ed || !ed.length) return json({ error: "Réservé aux personnes qui gèrent l'outil." }, 403);
 
     const body = await req.json().catch(() => ({}));
     const cle = Deno.env.get("ANTHROPIC_API_KEY");
