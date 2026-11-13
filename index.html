@@ -771,7 +771,21 @@ button.acc-st{cursor:pointer}button.acc-st:hover{border-color:var(--teal);backgr
 .pl-thf{font:inherit;font-weight:700;color:inherit;background:none;border:none;cursor:pointer;padding:0;white-space:nowrap}.pl-thf.on{text-decoration:underline;text-underline-offset:3px}
 .pl-mois td{background:#E6F2FB;color:#1F5A80;font-weight:800;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;padding:5px 8px !important}
 .pl-dom{font-size:11.5px;color:#55707a}
-.pl-titre{min-width:220px;max-width:320px}.pl-titre a{color:#12343F;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.pl-titre{min-width:190px;max-width:260px}
+.pl-pc{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.pl-qi{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;border:1px solid #c9def0;background:#EEF5FB;color:#2A6F97;font-size:12px;font-weight:700;text-decoration:none;cursor:pointer;padding:0}
+.pl-qi:hover{background:#2A6F97;color:#fff}
+.pl-qno{font-size:10.5px;color:#b26a00;white-space:nowrap}
+/* liste Pilotage compacte : jusqu'à « Convoc » sur un écran d'ordinateur (1366 px et plus) */
+.pl-wrap{max-width:calc(100vw - 32px)}
+.pl-xl .pl-t{width:92px}
+.pl-xl td.pl-typ .pl-t{min-width:0;width:92px}
+.pl-xl td.ins .pl-n,.pl-xl td.pre .pl-n{width:32px;padding:3px 1px}
+.pl-xl td.n{padding-left:3px;padding-right:3px}
+.pl-xl .pl-dt{font-size:11.5px;max-width:96px}
+.pl-xl .pl-dom{max-width:84px}
+.pl-xl .pl-cpf{max-width:64px;font-size:10.5px}
+.pl-xl .pl-com{width:170px}.pl-titre a{color:#12343F;font-weight:700;text-decoration:underline;text-underline-offset:2px}
 .pl-titre .pl-edit{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#2A6F97;border:none;background:none;padding:0;cursor:pointer;text-decoration:none}
 .pl-titre .pl-cert{display:block;margin-top:2px}
 .pl-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#E9733A;vertical-align:middle}
@@ -783,7 +797,7 @@ td.a-note:after{content:"";position:absolute;top:0;right:0;border-style:solid;bo
 .pl-notepop{position:absolute;z-index:50;width:260px;background:#fff;border:1px solid #9CCBEA;border-radius:12px;box-shadow:0 10px 30px rgba(18,52,63,.2);padding:10px}
 .pl-notepop b{display:block;font-size:12px;margin-bottom:6px}.pl-notepop textarea{width:100%;box-sizing:border-box;font:inherit;font-size:13px;border:1px solid #CFE6F7;border-radius:8px;padding:6px}.pl-notepop div{display:flex;gap:6px;margin-top:6px}
 .pl-qacc{display:flex;gap:6px;margin-top:3px}.pl-qacc a,.pl-qacc button{display:inline-flex;align-items:center;gap:3px;font:inherit;font-size:11.5px;font-weight:700;color:#12343F;background:var(--teal-clair);border:1px solid var(--teal);border-radius:999px;padding:1px 8px;cursor:pointer;text-decoration:none}
-.pl-qacc svg{width:11px;height:11px}.pl-qno{display:block;color:#7a8a92;font-size:10.5px;margin-top:2px}
+.pl-qacc svg{width:11px;height:11px}
 .metier-hint{display:flex;gap:8px;align-items:flex-start;background:var(--teal-clair);border:1px solid var(--teal);border-radius:10px;padding:8px 10px;margin:4px 0 10px;font-size:12.5px;line-height:1.4;color:#12343F}.metier-hint svg{width:16px;height:16px;flex:none;margin-top:1px}
 .mp-hint{grid-column:1/-1;background:var(--teal-clair);border-radius:8px;padding:6px 10px;margin-top:-4px}
 /* proposition : « Pourquoi » plus visible */
@@ -2669,26 +2683,26 @@ function renderPilot(){
   const PR = AG.map(a => "p" + a), totP = id => PR.reduce((t, k) => t + (Number(pilVal(id, k)) || 0), 0);
   let moisCourant = "";
   const rows = liste.map(s => { const d = dateD(s.debut), K = SUIVI(s), tot = K.length, fait = K.filter(k => pilVal(s.id, k)).length, ouvert = PIL.suivis.has(s.id), u = safeUrl(s.lien);
-    const m = s.debut.slice(0, 7), entete = m !== moisCourant ? `<tr class="pl-mois"><td colspan="${24 + 2 * AG.length}">${libM(m)}</td></tr>` : ""; moisCourant = m;
-    return entete + `<tr id="pr-${esc(s.id)}" class="${s.cert ? "certrow" : ""}"><td>${d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "2-digit" })}</td><td>${d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}</td><td class="n">${s.jours.length}</td>
-      <td class="pl-dom">${esc(s.dom)}</td><td>${txt(s.id, "ancienTitre", "Ancien titre", "—")}</td>
+    const m = s.debut.slice(0, 7), entete = m !== moisCourant ? `<tr class="pl-mois"><td colspan="${22 + 2 * AG.length}">${libM(m)}</td></tr>` : ""; moisCourant = m;
+    return entete + `<tr id="pr-${esc(s.id)}" class="${s.cert ? "certrow" : ""}"><td>${d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "2-digit" })}</td><td>${d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}</td>
+      <td class="pl-dom">${esc(s.dom)}</td>
       <td class="pl-titre">${u ? `<a href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir le programme">${esc(s.titre)}</a>` : esc(s.titre)}${enAlerte.has(s.id) ? ` <span class="pl-dot" title="Alerte en cours"></span>` : ""}<button type="button" class="pl-edit" data-pedit="${esc(s.fids[0])}" title="Modifier dans la Gestion (dates, tarif…)">✎ Gestion</button>${s.cert ? `<span class="pl-cert">🎓 certif ${esc(s.cert)} · ${dateD(s.fin).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span>` : ""}</td>
       <td class="pl-dt">${esc(s.texte.replace(/\s*20\d\d$/, ""))}</td><td>${txt(s.id, "formateur", "Formateur")}</td>
       <td class="n">${s.tarif ? eur(s.tarif) : ""}</td><td>${s.pos ? (() => { const q = s.qid && (RAW.questionnaires || []).find(x => x.id === s.qid), u = q && safeUrl(q.lien);
-        return `<span class="pl-pos">Oui · ${esc(s.pos)}</span>${q ? `<span class="pl-qacc">${u ? `<a href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir le questionnaire">${ic("ext")}Ouvrir</a>` : ""}${q.fichier ? `<button type="button" data-qf="${esc(q.id)}" title="Télécharger le questionnaire">${ic("ext")}Télécharger</button>` : ""}</span>` : `<small class="pl-qno">questionnaire à déposer (Gestion › Questionnaires)</small>`}`; })() : ""}</td><td class="pl-cpf">${esc(cpfCourt(s.cpf))}</td><td class="n">${s.tp ? eur(s.tp) : ""}</td>
+        return `<span class="pl-pc"><span class="pl-pos" title="Positionnement : ${esc(s.pos)}">Oui</span>${q ? `${u ? `<a class="pl-qi" href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir le questionnaire" aria-label="Ouvrir le questionnaire">↗</a>` : ""}${q.fichier ? `<button type="button" class="pl-qi" data-qf="${esc(q.id)}" title="Télécharger le questionnaire" aria-label="Télécharger le questionnaire">⬇</button>` : ""}` : `<span class="pl-qno" title="Questionnaire à déposer (Gestion › Questionnaires)">à déposer</span>`}</span>`; })() : ""}</td><td class="pl-cpf">${esc(cpfCourt(s.cpf))}</td><td class="n">${s.tp ? eur(s.tp) : ""}</td>
       <td class="pl-typ">${txt(s.id, "typeParcours", "Type de parcours", s.typeAuto)}</td>
       <td>${txt(s.id, "lieu", "Lieu")}</td>${AG.map(a => nb(s, a, "ins")).join("")}
       <td class="n tot" data-ptot="${esc(s.id)}">${pilTot(s.id)}</td><td class="n">${chk(s.id, "convoc", "Convocations envoyées")}</td>
       ${PR.map(k => nb(s, k, "pre")).join("")}<td class="n tot pre" data-ptotp="${esc(s.id)}">${totP(s.id)}</td>
       <td><input type="text" class="pl-t pl-com" data-plf="${esc(s.id)}" data-pk="commentaire" aria-label="Commentaire" placeholder="Commentaire…" value="${esc(pilVal(s.id, "commentaire") || "")}"></td>
       <td class="n"><button type="button" class="pl-suivi${ouvert ? " on" : ""}${fait === tot ? " ok" : ""}" data-psuivi="${esc(s.id)}" aria-expanded="${ouvert}" title="Salle, licences${s.cert ? ", certification" : ""}, qualité">${fait}/${tot} <i>▾</i></button></td></tr>
-      <tr class="pl-sub" data-psub="${esc(s.id)}"${ouvert ? "" : " hidden"}><td colspan="${24 + 2 * AG.length}"><div class="pl-subin">
+      <tr class="pl-sub" data-psub="${esc(s.id)}"${ouvert ? "" : " hidden"}><td colspan="${22 + 2 * AG.length}"><div class="pl-subin">
         <fieldset><legend>Logistique</legend><label>${chk(s.id, "salleOk", "Salle réservée")} Salle OK</label><label>${chk(s.id, "licOk", "Licences prévues")} Licences OK</label>${s.cert ? `<label>${chk(s.id, "certOk", "Certification prévue")} Certif OK</label>` : ""}</fieldset>
         <fieldset><legend>Qualité</legend><label>${chk(s.id, "qDeroule", "Déroulé pédagogique")} Déroulé pédagogique</label><label>${chk(s.id, "qSupport", "Support de cours")} Support de cours</label><label>${chk(s.id, "qProgramme", "Programme")} Programme</label></fieldset>
       </div></td></tr>`; }).join("");
   const thF = (lab, k, cls) => `<th class="${cls || ""}">${k ? `<button type="button" class="pl-thf${F[k] ? " on" : ""}" data-pthf="${k}" title="Filtrer">${lab} ▾</button>` : lab}</th>`;
-  const tete = `<tr>${thF("Date début", "periode")}<th>Jour</th><th>J</th>${thF("Domaine", "dom")}<th>Ancien titre</th><th>Titre (lien vers le programme)</th><th>Dates</th>${thF("Formateur", "form")}<th>Tarif</th><th>Positionnement</th><th>Éligible CPF</th><th>Tarif parcours</th>${thF("Type de parcours", "type", "th-o")}${thF("Lieu", "lieu")}${AG.map(a => `<th class="th-g" title="Inscrits · ${esc(agNom(a))}">${a}</th>`).join("")}<th class="th-g">Total</th><th>Convoc OK</th>${AG.map(a => `<th class="th-b" title="Pré-réservations · ${esc(agNom(a))}">${a}</th>`).join("")}<th class="th-b">Total</th><th>Commentaire</th><th title="Salle, licences, certification et qualité (cliquez pour déplier)">Suivi</th></tr>`;
-  const sur = `<tr class="pl-sur"><th colspan="14"></th><th colspan="${AG.length + 1}" class="th-g">Inscrits</th><th></th><th colspan="${AG.length + 1}" class="th-b">Pré-réservations</th><th colspan="2"></th></tr>`;
+  const tete = `<tr>${thF("Début", "periode")}<th>Jour</th>${thF("Domaine", "dom")}<th>Titre (lien vers le programme)</th><th>Dates</th>${thF("Formateur", "form")}<th>Tarif</th><th title="Positionnement : ↗ ouvrir le questionnaire, ⬇ le télécharger">Posit.</th><th title="Éligible CPF">CPF</th><th title="Tarif parcours">Tarif parc.</th>${thF("Type", "type", "th-o")}${thF("Lieu", "lieu")}${AG.map(a => `<th class="th-g" title="Inscrits · ${esc(agNom(a))}">${a}</th>`).join("")}<th class="th-g">Total</th><th title="Convocations envoyées">Convoc</th>${AG.map(a => `<th class="th-b" title="Pré-réservations · ${esc(agNom(a))}">${a}</th>`).join("")}<th class="th-b">Total</th><th>Commentaire</th><th title="Salle, licences, certification et qualité (cliquez pour déplier)">Suivi</th></tr>`;
+  const sur = `<tr class="pl-sur"><th colspan="12"></th><th colspan="${AG.length + 1}" class="th-g">Inscrits</th><th></th><th colspan="${AG.length + 1}" class="th-b">Pré-réservations</th><th colspan="2"></th></tr>`;
   const A = alertesPilotage(S, auj);
   /* contrôle : toutes les dates saisies dans Gestion sont-elles dans le calendrier ? */
   let nbDates = 0; const illisibles = [];
