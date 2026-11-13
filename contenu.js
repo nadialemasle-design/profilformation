@@ -3234,6 +3234,15 @@ window.CONTENU = {
             "M2": "Devis, courriers, relances et prospection : des modèles réutilisables dès le lendemain. Paramétrer un agent personnalisé qui connaît son offre et ses tarifs."
           },
           "argumentaire": "Le parcours couvre tout son quotidien d'indépendant : devis, mails, relances et prospection au M2, avec un assistant qui connaît son offre et ses tarifs ; visuels et contenus audio pour communiquer au M3. Résultat : des modèles utilisables dès le lendemain."
+        },
+        {
+          "formation": "ia-webmaster",
+          "pourquoi": "Si son site internet doit lui amener des clients.",
+          "reponses": {
+            "M2": "Pages de services et articles rédigés avec l'IA, optimisés pour Google et pour les réponses des IA : son site travaille pour lui ou pour elle.",
+            "M3": "Visuels et voix off pour habiller son site et ses publications, sans passer par un prestataire."
+          },
+          "argumentaire": "Pour l'indépendant(e) qui a un site ou veut en tirer davantage : le M2 lui apprend à rédiger avec l'IA des pages et articles visibles sur Google et dans les réponses des IA (GEO-SEO) ; le M3 à créer seul(e) visuels et voix off. Résultat : plus de visibilité et de demandes de contact, sans budget d'agence."
         }
       ],
       "reponses": {
@@ -6936,6 +6945,52 @@ window.CONTENU = {
         "difficulte": "Supports peu soignés ou longs à produire, sans graphiste.",
         "attente": "Créer rapidement des annonces, fiches et présentations soignées, à son image."
       }
+    },
+    {
+      "id": "ia-033",
+      "nom": "Assistant(e) commercial(e)",
+      "domaine": "ia",
+      "categorie": "Administratif et commercial",
+      "categories": [
+        "Administratif et commercial"
+      ],
+      "ordre": 33,
+      "besoin": "Gagner du temps sur les devis, les relances et les contenus commerciaux.",
+      "besoinDetail": {
+        "situation": "Prépare devis et propositions, assure le suivi et les relances clients, met à jour fiches produits, catalogues, parfois le site ou la newsletter.",
+        "difficulte": "Beaucoup d'écrits répétitifs et de contenus commerciaux à produire vite, sans être rédacteur(trice) ni graphiste.",
+        "attente": "Produire plus vite des écrits commerciaux soignés et des contenus qui valorisent l'offre, en ligne comme sur papier."
+      },
+      "motsCles": "assistant commercial, assistante commerciale, assistant(e) commercial(e), assistant des ventes, devis, relances, propositions commerciales, fiches produits, catalogue, newsletter, site internet, e-commerce, ChatGPT",
+      "reponses": {
+        "M1": "Comprendre le fonctionnement de l'IA générative, rédiger des prompts efficaces, comparer les outils (ChatGPT, Mistral, Gemini, Claude…) et adopter les bons réflexes : limites, éthique et sécurité des données."
+      },
+      "parcours": [
+        {
+          "formation": "ia-admin",
+          "pourquoi": "Devis, relances et suivi clients au quotidien.",
+          "reponses": {
+            "M2": "Devis, propositions, relances et mails clients : des modèles réutilisables et un agent personnalisé qui connaît l'offre et les tarifs.",
+            "M3": "Visuels et contenus audio pour présenter les offres et animer la relation client."
+          },
+          "argumentaire": "Le M2 traite le cœur du poste : devis, propositions commerciales, relances et mails clients, avec un assistant personnalisé qui connaît l'offre et les tarifs ; le M3 ajoute visuels et supports de présentation. Résultat : moins de temps sur l'écrit, plus de temps pour les clients."
+        },
+        {
+          "formation": "ia-webmaster",
+          "pourquoi": "Si la personne gère aussi le site, les fiches produits ou la newsletter.",
+          "reponses": {
+            "M2": "Fiches produits, pages d'offre et articles rédigés avec l'IA, optimisés pour Google et pour les réponses des IA.",
+            "M3": "Visuels et voix off pour mettre en valeur produits et offres en ligne."
+          },
+          "argumentaire": "Pour l'assistant(e) commercial(e) qui alimente le site, l'e-boutique ou la newsletter : le M2 lui apprend à rédiger avec l'IA des fiches produits et pages d'offre visibles sur Google et dans les IA (GEO-SEO) ; le M3 à créer visuels et voix off. Résultat : une offre mieux présentée en ligne, publiée plus vite."
+        }
+      ],
+      "complements": [
+        {
+          "formation": "com-canva1",
+          "pourquoi": "Créer ses visuels commerciaux soi-même, sans compétences graphiques."
+        }
+      ]
     }
   ]
 };
