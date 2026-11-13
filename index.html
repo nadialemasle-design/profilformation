@@ -1571,6 +1571,7 @@ $("admList").addEventListener("click", e => {
 
 const field = (label, html, full) => `<label class="field${full?" full":""}">${label}${html}</label>`;
 const inp = (id, val, ph) => `<input class="inp" id="${id}" value="${esc(val)}"${ph?` placeholder="${esc(ph)}"`:""}>`;
+const taIA = (kind, id, val, ph) => `<div class="ia-wrap">${ta(id, val, ph)}<button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="${kind}" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div>`;
 const ta = (id, val, ph, cls) => `<textarea class="inp${cls?" "+cls:""}" id="${id}"${ph?` placeholder="${esc(ph)}"`:""}>${esc(val)}</textarea>`;
 const formActions = (canDelete) => `<div class="actions"><button type="button" class="btn primary" data-act="save">Enregistrer</button><button type="button" class="btn" data-act="cancel">Annuler</button>${canDelete?`<button type="button" class="btn danger" data-act="del">Supprimer</button>`:""}<span class="msg" id="fmsg" role="status"></span></div><div id="fconfirm"></div>`;
 const setMsg = (t, ok) => { const m = $("fmsg"); if(m){ m.textContent = t; m.className = "msg " + (ok ? "ok" : "err"); } };
@@ -2133,13 +2134,13 @@ function formProfil(el, d){
         <div class="catchecks" id="fCats">${cats.map(c => `<label class="catchk"><input type="checkbox" value="${esc(c)}"${mes.includes(c)?" checked":""}> ${esc(c)}</label>`).join("")}</div>
         <input class="inp" id="fCatNew" placeholder="ou nouvelle catégorie : saisir son nom"></div>
       <div class="field full ia-line"><button type="button" class="ia-btn" data-ia="besoin" title="Proposer le besoin, son argumentaire détaillé et des mots-clés à partir du nom et des catégories (les champs déjà remplis servent de base)">✨ Rédiger le besoin et les mots-clés avec l'IA</button></div>
-      ${field("Besoin <small class=\"fhint\">— une phrase, affichée d'emblée</small>", ta("fBesoin", r.besoin || ""), true)}
+      ${field("Besoin <small class=\"fhint\">— une phrase, affichée d'emblée</small>", taIA("besoin", "fBesoin", r.besoin || ""), true)}
       <details class="mextra full"${r.besoinDetail ? "" : ""}><summary>Argumentaire détaillé du besoin (replié sur la fiche)</summary><div class="fgrid">
-        ${field("Situation", ta("fBSit", (r.besoinDetail || {}).situation || "", "ex. Gère seul(e) toute son activité…"), true)}
-        ${field("Difficulté", ta("fBDif", (r.besoinDetail || {}).difficulte || "", "ex. Manque de temps pour l'administratif…"), true)}
-        ${field("Attente", ta("fBAtt", (r.besoinDetail || {}).attente || "", "ex. Déléguer une partie de ces tâches…"), true)}
+        ${field("Situation", taIA("situation", "fBSit", (r.besoinDetail || {}).situation || "", "ex. Gère seul(e) toute son activité…"), true)}
+        ${field("Difficulté", taIA("difficulte", "fBDif", (r.besoinDetail || {}).difficulte || "", "ex. Manque de temps pour l'administratif…"), true)}
+        ${field("Attente", taIA("attente", "fBAtt", (r.besoinDetail || {}).attente || "", "ex. Déléguer une partie de ces tâches…"), true)}
       </div></details>
-      ${field("Mots-clés pour la recherche <small class=\"fhint\">— séparés par des virgules : synonymes, métiers voisins, besoins exprimés (invisibles pour le conseiller)</small>", ta("fMotsCles", r.motsCles || "", "ex. boulanger, pâtissier, traiteur, attirer des clients"), true)}
+      ${field("Mots-clés pour la recherche <small class=\"fhint\">— séparés par des virgules : synonymes, métiers voisins, besoins exprimés (invisibles pour le conseiller)</small>", taIA("motscles", "fMotsCles", r.motsCles || "", "ex. boulanger, pâtissier, traiteur, attirer des clients"), true)}
       ${!isNew && METIERS_PROFILS[r.id] ? `<p class="fhint full mp-hint"><b>Métiers déjà reconnus automatiquement :</b> ${esc(METIERS_PROFILS[r.id])}. Ajoutez dans les mots-clés ceux qui manqueraient.</p>` : ""}
     </div>
     <div class="fsec sec-com"><h3>Arguments module communs</h3>
@@ -2214,7 +2215,7 @@ function pcRow(d, x, i){
 }
 function cpRow(d, c){
   const autres = DOMAINES.filter(x => x.id !== d.id);
-  return `<div class="cprow"><select aria-label="Formation complémentaire"><option value="">Choisir une formation…</option>${autres.map(x => `<optgroup label="${esc(x.nom)}">${x.formations.map(f => `<option value="${esc(f.id)}"${f.id===c.formation?" selected":""}>${esc(f.nom)}</option>`).join("")}</optgroup>`).join("")}</select><input class="inp" value="${esc(c.pourquoi || "")}" placeholder="Pourquoi la proposer" aria-label="Pourquoi la proposer"><button type="button" class="ia-btn" data-ia="cp" title="Rédiger le pourquoi avec l'IA">✨ IA</button><button type="button" class="btn small danger" data-rm="1">Retirer</button></div>`;
+  return `<div class="cprow"><select aria-label="Formation complémentaire"><option value="">Choisir une formation…</option>${autres.map(x => `<optgroup label="${esc(x.nom)}">${x.formations.map(f => `<option value="${esc(f.id)}"${f.id===c.formation?" selected":""}>${esc(f.nom)}</option>`).join("")}</optgroup>`).join("")}</select><div class="ia-wrap inl"><input class="inp" value="${esc(c.pourquoi || "")}" placeholder="Pourquoi la proposer" aria-label="Pourquoi la proposer"><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="cp" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div><button type="button" class="btn small danger" data-rm="1">Retirer</button></div>`;
 }
 function readRow(row){
   const reponses = {};
@@ -3172,7 +3173,19 @@ Format : {"pourquoi": "...", "argumentaire": "...", "modules": {"M1": "..."}}`, 
       const kind = b.dataset.kind, wrap = b.closest(".ia-wrap"), el = wrap.querySelector(".inp"), actuel = el.value.trim();
       const base = actuel ? `Voici le texte actuel : améliore-le (plus clair, plus concret, plus court si possible) en gardant ses idées et ses formulations réussies.` : `Le champ est vide : rédige-le.`;
       let consigne, donnees = { sousProfil: prof, texteActuel: actuel, exemplesDeTon: iaExemples(3) };
-      if(kind === "com"){
+      const BES = { besoin: "« Besoin » : UNE phrase sur ce dont ce public a besoin côté compétences (affichée d'emblée sur la fiche)",
+        situation: "« Situation » : UNE phrase sur ce que vit la personne aujourd'hui dans son métier",
+        difficulte: "« Difficulté » : UNE phrase sur ce qui la freine",
+        attente: "« Attente » : UNE phrase sur ce qu'elle veut savoir faire à la fin",
+        motscles: "« Mots-clés pour la recherche » : 10 à 15 mots-clés séparés par des virgules (synonymes du métier, métiers voisins, besoins exprimés avec les mots des clients) ; s'il y en a déjà, garde-les tous et complète" };
+      if(BES[kind]){
+        consigne = `${base}\nChamp ${BES[kind]}. Reste cohérent avec les autres champs du sous-profil fournis.\nFormat : {"texte": "..."}`;
+        donnees = { sousProfil: prof, texteActuel: actuel, formationsDuDomaine: ((IA_DOM || {}).formations || []).map(f => f.nom) };
+      } else if(kind === "cp"){
+        const f = rawF(b.closest(".cprow").querySelector("select").value); if(!f) throw { message: "Choisissez d'abord la formation complémentaire." };
+        consigne = `${base}\nChamp « Pourquoi » d'une formation complémentaire (d'un autre domaine) suggérée à ce sous-profil : UNE ligne (100 caractères max) qui dit pourquoi la suggérer.\nFormat : {"texte": "..."}`;
+        donnees = { sousProfil: prof, texteActuel: actuel, formationComplementaire: iaFormInfo(f) };
+      } else if(kind === "com"){
         const code = el.dataset.m, mods = [];
         document.querySelectorAll("#pcRows .pcrow").forEach(r => { const f = rawF(r.querySelector("select.pcf").value), m = f && (f.modules || []).find(x => x.code === code); if(m) mods.push({ parcours: f.nom, module: m.titre }); });
         consigne = `${base}\nChamp : « argument module commun » du module ${code} pour ce sous-profil. Il s'affiche sous ce module dans tous les parcours du sous-profil qui le contiennent (liste fournie). UNE phrase (160 caractères max) qui relie ce module au besoin du sous-profil${new Set(mods.map(x => norm(x.module))).size > 1 ? " ; attention, le code désigne des modules différents selon le parcours : reste valable pour tous" : ""}.\nFormat : {"texte": "..."}`;
