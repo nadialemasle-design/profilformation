@@ -584,6 +584,45 @@ body.ia-on .ia-btn{display:inline-flex}.ia-btn:hover{background:var(--teal)}.ia-
 .cprow .ia-btn{margin-left:0;white-space:nowrap}
 .ia-undo{border:none;background:none;color:#2A6F97;font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:4px 6px;white-space:nowrap}
 .inp.ia-rempli{border-color:var(--teal) !important;background:#F3FCFA !important}
+/* ===== Gestion : repères de couleur (mêmes codes que la fiche conseiller) ===== */
+.form{--c-id:#12313F;--t-id:#EEF3F5;--c-bes:#13866F;--t-bes:#EAF7F4;--c-com:#6A4FD8;--t-com:#F3F0FF;--c-pc:#2A6F97;--t-pc:#EEF5FB;--c-pq:#B07D00;--t-pq:#FFF8E1;--b-pq:#F2B705;--c-cp:#C2611F;--t-cp:#FFF3EA;--c-q:#B07D00;--t-q:#FFF8E1;--c-rat:#13866F;--t-rat:#EAF7F4}
+.form .fsec{border-top:0;padding-top:0;margin-top:6px}
+.form .fsec>h3{margin:0;padding:9px 14px;border-radius:10px;border-left:6px solid var(--sc,#12313F);background:var(--st,#EEF3F5);color:var(--sc,#12313F);font-size:13px;letter-spacing:.07em}
+.fsec.sec-id{--sc:var(--c-id);--st:var(--t-id)}.fsec.sec-com{--sc:var(--c-com);--st:var(--t-com)}.fsec.sec-pc{--sc:var(--c-pc);--st:var(--t-pc)}
+.fsec.sec-cp{--sc:var(--c-cp);--st:var(--t-cp)}.fsec.sec-mod{--sc:var(--c-pc);--st:var(--t-pc)}.fsec.sec-q{--sc:var(--c-q);--st:var(--t-q)}.fsec.sec-rat{--sc:var(--c-rat);--st:var(--t-rat)}
+/* légende */
+.bo-leg{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-size:11.5px;font-weight:700;margin:-2px 0 4px}
+.bo-leg span{border-radius:999px;padding:2px 10px;border:1px solid}
+.bo-leg em{font-style:normal;font-weight:500;color:#6b7f89}
+.lg-bes{background:var(--t-bes);color:var(--c-bes);border-color:#bfe9de}.lg-com{background:var(--t-com);color:var(--c-com);border-color:#d9d0ff}
+.lg-pq{background:var(--t-pq);color:var(--c-pq);border-color:var(--b-pq)}.lg-arg{background:var(--t-bes);color:var(--c-bes);border-color:#bfe9de}
+.lg-pc{background:var(--t-pc);color:var(--c-pc);border-color:#c9def0}.lg-cp{background:var(--t-cp);color:var(--c-cp);border-color:#f6d2b8}
+/* champs : fond teinté discret + bordure gauche de la couleur */
+.bo-prof .field:has(#fBesoin) .inp,.bo-prof .mextra .inp{border-left:4px solid #27CCAD;background:#F7FCFB}
+.bo-prof .field:has(#fBesoin)>span:first-child,.bo-prof .field:has(#fBesoin){color:var(--c-bes)}
+.bo-prof .mextra>summary{color:var(--c-bes)}
+textarea.com{border-left:4px solid #9D8BEA !important;background:#FAF8FF}
+.sec-com .modrow .code{background:var(--c-com)}
+.pcrow{border:1px solid #c9def0;border-left:6px solid var(--c-pc);background:#fff;border-radius:10px;padding:12px 14px}
+.pcrow:first-child{border-left-color:#27CCAD;box-shadow:0 0 0 1px #bfe9de}
+.pcrow:first-child .rank::after{content:"Le plus adapté";margin-left:8px;background:#27CCAD;color:#0B222D;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:700;letter-spacing:0}
+.pcrow .rank{background:var(--c-pc);color:#fff;display:inline-flex;align-items:center}
+.rh{font-size:12px;font-weight:700;margin-top:6px}
+.rh-pq{color:var(--c-pq)}.rh-arg{color:var(--c-bes)}
+.pcrow .pcw{border-left:4px solid var(--b-pq) !important;background:var(--t-pq)}
+.pcrow .pca{border-left:4px solid #27CCAD !important;background:#F7FCFB}
+.pcrow textarea.pcm{border-left:4px solid #7FB0D6 !important;background:#F8FBFE}
+.pcrow .pcm~*, .pcrow .modrow .code{}
+.pcrow .modrow .code{background:var(--c-pc)}
+.arg-sous{color:var(--c-pc) !important}
+.cprow{border-left:4px solid #F0A56E;padding-left:8px;border-radius:6px;background:var(--t-cp)}
+.bo-form .modline{border:1px solid #c9def0;border-left:6px solid var(--c-pc);background:#F8FBFE;border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.bo-form .modline.repris{border-left-color:#27CCAD}
+.bo-form .modline .mc{font-weight:700;color:var(--c-pc)}
+/* barre d'enregistrement toujours visible */
+.form>.actions{position:sticky;bottom:0;z-index:5;background:#fff;margin:0 -16px -16px;padding:12px 16px;box-shadow:0 -6px 16px rgba(15,47,63,.08);border-top:1px solid var(--line)}
+/* onglets de Gestion : l'actif bien marqué */
+.stab[aria-pressed="true"]{box-shadow:inset 0 -3px 0 #27CCAD}
 .ia-wrap{position:relative;min-width:0}.ia-wrap>.inp{width:100%}
 body.ia-on .ia-wrap>.inp{padding-right:46px}
 .ia-btn.ia-mini{position:absolute;right:7px;top:7px;margin:0;padding:3px 8px;font-size:13px;line-height:1.1}
@@ -1709,7 +1748,8 @@ function formFormation(el, d){
   const used = isNew ? [] : d.profils.filter(p => p.parcours[adm.sel]);
   const domCur = r.domaine || d.id;
   const quoi = isNew ? "Nouvelle formation ou parcours" : (mods.length > 1 ? "Parcours : " : "Formation : ") + esc(r.nom);
-  el.innerHTML = `<div class="form"><h2>${quoi}</h2>
+  el.innerHTML = `<div class="form bo-form"><h2>${quoi}</h2>
+    <div class="fsec sec-id"><h3>Informations générales</h3></div>
     <div class="fgrid">
       ${field("Nom de la formation ou du parcours *", inp("fNom", r.nom || "", "ex. Photoshop initiation"))}
       ${field("Domaine de rattachement *", `<select class="inp" id="fDomF">${DOMAINES.map(x => `<option value="${esc(x.id)}"${x.id===domCur?" selected":""}>${esc(x.nom)}</option>`).join("")}</select>`)}
@@ -1721,11 +1761,11 @@ function formFormation(el, d){
       ${field("Référence interne (facultatif)", inp("fRef", r.reference || "", "ex. PAO-1.2 Photo Init"))}
       ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
     </div>
-    <div class="fsec"><h3>Modules</h3><p class="fhint">Formation seule : un seul module, avec le code « Formation ». Parcours : un module par code (M1, M2, M2.3…). Ouvrez « Dates, tarifs, positionnement, CPF » sous chaque module pour les compléter. Ces informations sont reportées automatiquement dans les autres parcours qui contiennent le même module (même titre).</p>
+    <div class="fsec sec-mod"><h3>Modules</h3><p class="fhint">Formation seule : un seul module, avec le code « Formation ». Parcours : un module par code (M1, M2, M2.3…). Ouvrez « Dates, tarifs, positionnement, CPF » sous chaque module pour les compléter. Ces informations sont reportées automatiquement dans les autres parcours qui contiennent le même module (même titre).</p>
       <div id="modLines">${mods.map(x => modLine(x, isNew ? "" : adm.sel)).join("")}</div>
       <div class="rp-btns"><button type="button" class="btn add small" id="addMod">+ Module vide</button><button type="button" class="btn add small rp-open" id="pickMod" aria-expanded="false">⧉ Reprendre un module existant</button></div>
       <div id="pickBox" hidden></div></div>
-    ${!isNew ? `<div class="fsec"><h3>Questionnaire de positionnement</h3><button type="button" class="btn small" id="goQ">Déposer ou modifier le questionnaire de positionnement →</button></div>` : ""}
+    ${!isNew ? `<div class="fsec sec-q"><h3>Questionnaire de positionnement</h3><button type="button" class="btn small" id="goQ">Déposer ou modifier le questionnaire de positionnement →</button></div>` : ""}
     ${!isNew ? rattachHtml(adm.sel, domCur) : ""}
     ${formActions(!isNew)}</div>`;
   if(!isNew) rattachBind(adm.sel, domCur, r.nom);
@@ -1829,7 +1869,7 @@ const nomDom = id => (DOMAINES.find(x => x.id === id) || {}).nom || id;
 function rattachHtml(fid, domF){
   const l = rattachListe(fid);
   const fams = [...new Set((RAW.profils || []).flatMap(famillesDe))].sort((x, y) => rangF(x) - rangF(y) || x.localeCompare(y));
-  return `<div class="fsec" id="rattach"><h3>Sous-profils qui la proposent (${l.length})</h3>
+  return `<div class="fsec sec-rat" id="rattach"><h3>Sous-profils qui la proposent (${l.length})</h3>
     <p class="fhint">Un sous-profil du domaine « ${esc(nomDom(domF))} » la reçoit comme parcours (placé en dernier : changez son rang dans la fiche du sous-profil). Un sous-profil d'un autre domaine la reçoit comme formation complémentaire.</p>
     <div class="rt-list">${l.length ? l.sort((a, b) => a.rp.domaine === b.rp.domaine ? (a.rp.nom || "").localeCompare(b.rp.nom || "") : nomDom(a.rp.domaine).localeCompare(nomDom(b.rp.domaine))).map(x => `<div class="rt-row" data-pid="${esc(x.rp.id)}">
       <button type="button" class="rt-open" data-open="1" title="Ouvrir la fiche du sous-profil"><b>${esc(x.rp.nom)}</b><small>${esc(nomDom(x.rp.domaine))} · ${esc(famillesDe(x.rp)[0] || "")}</small></button>
@@ -2078,7 +2118,9 @@ function formProfil(el, d){
   const cats = domCats(d), mes = isNew ? (adm.cat ? [adm.cat] : []) : profCats(r);
   adm.cat = "";
   const pc = Array.isArray(r.parcours) ? r.parcours : [];
-  el.innerHTML = `<div class="form"><h2>${isNew ? "Nouveau profil" : "Profil : " + esc(r.nom)}</h2>
+  el.innerHTML = `<div class="form bo-prof"><h2>${isNew ? "Nouveau profil" : "Profil : " + esc(r.nom)}</h2>
+    <div class="bo-leg" aria-hidden="true"><span class="lg-bes">Besoin</span><span class="lg-com">Argument module commun</span><span class="lg-pq">Pourquoi</span><span class="lg-arg">Argumentaire détaillé</span><span class="lg-pc">Argument parcours</span><span class="lg-cp">Complément</span><em>mêmes couleurs que sur la fiche conseiller</em></div>
+    <div class="fsec sec-id"><h3>Identité et besoin</h3></div>
     <div class="fgrid">
       ${field("Nom du profil *", inp("fNom", r.nom || "", "ex. Fleuriste"))}
       ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
@@ -2095,16 +2137,16 @@ function formProfil(el, d){
       ${field("Mots-clés pour la recherche <small class=\"fhint\">— séparés par des virgules : synonymes, métiers voisins, besoins exprimés (invisibles pour le conseiller)</small>", ta("fMotsCles", r.motsCles || "", "ex. boulanger, pâtissier, traiteur, attirer des clients"), true)}
       ${!isNew && METIERS_PROFILS[r.id] ? `<p class="fhint full mp-hint"><b>Métiers déjà reconnus automatiquement :</b> ${esc(METIERS_PROFILS[r.id])}. Ajoutez dans les mots-clés ceux qui manqueraient.</p>` : ""}
     </div>
-    <div class="fsec"><h3>Arguments module communs</h3>
+    <div class="fsec sec-com"><h3>Arguments module communs</h3>
       <p class="fhint">Un texte par module, affiché dans tous les parcours de ce sous-profil qui contiennent ce module, sauf si un « argument parcours » est saisi plus bas. Laissez vide si l'argument change selon le parcours.</p>
       ${d.ordreModules.map(m => `<div class="modrow"><span class="code">${esc(m)}</span><div class="ia-wrap"><textarea class="inp com" data-m="${esc(m)}" aria-label="Argument module commun ${esc(m)}">${esc((r.reponses||{})[m] || "")}</textarea><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="com" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>`).join("")}
     </div>
-    <div class="fsec"><h3>Parcours possibles</h3>
+    <div class="fsec sec-pc"><h3>Parcours possibles</h3>
       <p class="fhint">Du plus adapté au moins adapté. Pour chaque parcours : pourquoi le proposer, l'argumentaire détaillé, et les « arguments parcours » de ses modules.</p>
       <div id="pcRows">${pc.map((x,i) => pcRow(d, x, i)).join("")}</div>
       <div><button type="button" class="btn add small" id="addPc">+ Ajouter un parcours</button></div>
     </div>
-    <div class="fsec"><h3>Formations complémentaires</h3>
+    <div class="fsec sec-cp"><h3>Formations complémentaires</h3>
       <p class="fhint">Formations d'autres domaines à suggérer en plus, avec une phrase pour dire pourquoi.</p>
       <div id="cpRows">${(Array.isArray(r.complements) ? r.complements : []).map(c => cpRow(d, c)).join("")}</div>
       <div><button type="button" class="btn add small" id="addCp">+ Ajouter une formation complémentaire</button></div>
@@ -2160,8 +2202,8 @@ function pcRow(d, x, i){
   return `<div class="pcrow"><div class="pchead"><span class="rank">#${i+1}</span>
       <select class="pcf" aria-label="Parcours">${d.formations.map(o => `<option value="${esc(o.id)}"${o.id===x.formation?" selected":""}>${esc(o.nom)}</option>`).join("")}</select>
       <button type="button" class="btn small" data-up="1">Monter</button><button type="button" class="btn small" data-down="1">Descendre</button><button type="button" class="btn small danger" data-rm="1">Retirer</button><button type="button" class="ia-btn" data-ia="pc" title="Rédiger le pourquoi, l'argumentaire détaillé et l'argument de chaque module pour ce sous-profil">✨ Rédiger avec l'IA</button></div>
-    <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Pourquoi</span><div class="ia-wrap inl"><input class="inp pcw" value="${esc(x.pourquoi || "")}" placeholder="ex. Si sa clientèle est locale. (une ligne, affichée d'emblée)"><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="pourquoi" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>
-    <div class="modrow"><span class="rh" style="color:var(--orange);font-size:12px;font-weight:700;margin-top:6px">Argumentaire détaillé</span><div class="ia-wrap"><textarea class="inp pca" placeholder="Replié sur la fiche : ce que chaque module apporte, le résultat concret. Laisser vide si inutile.">${esc(x.argumentaire || "")}</textarea><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="argumentaire" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>
+    <div class="modrow"><span class="rh rh-pq">Pourquoi</span><div class="ia-wrap inl"><input class="inp pcw" value="${esc(x.pourquoi || "")}" placeholder="ex. Si sa clientèle est locale. (une ligne, affichée d'emblée)"><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="pourquoi" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>
+    <div class="modrow"><span class="rh rh-arg">Argumentaire détaillé</span><div class="ia-wrap"><textarea class="inp pca" placeholder="Replié sur la fiche : ce que chaque module apporte, le résultat concret. Laisser vide si inutile.">${esc(x.argumentaire || "")}</textarea><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="argumentaire" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>
     ${f ? `<div class="arg-sous">Arguments parcours <span>— propres à ce parcours ; vide = l'argument module commun s'affiche</span></div>` + Object.keys(f.modules).map(m => `<div class="modrow"><span class="code">${esc(m)}</span><div class="ia-wrap"><textarea class="inp pcm" data-m="${esc(m)}" placeholder="Vide : l'argument module commun ${esc(m)} s'affiche">${esc((x.reponses||{})[m] || "")}</textarea><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="pcm" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>`).join("") : ""}
   </div>`;
 }
