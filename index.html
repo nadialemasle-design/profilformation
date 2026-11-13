@@ -778,7 +778,10 @@ button.acc-st{cursor:pointer}button.acc-st:hover{border-color:var(--teal);backgr
 .pl-qno{font-size:10.5px;color:#b26a00;white-space:nowrap}
 /* liste Pilotage compacte : jusqu'à « Convoc » sur un écran d'ordinateur (1366 px et plus) */
 .pl-wrap{max-width:calc(100vw - 32px)}
-.pl-hbar{display:flex;align-items:center;gap:6px;margin:0 0 6px;max-width:calc(100vw - 32px)}
+.pl-hbar{display:flex;align-items:center;gap:8px;position:fixed;left:16px;right:16px;bottom:0;z-index:40;background:#fff;padding:7px 10px;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;box-shadow:0 -4px 14px rgba(15,47,63,.12)}
+#pilot:has(.pl-hbar){padding-bottom:56px}
+.pl-save{flex:none;font-size:12px;font-weight:700;white-space:nowrap;min-width:120px;text-align:right}
+.pl-save.en{color:#6b7f89}.pl-save.ok{color:#13866F}.pl-save.ko{color:#c62828}
 .pl-hs{flex:1;overflow-x:auto;overflow-y:hidden;height:16px}.pl-hs>div{height:1px}
 .pl-hbtn{flex:none;width:30px;height:24px;border:1px solid #c9def0;border-radius:6px;background:#EEF5FB;color:#2A6F97;font-size:12px;cursor:pointer}.pl-hbtn:hover{background:#2A6F97;color:#fff}
 .pl-hs::-webkit-scrollbar,.pl-wrap::-webkit-scrollbar{height:14px;width:12px}
@@ -2730,7 +2733,7 @@ function renderPilot(){
       <div class="pl-vues"><button type="button" class="stab" data-pvue="cal" aria-pressed="${PIL.vue === "cal"}">Calendrier</button><button type="button" class="stab" data-pvue="liste" aria-pressed="${PIL.vue === "liste"}">Liste</button></div></div>
     <div class="pl-grid${PIL.vue === "liste" ? " large" : ""}"><div class="pl-main">
       ${PIL.vue === "cal" ? `<div class="pc">${cal}</div><div class="pl-leg"><span><i class="l1"></i>Jour de formation</span><span><i class="l2"></i>Dernier jour d'une formation certifiante (certification)</span><span><i class="l3"></i>Aujourd'hui</span><span>Cliquez sur une session pour la retrouver dans la liste.</span></div>`
-      : `${filtres}<div class="pl-hbar"><button type="button" class="pl-hbtn" data-phs="-1" aria-label="Défiler vers la gauche">◀</button><div class="pl-hs" aria-hidden="true"><div></div></div><button type="button" class="pl-hbtn" data-phs="1" aria-label="Défiler vers la droite">▶</button></div><div class="pl-wrap"><table class="pl-t-tab pl-xl"><thead>${sur}${tete}</thead>
+      : `${filtres}<div class="pl-hbar"><button type="button" class="pl-hbtn" data-phs="-1" aria-label="Défiler vers la gauche">◀</button><div class="pl-hs" aria-hidden="true"><div></div></div><button type="button" class="pl-hbtn" data-phs="1" aria-label="Défiler vers la droite">▶</button><span class="pl-save" id="plSave" role="status"></span></div><div class="pl-wrap"><table class="pl-t-tab pl-xl"><thead>${sur}${tete}</thead>
         <tbody>${rows || `<tr><td colspan="30" class="none">Aucune session ne correspond aux filtres.</td></tr>`}</tbody></table></div><p class="pl-note">Les saisies sont enregistrées automatiquement. ✎ sur un chiffre : ajouter une note (coin orange quand il y en a une, lisible au survol). « ✎ Gestion » : modifier les dates ou le tarif.</p>`}
     </div><aside class="pl-side">
       <div class="pl-card"><h3>À prévoir</h3><p class="pl-note">Aujourd'hui, ${dateD(auj).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}. Cochez « Salle OK », « Licences OK » ou « Certif OK » (colonne Suivi de la liste) pour arrêter une alerte.</p>
@@ -2743,13 +2746,27 @@ function renderPilot(){
         <p class="pl-note">Bêta : vous seule. Plus tard, un compte par agence, qui ne modifiera que sa colonne.</p></div>
     </aside></div>`;
 }
-function pilSave(id){
-  clearTimeout(PIL.timers[id]);
-  PIL.timers[id] = setTimeout(async () => {
-    const data = Object.assign({}, pilDoc(id), PIL.edits[id] || {}); delete data.id;
-    try{ await db.doc("pilotage/" + id).set(data); delete PIL.edits[id]; }catch(e){ toast("Enregistrement impossible : vérifiez votre connexion."); }
-  }, 600);
+let PIL_ATTENTE = 0;
+function pilEtat(t, cls){ const e = document.getElementById("plSave"); if(e){ e.textContent = t; e.className = "pl-save " + cls; } }
+async function pilEcrire(id){
+  delete PIL.timers[id];
+  const data = Object.assign({}, pilDoc(id), PIL.edits[id] || {}); delete data.id;
+  PIL_ATTENTE++; pilEtat("Enregistrement…", "en");
+  try{ await db.doc("pilotage/" + id).set(data); delete PIL.edits[id]; PIL_ATTENTE--; if(!PIL_ATTENTE) pilEtat("✓ Enregistré", "ok"); }
+  catch(e){ PIL_ATTENTE--; pilEtat("⚠ Non enregistré", "ko"); toast("Saisie du Pilotage NON enregistrée : vérifiez votre connexion.");
+    try{ alert("Attention : la saisie du Pilotage n'a pas pu être enregistrée.\n\nVérifiez que vous êtes connectée, puis réessayez. Si le problème continue (version en ligne), la table « pilotage » n'existe peut-être pas encore dans Supabase : lancez le script supabase-mise-a-jour-2027-n12.sql."); }catch(_){} }
 }
+function pilSave(id){
+  clearTimeout(PIL.timers[id]); pilEtat("Modifié…", "en");
+  PIL.timers[id] = setTimeout(() => pilEcrire(id), 600);
+}
+/* ne rien perdre en rechargeant la page : on enregistre tout de suite ce qui attend, et on prévient */
+window.addEventListener("beforeunload", e => {
+  const ids = Object.keys(PIL.timers || {});
+  if(!ids.length && !PIL_ATTENTE) return;
+  ids.forEach(id => { clearTimeout(PIL.timers[id]); pilEcrire(id); });
+  e.preventDefault(); e.returnValue = "";
+});
 document.addEventListener("click", e => {
   const b = e.target.closest("#pilot [data-psuivi]"); if(!b) return;
   const id = b.dataset.psuivi, sub = document.querySelector(`[data-psub="${CSS.escape(id)}"]`); if(!sub) return;
