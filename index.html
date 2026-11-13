@@ -778,6 +778,14 @@ button.acc-st{cursor:pointer}button.acc-st:hover{border-color:var(--teal);backgr
 .pl-qno{font-size:10.5px;color:#b26a00;white-space:nowrap}
 /* liste Pilotage compacte : jusqu'à « Convoc » sur un écran d'ordinateur (1366 px et plus) */
 .pl-wrap{max-width:calc(100vw - 32px)}
+.pl-hbar{display:flex;align-items:center;gap:6px;margin:0 0 6px;max-width:calc(100vw - 32px)}
+.pl-hs{flex:1;overflow-x:auto;overflow-y:hidden;height:16px}.pl-hs>div{height:1px}
+.pl-hbtn{flex:none;width:30px;height:24px;border:1px solid #c9def0;border-radius:6px;background:#EEF5FB;color:#2A6F97;font-size:12px;cursor:pointer}.pl-hbtn:hover{background:#2A6F97;color:#fff}
+.pl-hs::-webkit-scrollbar,.pl-wrap::-webkit-scrollbar{height:14px;width:12px}
+.pl-hs::-webkit-scrollbar-track,.pl-wrap::-webkit-scrollbar-track{background:#EEF3F5;border-radius:8px}
+.pl-hs::-webkit-scrollbar-thumb,.pl-wrap::-webkit-scrollbar-thumb{background:#7FA7BF;border-radius:8px;border:3px solid #EEF3F5}
+.pl-hs::-webkit-scrollbar-thumb:hover,.pl-wrap::-webkit-scrollbar-thumb:hover{background:#2A6F97}
+.pl-hs,.pl-wrap{scrollbar-color:#7FA7BF #EEF3F5}
 /* l'en-tête reste visible : le tableau défile dans son cadre, en-tête figé en haut */
 .pl-wrap:has(.pl-xl){max-height:calc(100vh - 90px);overscroll-behavior:contain}
 .pl-xl thead{position:sticky;top:0;z-index:4;background:#fff;box-shadow:0 2px 4px rgba(15,47,63,.12)}
@@ -2722,7 +2730,7 @@ function renderPilot(){
       <div class="pl-vues"><button type="button" class="stab" data-pvue="cal" aria-pressed="${PIL.vue === "cal"}">Calendrier</button><button type="button" class="stab" data-pvue="liste" aria-pressed="${PIL.vue === "liste"}">Liste</button></div></div>
     <div class="pl-grid${PIL.vue === "liste" ? " large" : ""}"><div class="pl-main">
       ${PIL.vue === "cal" ? `<div class="pc">${cal}</div><div class="pl-leg"><span><i class="l1"></i>Jour de formation</span><span><i class="l2"></i>Dernier jour d'une formation certifiante (certification)</span><span><i class="l3"></i>Aujourd'hui</span><span>Cliquez sur une session pour la retrouver dans la liste.</span></div>`
-      : `${filtres}<div class="pl-wrap"><table class="pl-t-tab pl-xl"><thead>${sur}${tete}</thead>
+      : `${filtres}<div class="pl-hbar"><button type="button" class="pl-hbtn" data-phs="-1" aria-label="Défiler vers la gauche">◀</button><div class="pl-hs" aria-hidden="true"><div></div></div><button type="button" class="pl-hbtn" data-phs="1" aria-label="Défiler vers la droite">▶</button></div><div class="pl-wrap"><table class="pl-t-tab pl-xl"><thead>${sur}${tete}</thead>
         <tbody>${rows || `<tr><td colspan="30" class="none">Aucune session ne correspond aux filtres.</td></tr>`}</tbody></table></div><p class="pl-note">Les saisies sont enregistrées automatiquement. ✎ sur un chiffre : ajouter une note (coin orange quand il y en a une, lisible au survol). « ✎ Gestion » : modifier les dates ou le tarif.</p>`}
     </div><aside class="pl-side">
       <div class="pl-card"><h3>À prévoir</h3><p class="pl-note">Aujourd'hui, ${dateD(auj).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}. Cochez « Salle OK », « Licences OK » ou « Certif OK » (colonne Suivi de la liste) pour arrêter une alerte.</p>
@@ -3276,6 +3284,19 @@ document.addEventListener("click", e => {
 document.addEventListener("change", () => setTimeout(syncChoix, 0));
 new MutationObserver(() => syncChoix()).observe(document.getElementById("detail"), { childList: true });
 
+/* ===== Pilotage › Liste : barre de défilement horizontale en haut du tableau (synchronisée) ===== */
+function plHsync(){
+  const w = document.querySelector("#pilot .pl-wrap"), hs = document.querySelector("#pilot .pl-hs"); if(!w || !hs) return;
+  const t = w.querySelector("table"); hs.firstElementChild.style.width = (t ? t.scrollWidth : w.scrollWidth) + "px";
+  if(hs.dataset.lie) return; hs.dataset.lie = "1";
+  let ici = false;
+  hs.addEventListener("scroll", () => { if(ici){ ici = false; return; } ici = true; w.scrollLeft = hs.scrollLeft; });
+  w.addEventListener("scroll", () => { if(ici){ ici = false; return; } ici = true; hs.scrollLeft = w.scrollLeft; });
+}
+new MutationObserver(() => setTimeout(plHsync, 0)).observe(document.getElementById("pilot"), { childList: true, subtree: false });
+window.addEventListener("resize", plHsync);
+document.addEventListener("click", e => { const b = e.target.closest("[data-phs]"); if(!b) return;
+  const w = document.querySelector("#pilot .pl-wrap"); if(w) w.scrollBy({ left: Number(b.dataset.phs) * Math.round(w.clientWidth * 0.6), behavior: "smooth" }); });
 /* ===== Pilotage › Liste : filtres et notes ===== */
 let pilFilTimer = null;
 document.addEventListener("change", e => { const t = e.target.closest && e.target.closest("#pilot [data-pfil]"); if(!t || t.dataset.pfil === "q") return; PIL.f[t.dataset.pfil] = t.value || (t.dataset.pfil === "periode" ? "avenir" : ""); renderPilot(); });
