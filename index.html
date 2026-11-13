@@ -466,6 +466,22 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
 .modrow{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px;align-items:start}
 .modrow .code{justify-self:start;margin-top:8px}
 .modline{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:8px;align-items:center}
+.modline.repris{border-left:4px solid #27CCAD;padding-left:8px}
+.rp-btns{display:flex;gap:8px;flex-wrap:wrap}
+.rp-open{border-color:#27CCAD !important;background:#EAF7F4 !important}
+.rp{border:2px solid #27CCAD;border-radius:14px;background:#fff;margin:12px 0;box-shadow:0 8px 24px rgba(15,47,63,.12);overflow:hidden}
+.rp-h{display:flex;gap:10px;align-items:center;padding:12px 14px;background:#EAF7F4;border-bottom:1px solid #cdeee6;flex-wrap:wrap}
+.rp-h b{color:#12313F;font-size:15px}.rp-h #rpQ{flex:1;min-width:200px}.rp-h #rpDom{width:auto}
+.rp-l{max-height:420px;overflow:auto}
+.rp-hd,.rp-r{display:grid;grid-template-columns:28px minmax(0,1fr) 150px 80px 150px;gap:10px;align-items:center;padding:9px 14px}
+.rp-hd{padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;color:#5d7380;text-transform:uppercase;background:#fafcfd}
+.rp-r{border-bottom:1px solid #eef2f4;font-size:13.5px;cursor:pointer}.rp-r:hover{background:#f6fbfa}
+.rp-r small{display:block;color:#5d7380;font-size:12px}.rp-r.on{background:#F1FBF8}.rp-r.off{opacity:.45;cursor:default}
+.rp-t{font-weight:600;color:#12313F}
+.rp-tg{display:inline-block;font-size:11px;font-weight:700;border-radius:10px;padding:1px 7px;margin-left:6px}
+.rp-tg.c{background:#12313F;color:#fff}.rp-tg.q{background:#FFF8E1;color:#8a6500;border:1px solid #F2B705}
+.rp-f{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#f7fafb;flex-wrap:wrap}.rp-n{font-size:12.5px;color:#4a6370;flex:1;min-width:260px}
+@media (max-width:760px){.rp-hd{display:none}.rp-r{grid-template-columns:28px minmax(0,1fr)}.rp-r>span:nth-child(n+3){display:none}}
 .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:12px}
 .msg{font-size:13px;font-weight:600}
 .msg.err{color:#B42318}.msg.ok{color:var(--green)}
@@ -1702,13 +1718,15 @@ function formFormation(el, d){
     </div>
     <div class="fsec"><h3>Modules</h3><p class="fhint">Formation seule : un seul module, avec le code « Formation ». Parcours : un module par code (M1, M2, M2.3…). Ouvrez « Dates, tarifs, positionnement, CPF » sous chaque module pour les compléter. Ces informations sont reportées automatiquement dans les autres parcours qui contiennent le même module (même titre).</p>
       <div id="modLines">${mods.map(x => modLine(x, isNew ? "" : adm.sel)).join("")}</div>
-      <div><button type="button" class="btn add small" id="addMod">+ Ajouter un module</button></div></div>
+      <div class="rp-btns"><button type="button" class="btn add small" id="addMod">+ Module vide</button><button type="button" class="btn add small rp-open" id="pickMod" aria-expanded="false">⧉ Reprendre un module existant</button></div>
+      <div id="pickBox" hidden></div></div>
     ${!isNew ? `<div class="fsec"><h3>Questionnaire de positionnement</h3><button type="button" class="btn small" id="goQ">Déposer ou modifier le questionnaire de positionnement →</button></div>` : ""}
     ${!isNew ? rattachHtml(adm.sel, domCur) : ""}
     ${formActions(!isNew)}</div>`;
   if(!isNew) rattachBind(adm.sel, domCur, r.nom);
   if($("goQ")) $("goQ").onclick = () => document.querySelector('.stab[data-tab="questionnaires"]').click();
   $("addMod").onclick = () => $("modLines").insertAdjacentHTML("beforeend", modLine({ code: "", titre: "" }));
+  $("pickMod").onclick = () => repriseOuvrir(isNew ? "" : adm.sel, domCur);
   $("modLines").addEventListener("click", e => {
     if(e.target.closest("[data-rm]")) e.target.closest(".modline").remove();
     if(e.target.closest(".mqrm")){ const c = e.target.closest(".qcur"); c.dataset.retire = "1"; c.hidden = true; }
@@ -1744,7 +1762,8 @@ function formFormation(el, d){
         m.questionnaire = true;
         const nq = q(".mpos").value.trim(), tq = q(".mqt").value.trim(); if(nq) m.positionnement = nq; if(tq) m.questionnaireType = tq;
         const cur = q(".qcur");
-        qSaisie.push({ code: m.code, lien: q(".mposl").value.trim(), fichier: q(".mqf").files[0] || null, retire: !!(cur && cur.dataset.retire) });
+        const qrep = l.dataset.qf && !(cur && cur.dataset.retire) ? JSON.parse(l.dataset.qf) : null;
+        qSaisie.push({ code: m.code, lien: q(".mposl").value.trim(), fichier: q(".mqf").files[0] || null, retire: !!(cur && cur.dataset.retire), repris: qrep });
       } else qSaisie.push({ code: m.code, off: true });
       return m;
     }).filter(m => m.code);
@@ -1769,7 +1788,7 @@ function formFormation(el, d){
     await write(async () => {
       await db.doc("formations/" + id).set(data);
       try{ pilRep = await pilReporter(ancienne, data); }catch(e){ console.warn("Report Pilotage impossible", e); }
-      await qEnregistrer(id, qSaisie);
+      const qFin = await qEnregistrer(id, qSaisie);
       const rd = rawD(cible), om = (rd && rd.ordreModules) || [], add = modules.map(m => m.code).filter(c => !om.includes(c));
       if(add.length) await db.doc("domaines/" + cible).update({ ordreModules: om.concat(add) });
       /* changement de domaine : un parcours de profil doit rester dans le domaine du profil */
@@ -1785,7 +1804,7 @@ function formFormation(el, d){
           return om;
         });
         if(touche){ await db.doc("formations/" + o.id).update({ modules: mm }); reportes++; }
-        for(const om of o.modules){ const src = modules.find(m => m.titre && norm(m.titre) === norm(om.titre || "")); if(src) await qCopier(id, src.code, o.id, om.code); }
+        for(const om of o.modules){ const src = modules.find(m => m.titre && norm(m.titre) === norm(om.titre || "")); if(src) await qPoser(o.id, om.code, qFin[src.code] || null); }
       }
     }, "Enregistré", () => { ok = true; adm.sel = id; if(change){ adm.dom = cible; } });
     if(ok && reportes) toast(`Enregistré · reporté dans ${reportes} autre${reportes>1?"s":""} parcours`);
@@ -1861,10 +1880,12 @@ function rattachBind(fid, domF, nomF){
 }
 /* enregistre le lien et le document de chaque module (collection « questionnaires ») */
 async function qEnregistrer(fid, saisies){
+  const fin = {};
   for(const x of saisies){
     const k = qKey(fid, x.code), cur = (RAW.questionnaires || []).find(d => d.id === k);
+    fin[x.code] = null;
     if(x.off){ if(cur) await db.doc("questionnaires/" + k).delete(); continue; }
-    let fichier = cur && cur.fichier && !x.retire ? cur.fichier : null;
+    let fichier = cur && cur.fichier && !x.retire ? cur.fichier : (x.repris || null);
     if(cur && cur.fichier && x.retire && cur.fichier.chemin && SB) await SB.storage.from("questionnaires").remove([cur.fichier.chemin]);
     if(x.fichier){
       if(SB){
@@ -1879,8 +1900,17 @@ async function qEnregistrer(fid, saisies){
     }
     const data = {}; if(x.lien) data.lien = x.lien; if(fichier) data.fichier = fichier;
     if(!Object.keys(data).length){ if(cur) await db.doc("questionnaires/" + k).delete(); continue; }
+    fin[x.code] = data;
     if(JSON.stringify(data) !== JSON.stringify(cur ? { lien: cur.lien, fichier: cur.fichier } : null)) await db.doc("questionnaires/" + k).set(data);
   }
+  return fin;
+}
+/* pose dans un autre parcours le lien et le document qui viennent d'être enregistrés (sans relire une base pas encore à jour) */
+async function qPoser(fid2, code2, data){
+  const b = qDoc(fid2, code2), k = qKey(fid2, code2);
+  const db_ = b ? Object.assign({}, b) : null; if(db_) delete db_.id;
+  if(JSON.stringify(data || null) === JSON.stringify(db_)) return;
+  if(data) await db.doc("questionnaires/" + k).set(data); else if(b) await db.doc("questionnaires/" + k).delete();
 }
 /* même module dans un autre parcours : même lien, même document */
 async function qCopier(fid, code, fid2, code2){
@@ -1889,6 +1919,73 @@ async function qCopier(fid, code, fid2, code2){
   const db_ = b ? Object.assign({}, b) : null; if(db_) delete db_.id;
   if(JSON.stringify(da) === JSON.stringify(db_)) return;
   if(da) await db.doc("questionnaires/" + k).set(da); else await db.doc("questionnaires/" + k).delete();
+}
+/* ----- Reprendre un module existant (Gestion > formation ou parcours) ----- */
+function repriseCatalogue(){
+  const vus = new Map();
+  (RAW.formations || []).forEach(f => (Array.isArray(f.modules) ? f.modules : []).forEach(m => {
+    const t = (m.titre || "").trim(); if(!t) return;
+    const k = norm(t), seul = f.modules.length === 1;
+    const src = seul ? "Formation seule" : `${m.code} de « ${f.nom} »`;
+    if(vus.has(k)){ vus.get(k).autres.push(src); return; }
+    vus.set(k, { k, m, fid: f.id, dom: f.domaine, src, autres: [] });
+  }));
+  return [...vus.values()].sort((a, b) => nomDom(a.dom).localeCompare(nomDom(b.dom)) || a.m.titre.localeCompare(b.m.titre));
+}
+function repriseOuvrir(fid, domCur){
+  const box = $("pickBox"), btn = $("pickMod");
+  if(!box.hidden){ box.hidden = true; box.innerHTML = ""; btn.setAttribute("aria-expanded", "false"); return; }
+  const cat = repriseCatalogue(), doms = [...new Set(cat.map(x => x.dom))];
+  box.innerHTML = `<div class="rp"><div class="rp-h"><b>Reprendre un module existant</b>
+      <input class="inp" id="rpQ" placeholder="Rechercher un module ou une formation…" aria-label="Rechercher un module">
+      <select class="inp" id="rpDom" aria-label="Domaine"><option value="">Tous les domaines</option>${doms.map(d => `<option value="${esc(d)}"${d === domCur ? " selected" : ""}>${esc(nomDom(d))}</option>`).join("")}</select></div>
+    <div class="rp-hd" aria-hidden="true"><span></span><span>Module · d'où il vient</span><span>Domaine</span><span>Tarif</span><span>Prochaine date</span></div>
+    <div class="rp-l" id="rpL"></div>
+    <div class="rp-f"><span class="rp-n">Titre, lien, dates, tarifs, CPF et questionnaire de positionnement repris. Le module reste <b>lié</b> : une date ou un tarif modifié est reporté dans tous les parcours qui le contiennent. Le « Pourquoi » se remplit dans chaque sous-profil.</span>
+      <button type="button" class="btn small" id="rpX">Annuler</button><button type="button" class="btn small primary" id="rpGo" disabled>Ajouter</button></div></div>`;
+  box.hidden = false; btn.setAttribute("aria-expanded", "true");
+  const coches = new Set();
+  const dejaLa = () => new Set([...document.querySelectorAll("#modLines .mtit")].map(i => norm(i.value.trim())).filter(Boolean));
+  const liste = () => {
+    const q = norm($("rpQ").value.trim()), d = $("rpDom").value, deja = dejaLa();
+    const l = cat.filter(x => (!d || x.dom === d) && (!q || norm(x.m.titre + " " + x.src + " " + x.autres.join(" ")).includes(q)));
+    $("rpL").innerHTML = l.length ? l.map(x => { const ici = deja.has(x.k), on = coches.has(x.k), nx = aVenir(x.m)[0];
+      return `<label class="rp-r${ici ? " off" : on ? " on" : ""}"><input type="checkbox" data-k="${esc(x.k)}"${on ? " checked" : ""}${ici ? " disabled" : ""}>
+        <span><span class="rp-t">${esc(x.m.titre)}</span>${/^oui/i.test(x.m.cpf || "") ? `<span class="rp-tg c">€ CPF</span>` : ""}${aQuestionnaire(x.m) ? `<span class="rp-tg q">Questionnaire</span>` : ""}
+        <small>${ici ? "Déjà dans ce parcours" : esc(x.src) + (x.autres.length ? ` · aussi dans ${x.autres.length} autre${x.autres.length > 1 ? "s" : ""}` : "")}</small></span>
+        <span>${esc(nomDom(x.dom))}</span><span>${x.m.tarif ? esc(eur(x.m.tarif)) : "—"}</span><span>${nx ? esc(nx.texte) : "—"}</span></label>`; }).join("")
+      : `<p class="fhint" style="padding:12px 14px">Aucun module ne correspond.</p>`;
+    const n = coches.size; $("rpGo").disabled = !n; $("rpGo").textContent = n ? `Ajouter ${n} module${n > 1 ? "s" : ""}` : "Ajouter";
+  };
+  $("rpQ").oninput = liste; $("rpDom").onchange = liste;
+  $("rpL").onchange = e => { const c = e.target.closest("input[data-k]"); if(!c) return; c.checked ? coches.add(c.dataset.k) : coches.delete(c.dataset.k); liste(); };
+  $("rpX").onclick = () => repriseOuvrir(fid, domCur);
+  $("rpGo").onclick = () => {
+    const lignes = $("modLines");
+    /* une ligne vide (nouvelle fiche) est remplacée */
+    [...lignes.querySelectorAll(".modline")].forEach(l => { if(!l.querySelector(".mtit").value.trim() && !l.querySelector(".mlien").value.trim()) l.remove(); });
+    const codes = () => [...lignes.querySelectorAll(".mc")].map(i => i.value.trim());
+    const choix = cat.filter(x => coches.has(x.k));
+    /* une formation seule devient un parcours : son code « Formation » devient M1 */
+    if(choix.length && lignes.querySelectorAll(".modline").length === 1){ const c = lignes.querySelector(".mc"); if(/^formation$/i.test(c.value.trim())) c.value = "M1"; }
+    choix.forEach(x => {
+      const nums = codes().map(c => (/^M(\d+)/i.exec(c) || [])[1]).filter(Boolean).map(Number);
+      const code = codes().filter(Boolean).length ? "M" + ((nums.length ? Math.max(...nums) : codes().filter(Boolean).length) + 1) : (choix.length > 1 ? "M1" : "Formation");
+      const m = { code }; ["titre", "lien", "sessions", "tarif", "tarifParcours", "prefJours", "cpf", "questionnaire", "positionnement", "questionnaireType"].forEach(k => { if(x.m[k] !== undefined) m[k] = JSON.parse(JSON.stringify(x.m[k])); });
+      lignes.insertAdjacentHTML("beforeend", modLine(m, ""));
+      const l = lignes.lastElementChild, qd = qDoc(x.fid, x.m.code);
+      l.classList.add("repris");
+      if(qd && qd.lien) l.querySelector(".mposl").value = qd.lien;
+      if(qd && qd.fichier){
+        l.dataset.qf = JSON.stringify(qd.fichier);
+        l.querySelector(".qfile").insertAdjacentHTML("afterbegin", `<span class="qcur">${esc(qd.fichier.nom || "document")} (repris) <button type="button" class="btn small danger mqrm">Retirer</button></span>`);
+      }
+    });
+    repriseOuvrir(fid, domCur);
+    toast(`${choix.length} module${choix.length > 1 ? "s" : ""} ajouté${choix.length > 1 ? "s" : ""} · pensez à enregistrer`);
+    lignes.lastElementChild && lignes.lastElementChild.scrollIntoView({ block: "center", behavior: "smooth" });
+  };
+  liste(); $("rpQ").focus();
 }
 const modLine = (m, fid) => `<div class="modline"><input class="inp mc" value="${esc(m.code)}" placeholder="Code" aria-label="Code du module"><input class="inp mtit" value="${esc(m.titre)}" placeholder="Titre du module" aria-label="Titre du module"><button type="button" class="btn small danger" data-rm="1">Retirer</button><input class="inp mlien" value="${esc(m.lien || "")}" placeholder="Lien vers la fiche (https://…)" aria-label="Lien vers la fiche du module">
   <details class="mextra"><summary>Dates, tarifs, positionnement, CPF${(m.sessions||[]).length ? ` · ${aVenir(m).length} date${aVenir(m).length>1?"s":""} à venir` : ""}</summary><div class="fgrid">
