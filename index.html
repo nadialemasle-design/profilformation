@@ -2614,7 +2614,9 @@ function chargerPdfLib(){
 }
 /* un bulletin par formation (un parcours = un bulletin avec les dates de ses modules) */
 function biGroupes(){
-  const g = new Map(); propCalcul().hors.forEach(l => { if(!g.has(l.f.id)) g.set(l.f.id, { f: l.f, lignes: [] }); g.get(l.f.id).lignes.push(l); });
+  /* un bulletin par formation ; pour un parcours, un bulletin par module (chaque module a son intitulé, ses dates et son tarif) */
+  const g = new Map(); propCalcul().hors.forEach(l => { const k = (l.f.modules || []).length > 1 ? l.f.id + "|" + l.m.code : l.f.id;
+    if(!g.has(k)) g.set(k, { f: l.f, lignes: [] }); g.get(k).lignes.push(l); });
   return [...g.values()];
 }
 const pdfTxt = t => String(t || "").replace(/[\u202f\u00a0]/g, " ").replace(/[’]/g, "'").replace(/[^\x20-\x7E\u00A1-\u00FF–—«»…œŒ€]/g, "");
@@ -3165,7 +3167,7 @@ function mailHtml(){
     <label>Prénom du client<input id="mlPrenom" value="${esc(MAILV.prenom)}" placeholder="ex. Marie"></label>
     ${r.cpf.length ? `<label>Lien Mon Compte Formation<input id="mlLien" value="${esc(MAILV.lien)}" placeholder="https://www.moncompteformation.gouv.fr/…"></label>` : ""}
     ${(() => { const cv = casesVisibles(mailCfg(MAILV.modele), r); return cv.length ? `<fieldset><legend>Pièces jointes</legend>${cv.map(c => { const on = caseCochee(c, MAILV);
-      return `<label class="ck"><input type="checkbox" data-mlcase="${esc(c.id)}"${on ? " checked" : ""}> ${esc(c.libelle)}</label>${c.fichier === "bulletin" ? `<button type="button" class="ml-dl" data-mldl="bulletin" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Un bulletin par formation hors CPF, avec l'intitulé, les dates et le tarif ; le reste est à remplir par le client">⬇ Bulletin prérempli (PDF)</button>` : c.fichier === "devis" ? `<button type="button" class="ml-dl" data-mldl="devis" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"}>⬇ Devis (document Word)</button>` : c.fichier === "doc" && c.docId && docInfo(c.docId) ? `<button type="button" class="ml-dl" data-qf="${esc(c.docId)}" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Télécharger le document, puis joignez-le à votre e-mail">⬇ ${esc(docInfo(c.docId).nom || c.libelle)}</button>` : ""}`; }).join("")}</fieldset>` : ""; })()}
+      return `<label class="ck"><input type="checkbox" data-mlcase="${esc(c.id)}"${on ? " checked" : ""}> ${esc(c.libelle)}</label>${c.fichier === "bulletin" ? `<button type="button" class="ml-dl" data-mldl="bulletin" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Un bulletin par formation hors CPF (un par module pour un parcours), avec l'intitulé, les dates et le tarif ; le reste est à remplir par le client">⬇ Bulletin prérempli (PDF)</button>` : c.fichier === "devis" ? `<button type="button" class="ml-dl" data-mldl="devis" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"}>⬇ Devis (document Word)</button>` : c.fichier === "doc" && c.docId && docInfo(c.docId) ? `<button type="button" class="ml-dl" data-qf="${esc(c.docId)}" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Télécharger le document, puis joignez-le à votre e-mail">⬇ ${esc(docInfo(c.docId).nom || c.libelle)}</button>` : ""}`; }).join("")}</fieldset>` : ""; })()}
     <label>Ma signature (gardée sur cet ordinateur)<textarea id="mlSig" rows="4" placeholder="Prénom Nom&#10;Conseiller(ère) formation&#10;Téléphone · agence">${esc(MAILP.signature || "")}</textarea></label>
     <p class="pl-note">Le texte est modifiable à droite. La ligne [TABLEAU RÉCAPITULATIF] devient le tableau mis en forme quand vous copiez : vous pouvez la déplacer ou la supprimer.</p></div>
     <div class="ml-txt"><label>Objet<input id="mlObjet" value="${esc(t.objet)}"></label><label>Message${fmtBar()}<textarea id="mlCorps" rows="18">${esc(MAILV.texte != null ? MAILV.texte : t.corps)}</textarea></label>
