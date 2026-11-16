@@ -447,8 +447,8 @@ textarea.inp{min-height:54px;resize:vertical;line-height:1.4}
 .rt-open:hover b{text-decoration:underline}
 .rt-type{font-size:12px;color:var(--muted);white-space:nowrap}
 .rt-add{display:grid;grid-template-columns:auto 1fr 1.4fr;gap:8px;align-items:center;border:1px dashed var(--line);border-radius:8px;padding:8px}
-.rt-add b{font-size:13px}.rt-add #rtPq{grid-column:2 / 4}.rt-add #rtGo{grid-column:3;justify-self:end}
-@media (max-width:700px){.rt-add{grid-template-columns:1fr}.rt-add #rtPq,.rt-add #rtGo{grid-column:auto}}
+.rt-add b{font-size:13px}.rt-add .rt-pq{grid-column:2 / 4}.rt-add #rtGo{grid-column:3;justify-self:end}
+@media (max-width:700px){.rt-add{grid-template-columns:1fr}.rt-add .rt-pq,.rt-add #rtGo{grid-column:auto}}
 
 .form{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:14px}
 .form h2{margin:0;font-size:18px}
@@ -638,6 +638,7 @@ textarea.com{border-left:4px solid #9D8BEA !important;background:#FAF8FF}
 .mod-mhint{margin-left:auto;font-size:12px;color:#6b7f89}
 #modDelM{width:auto;padding:4px 10px;font-size:12px}
 .adm-side{min-width:0}
+.rt-pq{flex:1 1 260px}.rt-pq .inp{width:100%}
 .adm-search{display:flex;gap:6px;margin-bottom:8px;position:sticky;top:0;z-index:3;background:var(--bg,#fff);padding:2px 0}
 .adm-search .inp{flex:1;min-width:0}
 .adm-cnt{font-size:12px;color:#6b7f89;margin:6px 2px}
@@ -1994,7 +1995,7 @@ function rattachHtml(fid, domF){
     <div class="rt-add"><b>Rattacher</b>
       <select class="inp" id="rtFam" aria-label="Famille de métiers"><option value="">Famille de métiers…</option>${fams.map(f => `<option>${esc(f)}</option>`).join("")}</select>
       <select class="inp" id="rtProf" aria-label="Sous-profil" disabled><option value="">Choisissez d'abord une famille</option></select>
-      <input class="inp" id="rtPq" placeholder="Pourquoi la proposer (phrase vue par la conseillère)" aria-label="Pourquoi la proposer">
+      <div class="ia-wrap inl rt-pq"><input class="inp" id="rtPq" placeholder="Pourquoi la proposer (phrase vue par la conseillère)" aria-label="Pourquoi la proposer"><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="rattach" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div>
       <button type="button" class="btn small primary" id="rtGo">Rattacher</button></div></div>`;
 }
 /* la liste se met à jour quand la base change (sans toucher au reste du formulaire) */
@@ -3404,7 +3405,24 @@ Format : {"pourquoi": "...", "argumentaire": "...", "modules": {"M1": "..."}}`, 
         difficulte: "« Difficulté » : UNE phrase sur ce qui la freine",
         attente: "« Attente » : UNE phrase sur ce qu'elle veut savoir faire à la fin",
         motscles: "« Mots-clés pour la recherche » : 10 à 15 mots-clés séparés par des virgules (synonymes du métier, métiers voisins, besoins exprimés avec les mots des clients) ; s'il y en a déjà, garde-les tous et complète" };
-      if(BES[kind]){
+      if(kind === "rattach"){
+        const f = rawF(adm.sel); if(!f) throw { message: "Enregistrez d'abord la formation." };
+        const vp = $("rtProf").value, fam = $("rtFam").value;
+        if(vp === "*" && fam){ /* toute une famille : un « pourquoi » commun à ses sous-profils */
+          const l = (RAW.profils || []).filter(x => famillesDe(x).includes(fam));
+          consigne = `${base}\nChamp « Pourquoi » commun : cette formation est rattachée à TOUS les sous-profils de la famille « ${fam} » (liste fournie). UNE ligne (110 caractères max), valable pour chacun, qui dit quand la proposer ; commence par « À proposer » ou « À proposer si ».\nFormat : {"texte": "..."}`;
+          donnees = { famille: fam, sousProfils: l.map(x => ({ nom: x.nom, besoin: x.besoin || "" })), texteActuel: actuel, formation: iaFormInfo(f), exemplesDeTon: iaExemples(3) };
+          const r0 = await iaDemander(consigne, donnees); iaRemplir(b, [[el, r0.texte]]); return;
+        }
+        const rp = rawP(vp);
+        if(!rp) throw { message: "Choisissez d'abord la famille puis le sous-profil." };
+        const memeDom = rp.domaine === f.domaine, nb = (rp.parcours || []).length;
+        const sp = { domaine: nomDom(rp.domaine), nom: rp.nom, categories: famillesDe(rp), besoin: rp.besoin || "", situation: (rp.besoinDetail || {}).situation || "", difficulte: (rp.besoinDetail || {}).difficulte || "", attente: (rp.besoinDetail || {}).attente || "", motsCles: rp.motsCles || "" };
+        consigne = memeDom
+          ? `${base}\nChamp « Pourquoi » : cette formation est ajoutée comme parcours n°${nb + 1} (en dernier) à ce sous-profil. UNE ligne (110 caractères max) qui dit quand la proposer, en commençant par « À proposer » ou « À proposer si » ; elle doit se distinguer des parcours déjà proposés.\nFormat : {"texte": "..."}`
+          : `${base}\nChamp « Pourquoi » d'une formation complémentaire (d'un autre domaine) suggérée à ce sous-profil : UNE ligne (100 caractères max) qui dit pourquoi la suggérer.\nFormat : {"texte": "..."}`;
+        donnees = { sousProfil: sp, texteActuel: actuel, formation: iaFormInfo(f), parcoursDejaProposes: (rp.parcours || []).map(x => ({ formation: (rawF(x.formation) || {}).nom || x.formation, pourquoi: x.pourquoi || "" })), exemplesDeTon: iaExemples(3) };
+      } else if(BES[kind]){
         consigne = `${base}\nChamp ${BES[kind]}. Reste cohérent avec les autres champs du sous-profil fournis.\nFormat : {"texte": "..."}`;
         donnees = { sousProfil: prof, texteActuel: actuel, formationsDuDomaine: ((IA_DOM || {}).formations || []).map(f => f.nom) };
       } else if(kind === "cp"){
