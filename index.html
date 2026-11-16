@@ -784,6 +784,14 @@ button.acc-st{cursor:pointer}button.acc-st:hover{border-color:var(--teal);backgr
 /* liste Pilotage compacte : jusqu'à « Convoc » sur un écran d'ordinateur (1366 px et plus) */
 .pl-wrap{max-width:calc(100vw - 32px)}
 /* sessions passées (gris) et annulées (rouge) */
+/* survol d'une ligne : elle ressort (teinte + liseré + ombre) */
+.pl-xl tbody tr[id^="pr-"]>td{transition:background-color .12s}
+.pl-xl tbody tr[id^="pr-"]:hover>td{background:#FFF6D6 !important}
+.pl-xl tbody tr[id^="pr-"]:hover{box-shadow:0 2px 10px rgba(15,47,63,.18);position:relative;z-index:1}
+.pl-xl tbody tr[id^="pr-"]:not(.certrow):not(.annulee):hover>td:first-child{box-shadow:inset 5px 0 0 #F2B705}
+.pl-xl tbody tr.annulee:hover>td{background:#FBD5D5 !important}
+.pl-xl tbody tr.annulee:hover>td:first-child{box-shadow:inset 5px 0 0 #D32F2F}
+.pl-xl tbody tr[id^="pr-"]:focus-within>td{background:#FFF9E6}
 .pl-xl tr.passee>td{background:#EEF1F3;color:#6b7f89}
 .pl-xl tr.passee .pl-titre a{color:#5d6f78}
 .pl-xl tr.annulee>td{background:#FDE8E8;color:#8f2b2b}
