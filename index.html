@@ -623,7 +623,12 @@ textarea.com{border-left:4px solid #9D8BEA !important;background:#FAF8FF}
 .form>.actions{position:sticky;bottom:0;z-index:5;background:#fff;margin:0 -16px -16px;padding:12px 16px;box-shadow:0 -6px 16px rgba(15,47,63,.08);border-top:1px solid var(--line)}
 /* onglets de Gestion : l'actif bien marqué */
 .stab[aria-pressed="true"]{box-shadow:inset 0 -3px 0 #27CCAD}
-.ia-wrap{position:relative;min-width:0}.ia-wrap>.inp{width:100%}
+.ia-wrap{position:relative;min-width:0}
+.adm-side{min-width:0}
+.adm-search{display:flex;gap:6px;margin-bottom:8px;position:sticky;top:0;z-index:3;background:var(--bg,#fff);padding:2px 0}
+.adm-search .inp{flex:1;min-width:0}
+.adm-cnt{font-size:12px;color:#6b7f89;margin:6px 2px}
+.adm-autres{font-size:12px;margin:0 2px 8px;color:#4a6370}.adm-dg{border:1px solid #c9def0;background:#EEF5FB;color:#2A6F97;border-radius:999px;padding:1px 8px;font-size:11.5px;font-weight:700;cursor:pointer;margin:2px 2px 0 0}.ia-wrap>.inp{width:100%}
 body.ia-on .ia-wrap>.inp{padding-right:46px}
 .ia-btn.ia-mini{position:absolute;right:7px;top:7px;margin:0;padding:3px 8px;font-size:13px;line-height:1.1}
 .ia-wrap .ia-undo{display:block;margin-left:auto}
@@ -916,7 +921,10 @@ details.fo-det[open]>summary{background:#12343F !important;color:#fff !important
       <button type="button" class="btn add" id="admNewDom">+ Nouveau domaine</button>
     </div>
     <div class="adm-grid">
-      <div class="adm-list" id="admList"></div>
+      <div class="adm-side"><div class="adm-search" id="admSearch" hidden>
+        <input type="search" class="inp" id="admQ" placeholder="Rechercher (mot-clé)…" aria-label="Rechercher dans la liste">
+        <button type="button" class="btn small" id="admQx">Réinitialiser</button></div>
+      <div class="adm-list" id="admList"></div></div>
       <div id="admForm"></div>
     </div>
   </section>
@@ -1572,8 +1580,22 @@ function renderAdmin(resetForm){
   if(resetForm) renderAdmForm();
 }
 
+/* recherche par mot-clé dans Gestion (formations & parcours, sous-profils) */
+const admTexteF = f => { const r = rawF(f.id) || {}; return norm([f.id, r.nom, r.intitule, r.certification, r.duree, ...(r.modules || []).map(m => m.code + " " + (m.titre || ""))].join(" ")); };
+const admTexteP = p => { const r = rawP(p.id) || {}; return norm([p.id, r.nom, r.besoin, r.motsCles, (r.categories || []).join(" "), ...(r.parcours || []).map(x => (rawF(x.formation) || {}).nom || x.formation)].join(" ")); };
+const admMatch = (txt, q) => q.split(/\s+/).filter(Boolean).every(w => txt.includes(w));
+function admAutres(q, fn, liste){
+  const autres = DOMAINES.filter(o => o.id !== adm.dom).map(o => ({ o, n: liste(o).filter(x => admMatch(fn(x), q)).length })).filter(x => x.n);
+  return autres.length ? `<div class="adm-autres">Aussi dans : ${autres.map(x => `<button type="button" class="adm-dg" data-admdom="${esc(x.o.id)}">${esc(x.o.nom)} (${x.n})</button>`).join(" ")}</div>` : "";
+}
+$("admQ").addEventListener("input", e => { adm.q = e.target.value; renderAdmList(); });
+$("admQx").addEventListener("click", () => { adm.q = ""; $("admQ").value = ""; renderAdmList(); $("admQ").focus(); });
+document.addEventListener("click", e => { const b = e.target.closest("[data-admdom]"); if(!b) return; adm.dom = b.dataset.admdom; adm.sel = null; $("admDom").value = adm.dom; renderAdmin(true); });
 function renderAdmList(){
   const d = admDom(), el = $("admList");
+  const avecQ = adm.tab === "formations" || adm.tab === "profils"; $("admSearch").hidden = !avecQ;
+  if($("admQ").value !== (adm.q || "")) $("admQ").value = adm.q || "";
+  const q = avecQ ? norm((adm.q || "").trim()) : "";
   if(!d){ el.innerHTML = `<p class="none">Aucun domaine. Créez-en un avec « + Nouveau domaine ».</p>`; return; }
   if(adm.tab === "questionnaires") return listQuestionnaires(el);
   if(adm.tab === "comptes") return listComptes(el);
@@ -1587,15 +1609,18 @@ function renderAdmList(){
     return;
   }
   if(adm.tab === "formations"){
-    el.innerHTML = `<button type="button" class="btn add" data-new="1">+ Nouvelle formation ou parcours</button>` + d.formations.map(f => {
+    const lf = q ? d.formations.filter(f => admMatch(admTexteF(f), q)) : d.formations;
+    el.innerHTML = `<button type="button" class="btn add" data-new="1">+ Nouvelle formation ou parcours</button>`
+      + (q ? `<p class="adm-cnt">${lf.length} résultat${lf.length > 1 ? "s" : ""} dans ce domaine</p>` + admAutres(q, admTexteF, o => o.formations) : "") + lf.map(f => {
       const n = d.profils.filter(p => p.parcours[f.id]).length;
       return `<button type="button" class="adm-item" data-sel="${esc(f.id)}" aria-pressed="${adm.sel===f.id}"><b>${esc(f.nom)}</b><small>${esc(f.duree)} · ${Object.keys(f.modules).length} modules · ${n} profils</small></button>`;
     }).join("");
     return;
   }
   let html = `<button type="button" class="btn add" data-new="1">+ Nouveau sous-profil</button>`;
+  if(q){ const n = d.profils.filter(p => admMatch(admTexteP(p), q)).length; html += `<p class="adm-cnt">${n} résultat${n > 1 ? "s" : ""} dans ce domaine</p>` + admAutres(q, admTexteP, o => o.profils); }
   domCats(d).forEach(c => {
-    const l = d.profils.filter(p => p.categories.includes(c)); if(!l.length) return;
+    const l = d.profils.filter(p => p.categories.includes(c) && (!q || admMatch(admTexteP(p), q))); if(!l.length) return;
     html += `<div class="adm-cat">${esc(c)}</div>` + l.map(p => `<button type="button" class="adm-item" data-sel="${esc(p.id)}" aria-pressed="${adm.sel===p.id}"><b>${esc(p.nom)}</b><small>${Object.keys(p.parcours).length} parcours${p.categories.length > 1 ? ` · ${p.categories.length} catégories` : ""}</small></button>`).join("");
   });
   el.innerHTML = html;
