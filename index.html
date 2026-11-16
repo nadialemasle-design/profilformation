@@ -778,6 +778,17 @@ button.acc-st{cursor:pointer}button.acc-st:hover{border-color:var(--teal);backgr
 .pl-qno{font-size:10.5px;color:#b26a00;white-space:nowrap}
 /* liste Pilotage compacte : jusqu'à « Convoc » sur un écran d'ordinateur (1366 px et plus) */
 .pl-wrap{max-width:calc(100vw - 32px)}
+/* sessions passées (gris) et annulées (rouge) */
+.pl-xl tr.passee>td{background:#EEF1F3;color:#6b7f89}
+.pl-xl tr.passee .pl-titre a{color:#5d6f78}
+.pl-xl tr.annulee>td{background:#FDE8E8;color:#8f2b2b}
+.pl-xl tr.annulee>td:first-child{box-shadow:inset 5px 0 0 #D32F2F}
+.pl-xl tr.annulee .pl-titre a{text-decoration:line-through;text-decoration-color:#D32F2F;color:#8f2b2b}
+.pl-xl tr.passee input,.pl-xl tr.annulee input{opacity:.75}
+.pl-st{display:inline-block;margin:0 6px 3px 0;border-radius:999px;padding:1px 8px;font-size:10.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;vertical-align:1px}
+.pl-st.pa{background:#D5DCE0;color:#3f525c}.pl-st.an{background:#D32F2F;color:#fff}
+.pl-fs-an{border-color:#F3B4B4 !important}.pl-fs-an legend{color:#c62828}.pl-fs-an .pl-t{width:220px}
+.pc-ev.passe{opacity:.55}.pc-ev.annul{background:#FDE8E8 !important;color:#8f2b2b !important;text-decoration:line-through;border-color:#F3B4B4 !important}
 .pl-hbar{display:flex;align-items:center;gap:8px;position:fixed;left:16px;right:16px;bottom:0;z-index:40;background:#fff;padding:7px 10px;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;box-shadow:0 -4px 14px rgba(15,47,63,.12)}
 #pilot:has(.pl-hbar){padding-bottom:56px}
 .pl-save{flex:none;font-size:12px;font-weight:700;white-space:nowrap;min-width:120px;text-align:right}
@@ -2639,7 +2650,7 @@ const ecart = (a, b) => Math.round((dateD(b) - dateD(a)) / 864e5);
 /* alertes en cours aujourd'hui ; déclenchement : salle J-25, licences J-15, certification J-10 puis J-2 ouvrés avant le dernier jour */
 function alertesPilotage(S, auj){
   const A = [];
-  S.forEach(s => {
+  S.forEach(s => { if(pilVal(s.id, "annulee")) return;
     const j = ecart(auj, s.debut);
     if(j >= 0 && j <= 25 && !pilVal(s.id, "salleOk")) A.push({ s, k: "salle", j, txt: `Prévoir la salle · J-${j}` });
     if(j >= 0 && j <= 15 && !pilVal(s.id, "licOk")) A.push({ s, k: "lic", j, txt: `Prévoir les licences · J-${j}` });
@@ -2661,7 +2672,7 @@ function renderPilot(){
   for(let i = 0; i < nbSem * 7; i++){
     const d = new Date(y, mo - 1, 1 - off + i), iso = isoD(d);
     const ev = S.filter(s => s.jours.includes(iso)).map(s => { const der = s.cert && s.fin === iso;
-      return `<button type="button" class="pc-ev${der ? " cert" : ""}" data-pgo="${esc(s.id)}" title="${esc(s.titre)} · ${esc(s.texte)}${der ? " · certification " + esc(s.cert) : ""}">${der ? "🎓 " : ""}${esc(s.nom)}${pilTot(s.id) ? ` <small>${pilTot(s.id)}</small>` : ""}</button>`; }).join("");
+      return `<button type="button" class="pc-ev${der ? " cert" : ""}${pilVal(s.id, "annulee") ? " annul" : s.fin < auj ? " passe" : ""}" data-pgo="${esc(s.id)}" title="${esc(s.titre)} · ${esc(s.texte)}${der ? " · certification " + esc(s.cert) : ""}">${der ? "🎓 " : ""}${esc(s.nom)}${pilTot(s.id) ? ` <small>${pilTot(s.id)}</small>` : ""}</button>`; }).join("");
     cal += `<div class="pc-d${d.getMonth() !== mo - 1 ? " out" : ""}${d.getDay() % 6 ? "" : " we"}${iso === auj ? " today" : ""}"><b>${d.getDate()}</b>${ev}</div>`;
   }
   const chk = (id, k, lab) => `<input type="checkbox" data-plf="${esc(id)}" data-pk="${k}" aria-label="${lab}"${pilVal(id, k) ? " checked" : ""}>`;
@@ -2671,7 +2682,8 @@ function renderPilot(){
   const F = PIL.f, typeDe = s => pilVal(s.id, "typeParcours") || s.typeAuto, A0 = alertesPilotage(S, auj), enAlerte = new Set(A0.map(a => a.s.id));
   const mois0 = auj.slice(0, 7);
   const garde = s => {
-    if(F.periode === "avenir" ? s.fin < auj : F.periode !== "tout" && !s.jours.some(d => d.startsWith(F.periode))) return false;
+    if(F.periode === "avenir" ? s.fin < auj : F.periode === "passees" ? s.fin >= auj : F.periode !== "tout" && !s.jours.some(d => d.startsWith(F.periode))) return false;
+    if(F.annul && !pilVal(s.id, "annulee")) return false;
     if(F.dom && s.domId !== F.dom) return false; if(F.form && (pilVal(s.id, "formateur") || "") !== F.form) return false;
     if(F.lieu && (pilVal(s.id, "lieu") || "") !== F.lieu) return false; if(F.type && typeDe(s) !== F.type) return false;
     if(F.cert && !s.cert) return false; if(F.traiter && !enAlerte.has(s.id)) return false; if(F.convoc && (pilVal(s.id, "convoc") || !pilTot(s.id))) return false;
@@ -2684,12 +2696,12 @@ function renderPilot(){
   const libM = m => { const [yy, mm] = m.split("-").map(Number); return new Date(yy, mm - 1, 1).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }); };
   const sel = (k, lab, opts, tous) => `<label class="pf"><span>${lab}</span><select data-pfil="${k}"><option value="">${tous}</option>${opts.map(o => `<option value="${esc(o[0])}"${F[k] === o[0] ? " selected" : ""}>${esc(o[1])}</option>`).join("")}</select></label>`;
   const puce = (k, lab, t) => `<button type="button" class="pf-chip" data-pfchip="${k}" aria-pressed="${!!F[k]}" title="${t}">${lab}</button>`;
-  const actifs = ["dom", "form", "lieu", "type", "q", "cert", "traiter", "convoc", "vide"].some(k => F[k]) || F.periode !== "avenir";
+  const actifs = ["dom", "form", "lieu", "type", "q", "cert", "traiter", "convoc", "vide", "annul"].some(k => F[k]) || F.periode !== "avenir";
   const filtres = `<div class="pf-bar">
-    <label class="pf"><span>Période</span><select data-pfil="periode"><option value="avenir"${F.periode === "avenir" ? " selected" : ""}>À venir</option><option value="tout"${F.periode === "tout" ? " selected" : ""}>Tout</option>${moisL.map(m => `<option value="${m}"${F.periode === m ? " selected" : ""}>${libM(m)}</option>`).join("")}</select></label>
+    <label class="pf"><span>Période</span><select data-pfil="periode"><option value="avenir"${F.periode === "avenir" ? " selected" : ""}>À venir</option><option value="passees"${F.periode === "passees" ? " selected" : ""}>Passées</option><option value="tout"${F.periode === "tout" ? " selected" : ""}>Tout</option>${moisL.map(m => `<option value="${m}"${F.periode === m ? " selected" : ""}>${libM(m)}</option>`).join("")}</select></label>
     ${sel("dom", "Domaine", DOMAINES.map(d => [d.id, d.nom]), "Tous")}${sel("form", "Formateur", valeurs("formateur").map(v => [v, v]), "Tous")}${sel("lieu", "Lieu", valeurs("lieu").map(v => [v, v]), "Tous")}${sel("type", "Type de parcours", valeurs("type").map(v => [v, v]), "Tous")}
     <label class="pf"><span>Recherche</span><input type="search" data-pfil="q" value="${esc(F.q || "")}" placeholder="Titre, formateur, commentaire…"></label>
-    ${puce("cert", "🎓 Certifiantes", "Sessions avec certification")}${puce("traiter", "● À traiter", "Une alerte salle, licences ou certification est en cours")}${puce("convoc", "Convoc à envoyer", "Des inscrits, mais convocation pas cochée")}${puce("vide", "Sans inscrit", "Aucun inscrit saisi")}
+    ${puce("cert", "🎓 Certifiantes", "Sessions avec certification")}${puce("traiter", "● À traiter", "Une alerte salle, licences ou certification est en cours")}${puce("convoc", "Convoc à envoyer", "Des inscrits, mais convocation pas cochée")}${puce("vide", "Sans inscrit", "Aucun inscrit saisi")}${puce("annul", "✕ Annulées", "Sessions annulées")}
     ${actifs ? `<button type="button" class="pf-eff" data-pfreset="1">Effacer les filtres</button>` : ""}<span class="pf-cnt">${liste.length} session${liste.length > 1 ? "s" : ""} sur ${S.length}</span></div>`;
   /* ---------- liste : lignes ---------- */
   const nb = (s, k, cls) => { const note = pilVal(s.id, "note_" + k) || "";
@@ -2698,9 +2710,10 @@ function renderPilot(){
   let moisCourant = "";
   const rows = liste.map(s => { const d = dateD(s.debut), K = SUIVI(s), tot = K.length, fait = K.filter(k => pilVal(s.id, k)).length, ouvert = PIL.suivis.has(s.id), u = safeUrl(s.lien);
     const m = s.debut.slice(0, 7), entete = m !== moisCourant ? `<tr class="pl-mois"><td colspan="${22 + 2 * AG.length}">${libM(m)}</td></tr>` : ""; moisCourant = m;
-    return entete + `<tr id="pr-${esc(s.id)}" class="${s.cert ? "certrow" : ""}"><td>${d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "2-digit" })}</td><td>${d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}</td>
+    const annul = !!pilVal(s.id, "annulee"), passe = s.fin < auj;
+    return entete + `<tr id="pr-${esc(s.id)}" class="${s.cert ? "certrow" : ""}${annul ? " annulee" : passe ? " passee" : ""}"><td>${d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "2-digit" })}</td><td>${d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}</td>
       <td class="pl-dom">${esc(s.dom)}</td>
-      <td class="pl-titre">${u ? `<a href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir le programme">${esc(s.titre)}</a>` : esc(s.titre)}${enAlerte.has(s.id) ? ` <span class="pl-dot" title="Alerte en cours"></span>` : ""}<button type="button" class="pl-edit" data-pedit="${esc(s.fids[0])}" title="Modifier dans la Gestion (dates, tarif…)">✎ Gestion</button>${s.cert ? `<span class="pl-cert">🎓 certif ${esc(s.cert)} · ${dateD(s.fin).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span>` : ""}</td>
+      <td class="pl-titre">${annul ? `<span class="pl-st an" title="${esc(pilVal(s.id, "motifAnnul") || "Session annulée")}">✕ Annulée</span>` : passe ? `<span class="pl-st pa">Passée</span>` : ""}${u ? `<a href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir le programme">${esc(s.titre)}</a>` : esc(s.titre)}${enAlerte.has(s.id) ? ` <span class="pl-dot" title="Alerte en cours"></span>` : ""}<button type="button" class="pl-edit" data-pedit="${esc(s.fids[0])}" title="Modifier dans la Gestion (dates, tarif…)">✎ Gestion</button>${s.cert ? `<span class="pl-cert">🎓 certif ${esc(s.cert)} · ${dateD(s.fin).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span>` : ""}</td>
       <td class="pl-dt">${esc(s.texte.replace(/\s*20\d\d$/, ""))}</td><td>${txt(s.id, "formateur", "Formateur")}</td>
       <td class="n">${s.tarif ? eur(s.tarif) : ""}</td><td>${s.pos ? (() => { const q = s.qid && (RAW.questionnaires || []).find(x => x.id === s.qid), u = q && safeUrl(q.lien);
         return `<span class="pl-pc"><span class="pl-pos" title="Positionnement : ${esc(s.pos)}">Oui</span>${q ? `${u ? `<a class="pl-qi" href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir le questionnaire" aria-label="Ouvrir le questionnaire">↗</a>` : ""}${q.fichier ? `<button type="button" class="pl-qi" data-qf="${esc(q.id)}" title="Télécharger le questionnaire" aria-label="Télécharger le questionnaire">⬇</button>` : ""}` : `<span class="pl-qno" title="Questionnaire à déposer (Gestion › Questionnaires)">à déposer</span>`}</span>`; })() : ""}</td><td class="pl-cpf">${esc(cpfCourt(s.cpf))}</td><td class="n">${s.tp ? eur(s.tp) : ""}</td>
@@ -2711,6 +2724,7 @@ function renderPilot(){
       <td><input type="text" class="pl-t pl-com" data-plf="${esc(s.id)}" data-pk="commentaire" aria-label="Commentaire" placeholder="Commentaire…" value="${esc(pilVal(s.id, "commentaire") || "")}"></td>
       <td class="n"><button type="button" class="pl-suivi${ouvert ? " on" : ""}${fait === tot ? " ok" : ""}" data-psuivi="${esc(s.id)}" aria-expanded="${ouvert}" title="Salle, licences${s.cert ? ", certification" : ""}, qualité">${fait}/${tot} <i>▾</i></button></td></tr>
       <tr class="pl-sub" data-psub="${esc(s.id)}"${ouvert ? "" : " hidden"}><td colspan="${22 + 2 * AG.length}"><div class="pl-subin">
+        <fieldset class="pl-fs-an"><legend>Statut</legend><label>${chk(s.id, "annulee", "Session annulée")} Session annulée</label>${txt(s.id, "motifAnnul", "Motif de l'annulation", "Motif (facultatif)")}</fieldset>
         <fieldset><legend>Logistique</legend><label>${chk(s.id, "salleOk", "Salle réservée")} Salle OK</label><label>${chk(s.id, "licOk", "Licences prévues")} Licences OK</label>${s.cert ? `<label>${chk(s.id, "certOk", "Certification prévue")} Certif OK</label>` : ""}</fieldset>
         <fieldset><legend>Qualité</legend><label>${chk(s.id, "qDeroule", "Déroulé pédagogique")} Déroulé pédagogique</label><label>${chk(s.id, "qSupport", "Support de cours")} Support de cours</label><label>${chk(s.id, "qProgramme", "Programme")} Programme</label></fieldset>
       </div></td></tr>`; }).join("");
@@ -2780,7 +2794,7 @@ document.addEventListener("input", e => {
   const c = document.querySelector(`[data-ptot="${CSS.escape(id)}"]`); if(c) c.textContent = pilTot(id);
   const cp = document.querySelector(`[data-ptotp="${CSS.escape(id)}"]`); if(cp) cp.textContent = AG.reduce((t, a) => t + (Number(pilVal(id, "p" + a)) || 0), 0);
   const sub = document.querySelector(`[data-psub="${CSS.escape(id)}"]`), sb = document.querySelector(`[data-psuivi="${CSS.escape(id)}"]`);
-  if(sub && sb){ const cs = [...sub.querySelectorAll("input[type=checkbox]")], f = cs.filter(x => x.checked).length; sb.firstChild.textContent = `${f}/${cs.length} `; sb.classList.toggle("ok", f === cs.length); }
+  if(sub && sb){ const cs = [...sub.querySelectorAll("input[type=checkbox]:not([data-pk=annulee])")], f = cs.filter(x => x.checked).length; sb.firstChild.textContent = `${f}/${cs.length} `; sb.classList.toggle("ok", f === cs.length); }
   pilSave(id);
   if(t.type === "checkbox") renderPilotSoon();
 });

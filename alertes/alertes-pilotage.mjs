@@ -81,6 +81,7 @@ export async function calculer(RAW, auj){
   const dans = d => d >= debutFen && d <= auj;
   const nouv = [], attente = [];
   S.forEach(s => {
+    if(v(s.id, "annulee")) return; /* session annulée : plus d'alerte */
     const j = ecart(auj, s.debut);
     const items = [
       { k: "salle", ok: v(s.id, "salleOk"), dec: ajouter(s.debut, -25), actif: j >= 0 && j <= 25, txt: `Prévoir la salle · J-${j}` },
