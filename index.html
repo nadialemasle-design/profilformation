@@ -624,6 +624,11 @@ textarea.com{border-left:4px solid #9D8BEA !important;background:#FAF8FF}
 /* onglets de Gestion : l'actif bien marqué */
 .stab[aria-pressed="true"]{box-shadow:inset 0 -3px 0 #27CCAD}
 .ia-wrap{position:relative;min-width:0}
+.mod-doc{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;font-size:12px}
+.mod-docn{font-weight:700;color:#12313F;max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mod-docv{color:#7a8e98}
+.mod-docb{border:1px solid #c9def0;background:#EEF5FB;color:#2A6F97;border-radius:6px;padding:3px 9px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none}
+.mod-docb:hover{background:#2A6F97;color:#fff}.mod-docup{border-color:#27CCAD;background:#EAF7F4;color:#13866F}
+.mod-bi{font-size:13px;margin:0 0 6px}
 .mod-mbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-left:6px solid #27CCAD;border-radius:12px;padding:10px 14px;margin-bottom:12px}
 .mod-mlab{font-weight:800;color:#12313F;font-size:13px}
 .mod-mchip{border:1.5px solid #c9def0;background:#fff;color:#12313F;border-radius:999px;padding:5px 14px;font-weight:700;font-size:13px;cursor:pointer}
@@ -2615,7 +2620,8 @@ function biGroupes(){
 const pdfTxt = t => String(t || "").replace(/[\u202f\u00a0]/g, " ").replace(/[’]/g, "'").replace(/[^\x20-\x7E\u00A1-\u00FF–—«»…œŒ€]/g, "");
 async function biPdf(gr){
   const P = await chargerPdfLib();
-  const doc = await P.PDFDocument.load(await (await fetch("bi-trame.pdf")).arrayBuffer());
+  let octets = null; try{ octets = await docOctets(BI_DOC); }catch(e){ octets = null; }
+  const doc = await P.PDFDocument.load(octets || await (await fetch("bi-trame.pdf")).arrayBuffer());
   const form = doc.getForm(), font = await doc.embedFont(P.StandardFonts.Helvetica);
   const parc = (gr.f.modules || []).length > 1, partiel = parc && gr.lignes.length < gr.f.modules.length;
   const titre = partiel ? gr.lignes.map(nomLigne).join(" + ") : gr.f.nom; /* module(s) seul(s) → nom du module ; parcours complet → nom du parcours */
@@ -2923,6 +2929,23 @@ function mailCorpsHtml(corps){
   const blocs = corps.split(/\n{2,}/).map(b => b.trim() === MAIL_TAB ? `<div style="margin:0 0 14px">${t.html}</div>` : fmtHtml(b, P));
   return `<div>${blocs.join("")}</div>`;
 }
+/* ===================== Documents déposés (pièces jointes fixes, modèle du bulletin) =====================
+   Rangés comme les questionnaires : fiche « questionnaires/_doc__… » (lecture : conseillères connectées) ;
+   version en ligne : le fichier va dans l'espace privé Supabase (dossier _documents), jamais sur GitHub. */
+const docInfo = id => { const d = (RAW.questionnaires || []).find(x => x.id === id); return d && d.fichier ? d.fichier : null; };
+async function docDeposer(id, file){
+  let fichier;
+  if(SB){ const chemin = "_documents/" + id + "/" + file.name.replace(/[^\w.-]/g, "_");
+    const { error } = await SB.storage.from("questionnaires").upload(chemin, file, { upsert: true, contentType: file.type || undefined }); if(error) throw error;
+    fichier = { nom: file.name, chemin }; }
+  else { const contenu = await new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = ko; r.readAsDataURL(file); }); fichier = { nom: file.name, contenu }; }
+  await db.doc("questionnaires/" + id).set({ fichier });
+}
+async function docRetirer(id){ const f = docInfo(id); if(f && f.chemin && SB) await SB.storage.from("questionnaires").remove([f.chemin]); await db.doc("questionnaires/" + id).delete(); }
+async function docOctets(id){ const f = docInfo(id); if(!f) return null;
+  if(f.chemin && SB){ const { data, error } = await SB.storage.from("questionnaires").download(f.chemin); if(error) throw error; return await data.arrayBuffer(); }
+  if(f.contenu) return await (await fetch(f.contenu)).arrayBuffer(); return null; }
+const BI_DOC = "_doc__bulletin", BI_CHAMPS = ["Intitulé de la formation", "Dates de formation souhaitées", "Tarif de la formation"];
 /* ===================== Modèles d'e-mail (Gestion › Modèles d'e-mail) ===================== */
 const MAIL_ID = "_mail"; let MAILCFG = null;
 const MAIL_DEF = {
@@ -3010,7 +3033,10 @@ function formModeles(el, brouillon){
     <button type="button" class="mod-mnew" id="modNew" title="Nouveau modèle, à partir d'une copie du modèle standard">＋ Nouveau modèle</button>
     ${cur ? `<label class="mod-mnom">Nom <input class="inp" id="modNom" value="${esc(cur.nom || "")}"></label><button type="button" class="mod-x" id="modDelM" title="Supprimer ce modèle (après Enregistrer)">Supprimer ce modèle</button>` : `<span class="mod-mhint">Le modèle standard est proposé par défaut dans « Préparer l'e-mail ».</span>`}</div>`;
   const opt = (v, cur) => Object.keys(CONDS).map(k => `<option value="${k}"${k === cur ? " selected" : ""}>${CONDS[k]}</option>`).join("");
-  const FICH = { "": "—", bulletin: "Bulletin prérempli (PDF)", devis: "Devis (document Word)" };
+  const FICH = { "": "—", bulletin: "Bulletin prérempli (PDF)", devis: "Devis (document Word)", doc: "Document déposé (PDF, Word…)" };
+  const docCtl = (x, i) => { if(x.fichier !== "doc") return ""; const id = x.docId || ""; const f = id && docInfo(id);
+    return `<div class="mod-doc">${f ? `<span class="mod-docn" title="${esc(f.nom)}">📄 ${esc(f.nom)}</span><button type="button" class="mod-docb" data-docdl="${esc(id)}">Voir</button>` : `<span class="mod-docv">Aucun document</span>`}
+      <label class="mod-docb mod-docup">${f ? "Remplacer" : "Déposer un fichier"}<input type="file" hidden data-docup="${i}"></label>${f ? `<button type="button" class="mod-docb" data-docrm="${i}">Retirer</button>` : ""}</div>`; };
   el.innerHTML = barre + `<div class="mod-grid"><div>
     <div class="form mod-card"><h2>Texte du message${cur ? ` · <span class="mod-hn">${esc(cur.nom || "")}</span>` : ""}</h2>
       ${fmtBar()}<p class="mod-reps">Repères remplacés automatiquement : ${["prénom", "besoin", "formations", "tableau", "lien CPF", "pièces jointes"].map(k => `<button type="button" class="mod-tag" data-modins="{${k}}" title="Insérer à l'endroit du curseur">{${k}}</button>`).join("")}</p>
@@ -3026,9 +3052,13 @@ function formModeles(el, brouillon){
       <table class="mod-cases"><tr><th>Libellé de la case</th><th>Phrase ajoutée au message</th><th>Affichée</th><th>Cochée par défaut</th><th>Fichier</th><th></th></tr>
       ${MOD.cases.map((x, i) => `<tr data-mc="${i}"><td><input class="inp" data-mck="libelle" value="${esc(x.libelle || "")}" placeholder="ex. Plan d'accès"></td><td><input class="inp" data-mck="phrase" value="${esc(x.phrase || "")}" placeholder="ex. le plan d'accès"></td>
         <td><select class="inp" data-mck="cond">${opt(0, x.cond || "toujours")}</select></td><td class="n"><input type="checkbox" data-mck="defaut"${x.defaut ? " checked" : ""}></td>
-        <td><select class="inp" data-mck="fichier">${Object.keys(FICH).map(k => `<option value="${k}"${(x.fichier || "") === k ? " selected" : ""}>${FICH[k]}</option>`).join("")}</select></td><td><button type="button" class="mod-x" data-mcdel="${i}" title="Supprimer cette case">✕</button></td></tr>`).join("")}</table>
+        <td><select class="inp" data-mck="fichier">${Object.keys(FICH).map(k => `<option value="${k}"${(x.fichier || "") === k ? " selected" : ""}>${FICH[k]}</option>`).join("")}</select>${docCtl(x, i)}</td><td><button type="button" class="mod-x" data-mcdel="${i}" title="Supprimer cette case">✕</button></td></tr>`).join("")}</table>
       <button type="button" class="mod-add" id="modAddCase">＋ Ajouter une case</button>
-      <p class="fhint">Les cases cochées forment la phrase « Vous trouverez ci-joint … » du bloc {pièces jointes}.</p></div>
+      <p class="fhint">Les cases cochées forment la phrase « Vous trouverez ci-joint … » du bloc {pièces jointes}. Avec « Document déposé », la conseillère trouve un bouton ⬇ pour télécharger le fichier et le joindre.</p></div>
+    <div class="form mod-card"><h2>Bulletin d'inscription (modèle PDF)</h2>
+      ${(() => { const f = docInfo(BI_DOC); return `<div class="mod-doc mod-bi">${f ? `<span class="mod-docn">📄 ${esc(f.nom)}</span><button type="button" class="mod-docb" data-docdl="${BI_DOC}">Voir</button>` : `<span class="mod-docv">Bulletin fourni avec l'outil</span><a class="mod-docb" href="bi-trame.pdf" target="_blank" rel="noopener">Voir</a>`}
+        <label class="mod-docb mod-docup">${f ? "Remplacer" : "Déposer mon bulletin"}<input type="file" accept="application/pdf" hidden id="biUp"></label>${f ? `<button type="button" class="mod-docb" id="biRm">Revenir au bulletin d'origine</button>` : ""}</div>`; })()}
+      <p class="fhint">Commun à tous les modèles. Le PDF doit être un <b>formulaire à remplir</b> contenant les champs « Intitulé de la formation », « Dates de formation souhaitées » et « Tarif de la formation » : l'outil les préremplit, le reste est complété par le client.</p></div>
     <div class="form mod-card"><h2>Mentions CPF (notes * et ** du tableau)</h2>
       <p class="fhint" style="margin-top:0">Utilisées dans le document Word et dans le tableau de l'e-mail, seulement quand la proposition contient du CPF. Les montants servent aussi au calcul.</p>
       <div class="mod-mt"><label>Plafond de prise en charge CPF (€) <input class="inp" data-mmk="plafond" inputmode="numeric" value="${esc(MOD.mentions.plafond)}"></label>
@@ -3053,10 +3083,40 @@ function modLire(){ /* relit le formulaire dans MOD */
     n.querySelectorAll("[data-mck]").forEach(x => { c[x.dataset.mck] = x.type === "checkbox" ? x.checked : x.value; }); });
 }
 let modDernierChamp = null;
+document.addEventListener("change", async e => {
+  const up = e.target.closest && e.target.closest("[data-docup]"), bi = e.target.id === "biUp" ? e.target : null;
+  if(!up && !bi) return; const file = e.target.files && e.target.files[0]; if(!file) return;
+  if(file.size > 8 * 1024 * 1024){ toast("Fichier trop lourd (8 Mo maximum)"); e.target.value = ""; return; }
+  try{
+    if(bi){
+      const P = await chargerPdfLib(), d = await P.PDFDocument.load(await file.arrayBuffer());
+      let noms = []; try{ noms = d.getForm().getFields().map(f => f.getName()); }catch(_){}
+      const manque = BI_CHAMPS.filter(n => !noms.includes(n));
+      if(manque.length){ toast("Ce PDF n'a pas les champs à préremplir : " + manque.join(", ") + ". Il n'a pas été enregistré."); e.target.value = ""; return; }
+      await docDeposer(BI_DOC, file); toast("Bulletin d'inscription enregistré");
+    } else {
+      modSync(); const i = +up.dataset.docup, c = MOD.cases[i]; if(!c) return;
+      c.docId = c.docId || "_doc__" + (MOD_CUR || "std") + "__" + (c.id || ("c" + Date.now().toString(36)));
+      await docDeposer(c.docId, file); modSync(); toast("Document déposé : pensez à enregistrer les modèles");
+      $("admForm").dataset.dirty = "1";
+    }
+    renderModFromMOD(); setTimeout(() => { if(MOD) renderModFromMOD(); }, 900);
+  }catch(err){ console.error(err); toast("Le document n'a pas pu être enregistré."); }
+});
+document.addEventListener("click", async e => {
+  const b = e.target.closest && e.target.closest("[data-docdl],[data-docrm],#biRm"); if(!b || !MOD) return;
+  if(b.dataset.docdl){ ouvrirFichierQ(b.dataset.docdl); return; }
+  try{
+    if(b.id === "biRm"){ await docRetirer(BI_DOC); toast("Retour au bulletin d'origine"); }
+    else { modSync(); const c = MOD.cases[+b.dataset.docrm]; if(c && c.docId){ await docRetirer(c.docId); } toast("Document retiré"); }
+    renderModFromMOD(); setTimeout(() => { if(MOD) renderModFromMOD(); }, 900);
+  }catch(err){ toast("Opération impossible pour le moment."); }
+});
 document.addEventListener("focusin", e => { if(e.target.closest && e.target.closest("#admForm .mod-txt")) modDernierChamp = e.target; }); /* blocs du message et notes CPF */
 document.addEventListener("input", e => { if(!MOD || !e.target.closest("#admForm .mod-grid")) return; modLire(); modApercu(); $("admForm").dataset.dirty = "1"; });
 document.addEventListener("input", e => { if(e.target.id !== "modNom" || !MODA) return; const m = MODA.autres.find(x => x.id === MOD_CUR); if(m){ m.nom = e.target.value; const ch = document.querySelector(`[data-modcur="${CSS.escape(MOD_CUR)}"]`); if(ch) ch.textContent = m.nom || "Sans nom"; const h = document.querySelector(".mod-hn"); if(h) h.textContent = m.nom; } $("admForm").dataset.dirty = "1"; });
 document.addEventListener("change", e => { if(!MOD || !e.target.closest("#admForm .mod-grid")) return; modLire(); modApercu(); $("admForm").dataset.dirty = "1"; });
+document.addEventListener("change", e => { if(MOD && e.target.matches && e.target.matches('#admForm [data-mck="fichier"]')) setTimeout(() => { modLire(); renderModFromMOD(); }, 0); });
 document.addEventListener("click", async e => {
   if(!MOD || !e.target.closest("#admForm")) return; const t = e.target.closest("button"); if(!t) return;
   const re = () => { const ex = MOD.ex; const keep = MOD; formModeles($("admForm")); MOD.blocs = keep.blocs; MOD.cases = keep.cases; MOD.mentions = keep.mentions; MOD.ex = ex; renderModFromMOD(); };
@@ -3105,7 +3165,7 @@ function mailHtml(){
     <label>Prénom du client<input id="mlPrenom" value="${esc(MAILV.prenom)}" placeholder="ex. Marie"></label>
     ${r.cpf.length ? `<label>Lien Mon Compte Formation<input id="mlLien" value="${esc(MAILV.lien)}" placeholder="https://www.moncompteformation.gouv.fr/…"></label>` : ""}
     ${(() => { const cv = casesVisibles(mailCfg(MAILV.modele), r); return cv.length ? `<fieldset><legend>Pièces jointes</legend>${cv.map(c => { const on = caseCochee(c, MAILV);
-      return `<label class="ck"><input type="checkbox" data-mlcase="${esc(c.id)}"${on ? " checked" : ""}> ${esc(c.libelle)}</label>${c.fichier === "bulletin" ? `<button type="button" class="ml-dl" data-mldl="bulletin" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Un bulletin par formation hors CPF, avec l'intitulé, les dates et le tarif ; le reste est à remplir par le client">⬇ Bulletin prérempli (PDF)</button>` : c.fichier === "devis" ? `<button type="button" class="ml-dl" data-mldl="devis" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"}>⬇ Devis (document Word)</button>` : ""}`; }).join("")}</fieldset>` : ""; })()}
+      return `<label class="ck"><input type="checkbox" data-mlcase="${esc(c.id)}"${on ? " checked" : ""}> ${esc(c.libelle)}</label>${c.fichier === "bulletin" ? `<button type="button" class="ml-dl" data-mldl="bulletin" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Un bulletin par formation hors CPF, avec l'intitulé, les dates et le tarif ; le reste est à remplir par le client">⬇ Bulletin prérempli (PDF)</button>` : c.fichier === "devis" ? `<button type="button" class="ml-dl" data-mldl="devis" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"}>⬇ Devis (document Word)</button>` : c.fichier === "doc" && c.docId && docInfo(c.docId) ? `<button type="button" class="ml-dl" data-qf="${esc(c.docId)}" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Télécharger le document, puis joignez-le à votre e-mail">⬇ ${esc(docInfo(c.docId).nom || c.libelle)}</button>` : ""}`; }).join("")}</fieldset>` : ""; })()}
     <label>Ma signature (gardée sur cet ordinateur)<textarea id="mlSig" rows="4" placeholder="Prénom Nom&#10;Conseiller(ère) formation&#10;Téléphone · agence">${esc(MAILP.signature || "")}</textarea></label>
     <p class="pl-note">Le texte est modifiable à droite. La ligne [TABLEAU RÉCAPITULATIF] devient le tableau mis en forme quand vous copiez : vous pouvez la déplacer ou la supprimer.</p></div>
     <div class="ml-txt"><label>Objet<input id="mlObjet" value="${esc(t.objet)}"></label><label>Message${fmtBar()}<textarea id="mlCorps" rows="18">${esc(MAILV.texte != null ? MAILV.texte : t.corps)}</textarea></label>
