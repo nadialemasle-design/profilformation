@@ -624,6 +624,8 @@ textarea.com{border-left:4px solid #9D8BEA !important;background:#FAF8FF}
 /* onglets de Gestion : l'actif bien marqué */
 .stab[aria-pressed="true"]{box-shadow:inset 0 -3px 0 #27CCAD}
 .ia-wrap{position:relative;min-width:0}
+.ml-bis{display:flex;flex-direction:column;gap:4px;margin:2px 0 6px 22px}.ml-bis[hidden]{display:none}.ml-bis small{font-size:11.5px;color:#6b7f89}
+.ml-bis .ml-dl{text-align:left}
 .mod-doc{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;font-size:12px}
 .mod-docn{font-weight:700;color:#12313F;max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mod-docv{color:#7a8e98}
 .mod-docb{border:1px solid #c9def0;background:#EEF5FB;color:#2A6F97;border-radius:6px;padding:3px 9px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none}
@@ -2620,6 +2622,8 @@ function biGroupes(){
     if(!g.has(k)) g.set(k, { f: l.f, lignes: [] }); g.get(k).lignes.push(l); });
   return [...g.values()];
 }
+/* intitulé d'un bulletin : nom du module pour un parcours, sinon nom de la formation */
+const biTitre = gr => { const parc = (gr.f.modules || []).length > 1; return parc && gr.lignes.length < gr.f.modules.length ? gr.lignes.map(nomLigne).join(" + ") : gr.f.nom; };
 const pdfTxt = t => String(t || "").replace(/[\u202f\u00a0]/g, " ").replace(/[’]/g, "'").replace(/[^\x20-\x7E\u00A1-\u00FF–—«»…œŒ€]/g, "");
 async function biPdf(gr){
   const P = await chargerPdfLib();
@@ -2636,8 +2640,9 @@ async function biPdf(gr){
   mettre("Intitulé de la formation", titre); mettre("Dates de formation souhaitées", dates); mettre("Tarif de la formation", tarif);
   const blob = new Blob([await doc.save()], { type: "application/pdf" }); blob.titre = titre; return blob;
 }
-async function biTelecharger(){
-  const gs = biGroupes(); if(!gs.length){ toast("Aucune formation hors CPF dans la proposition."); return; }
+async function biTelecharger(k){
+  let gs = biGroupes(); if(!gs.length){ toast("Aucune formation hors CPF dans la proposition."); return; }
+  if(k !== undefined && k !== null && k !== "") gs = gs[+k] ? [gs[+k]] : gs;
   try{ for(const gr of gs){ const bl = await biPdf(gr), nom = "Bulletin-inscription-" + norm(bl.titre || gr.f.nom).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) + ".pdf"; await enregistrer(bl, nom); } }
   catch(e){ toast("Le bulletin n'a pas pu être préparé."); console.error(e); }
 }
@@ -3168,7 +3173,9 @@ function mailHtml(){
     <label>Prénom du client<input id="mlPrenom" value="${esc(MAILV.prenom)}" placeholder="ex. Marie"></label>
     ${r.cpf.length ? `<label>Lien Mon Compte Formation<input id="mlLien" value="${esc(MAILV.lien)}" placeholder="https://www.moncompteformation.gouv.fr/…"></label>` : ""}
     ${(() => { const cv = casesVisibles(mailCfg(MAILV.modele), r); return cv.length ? `<fieldset><legend>Pièces jointes</legend>${cv.map(c => { const on = caseCochee(c, MAILV);
-      return `<label class="ck"><input type="checkbox" data-mlcase="${esc(c.id)}"${on ? " checked" : ""}> ${esc(c.libelle)}</label>${c.fichier === "bulletin" ? `<button type="button" class="ml-dl" data-mldl="bulletin" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Un bulletin par formation hors CPF (un par module pour un parcours), avec l'intitulé, les dates et le tarif ; le reste est à remplir par le client">⬇ Bulletin prérempli (PDF)</button>` : c.fichier === "devis" ? `<button type="button" class="ml-dl" data-mldl="devis" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"}>⬇ Devis (document Word)</button>` : c.fichier === "doc" && c.docId && docInfo(c.docId) ? `<button type="button" class="ml-dl" data-qf="${esc(c.docId)}" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Télécharger le document, puis joignez-le à votre e-mail">⬇ ${esc(docInfo(c.docId).nom || c.libelle)}</button>` : ""}`; }).join("")}</fieldset>` : ""; })()}
+      return `<label class="ck"><input type="checkbox" data-mlcase="${esc(c.id)}"${on ? " checked" : ""}> ${esc(c.libelle)}</label>${c.fichier === "bulletin" ? (() => { const gs = biGroupes();
+        if(gs.length < 2) return `<button type="button" class="ml-dl" data-mldl="bulletin" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Bulletin avec l'intitulé, les dates et le tarif ; le reste est à remplir par le client">⬇ Bulletin prérempli (PDF)</button>`;
+        return `<span class="ml-bis" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"}><small>Un bulletin par ${gs.some(g => (g.f.modules || []).length > 1) ? "module" : "formation"} :</small>${gs.map((g, k) => `<button type="button" class="ml-dl" data-mldl="bulletin" data-big="${k}" title="Bulletin prérempli : ${esc(biTitre(g))}">⬇ ${esc(biTitre(g))}</button>`).join("")}</span>`; })() : c.fichier === "devis" ? `<button type="button" class="ml-dl" data-mldl="devis" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"}>⬇ Devis (document Word)</button>` : c.fichier === "doc" && c.docId && docInfo(c.docId) ? `<button type="button" class="ml-dl" data-qf="${esc(c.docId)}" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Télécharger le document, puis joignez-le à votre e-mail">⬇ ${esc(docInfo(c.docId).nom || c.libelle)}</button>` : ""}`; }).join("")}</fieldset>` : ""; })()}
     <label>Ma signature (gardée sur cet ordinateur)<textarea id="mlSig" rows="4" placeholder="Prénom Nom&#10;Conseiller(ère) formation&#10;Téléphone · agence">${esc(MAILP.signature || "")}</textarea></label>
     <p class="pl-note">Le texte est modifiable à droite. La ligne [TABLEAU RÉCAPITULATIF] devient le tableau mis en forme quand vous copiez : vous pouvez la déplacer ou la supprimer.</p></div>
     <div class="ml-txt"><label>Objet<input id="mlObjet" value="${esc(t.objet)}"></label><label>Message${fmtBar()}<textarea id="mlCorps" rows="18">${esc(MAILV.texte != null ? MAILV.texte : t.corps)}</textarea></label>
@@ -3190,7 +3197,7 @@ document.addEventListener("input", e => {
 document.addEventListener("click", async e => {
   const id = e.target.id;
   const dl = e.target.closest && e.target.closest("[data-mldl]");
-  if(dl){ if(dl.dataset.mldl === "bulletin") biTelecharger(); else propWord(); return; }
+  if(dl){ if(dl.dataset.mldl === "bulletin") biTelecharger(dl.dataset.big); else propWord(); return; }
   if(!/^ml(Copy|CopyObj|Open|Regen|Apercu)$/.test(id)) return;
   if(id === "mlApercu"){ const z = $("mlPrev"); z.hidden = !z.hidden; if(!z.hidden) z.innerHTML = mailCorpsHtml($("mlCorps").value); e.target.textContent = z.hidden ? "Voir l'aperçu" : "Masquer l'aperçu"; return; }
   const objet = $("mlObjet").value, corps = $("mlCorps").value;
