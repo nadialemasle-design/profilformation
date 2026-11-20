@@ -145,6 +145,15 @@ details.group .profiles{padding:6px 0 4px 6px}
 .cmp tbody td:not(.abs):not(.why){background:var(--green-soft);box-shadow:inset 3px 0 0 var(--green-mid)}
 .cmp tbody td:not(.abs):not(.why) .mt{color:var(--green)}
 /* Dates, tarifs, positionnement, CPF sous chaque module */
+.mfin{display:flex;gap:8px;align-items:flex-start;margin:8px 0 2px;padding:7px 10px;border:1.5px solid var(--teal);border-left-width:5px;border-radius:10px;background:var(--teal-soft);font-size:12.5px;line-height:1.4;color:var(--fg);text-align:left}
+.mfin .ic{width:16px;height:16px;flex:none;margin-top:1px;color:var(--teal)}
+.mfin-l{font-weight:700;color:var(--teal);margin-right:4px}
+.mfin-c{display:inline-block;margin:1px 4px 1px 0;padding:1px 8px;border-radius:999px;background:var(--teal);color:#fff;font-size:11.5px;font-weight:600;white-space:nowrap}
+.mfin-t{display:block;margin-top:3px}
+.finbox{grid-column:1/-1;border-top:1px dashed var(--line);padding-top:8px;display:flex;flex-direction:column;gap:6px}
+.finbox>b{font-size:13px}
+.finchk{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}
+.finchk label{display:flex;align-items:center;gap:6px}
 .minfo{display:flex;flex-direction:column;gap:2px;margin-top:6px;padding-top:5px;border-top:1px dashed var(--line);font-size:12px;line-height:1.35;color:var(--muted);text-align:left}
 .minfo .ml{display:flex;gap:2px;align-items:flex-start}
 .minfo .ic{width:15px;height:15px;margin:1px 4px 0 0;vertical-align:0}
@@ -1002,6 +1011,14 @@ const today = () => { const d = new Date(); return d.getFullYear() + "-" + Strin
 const aVenir = m => (Array.isArray(m && m.sessions) ? m.sessions : []).filter(x => x && x.texte && (!x.fin || x.fin >= today()))
   .sort((a,b) => String(a.debut || a.fin || "").localeCompare(String(b.debut || b.fin || "")));
 const eur = n => (n === "" || n == null || isNaN(Number(n))) ? "" : Number(n).toLocaleString("fr-FR") + " €";
+/* conditions de financement d'un module : cases (types) + précisions, affichées en évidence sur la fiche */
+const FIN_TYPES = [["cpf", "CPF"], ["opco", "OPCO"], ["plan", "Plan de développement des compétences (employeur)"], ["ft", "France Travail (AIF)"], ["tp", "Transitions Pro"], ["faf", "FAF indépendants (AGEFICE, FIFPL, FAFCEA)"], ["perso", "Financement personnel"]];
+const FIN_COURT = { cpf: "CPF", opco: "OPCO", plan: "Plan de développement", ft: "France Travail", tp: "Transitions Pro", faf: "FAF indépendants", perso: "Financement personnel" };
+function finHtml(m){
+  const t = Array.isArray(m && m.financements) ? m.financements.filter(k => FIN_COURT[k]) : [], x = String((m && m.financementTexte) || "").trim();
+  if(!t.length && !x) return "";
+  return `<div class="mfin">${ic("euro")}<span><span class="mfin-l">Financement :</span>${t.map(k => `<span class="mfin-c">${FIN_COURT[k]}</span>`).join("")}${x ? `<span class="mfin-t">${esc(x).replace(/\n/g, "<br>")}</span>` : ""}</span></div>`;
+}
 /* opts.parcours : le module fait partie d'un parcours (plusieurs modules) ; opts.avecM1 : ce parcours contient un module de niveau 1 */
 function infoHtml(m, opts){
   if(!m) return "";
@@ -1395,7 +1412,7 @@ function pied(m, o){
   if(!m) return "";
   const s = aVenir(m), has = Array.isArray(m.sessions) && m.sessions.length, det = infoHtml(m, o);
   const next = has ? (s.length ? `<span class="fo-next">${ic("cal")}<span><b>Prochaine session :</b> ${esc(s[0].texte)}${s.length > 1 ? ` <small>· ${s.length - 1} autre${s.length > 2 ? "s" : ""}</small>` : ""}</span></span>` : `<span class="fo-next none">${ic("cal")}Aucune date à venir</span>`) : "<span></span>";
-  return `<div class="fo-foot">${next}${det ? `<details class="fo-det"><summary>Détails</summary>${det}</details>` : ""}</div>`;
+  return `${finHtml(m)}<div class="fo-foot">${next}${det ? `<details class="fo-det"><summary>Détails</summary>${det}</details>` : ""}</div>`;
 }
 /* besoin détaillé : situation, difficulté, attente — replié par défaut */
 function besoinDetailHtml(b){
@@ -1922,6 +1939,8 @@ function formFormation(el, d){
         /* un simple nombre saisi ici (ex. « 4 ») veut dire « éligible dans un parcours de N jours minimum » */
         if(/^\d+\s*(j|jours?)?$/i.test(v)){ const n = parseInt(v, 10); v = `Oui, dans un parcours de ${n} jour${n > 1 ? "s" : ""} minimum`; }
         if(v) m[k] = v; });
+      m.financements = [...l.querySelectorAll(".mfinc:checked")].map(c => c.value);
+      const ft = q(".mfint").value.trim(); if(ft) m.financementTexte = ft;
       if(q(".mq").checked){
         m.questionnaire = true;
         const nq = q(".mpos").value.trim(), tq = q(".mqt").value.trim(); if(nq) m.positionnement = nq; if(tq) m.questionnaireType = tq;
@@ -2152,13 +2171,20 @@ function repriseOuvrir(fid, domCur){
   liste(); $("rpQ").focus();
 }
 const modLine = (m, fid) => `<div class="modline"><input class="inp mc" value="${esc(m.code)}" placeholder="Code" aria-label="Code du module"><input class="inp mtit" value="${esc(m.titre)}" placeholder="Titre du module" aria-label="Titre du module"><button type="button" class="btn small danger" data-rm="1">Retirer</button><input class="inp mlien" value="${esc(m.lien || "")}" placeholder="Lien vers la fiche (https://…)" aria-label="Lien vers la fiche du module">
-  <details class="mextra"><summary>Dates, tarifs, positionnement, CPF${(m.sessions||[]).length ? ` · ${aVenir(m).length} date${aVenir(m).length>1?"s":""} à venir` : ""}</summary><div class="fgrid">
+  <details class="mextra"><summary>Dates, tarifs, positionnement, CPF, financement${(m.sessions||[]).length ? ` · ${aVenir(m).length} date${aVenir(m).length>1?"s":""} à venir` : ""}</summary><div class="fgrid">
     ${field("Dates (une session par ligne, avec l'année)", `<textarea class="inp mses" placeholder="ex. 18-19 et 25-26 janvier 2027&#10;15 avril 2027">${esc((m.sessions || []).map(x => x.texte).join("\n"))}</textarea>`, true)}
     ${field("Tarif (€)", `<input class="inp mtar" inputmode="decimal" value="${esc(m.tarif ?? "")}" placeholder="ex. 780">`)}
     ${field("Tarif préférentiel (€)", `<input class="inp mtp" inputmode="decimal" value="${esc(m.tarifParcours ?? "")}" placeholder="ex. 700"><span class="mpj">en parcours, ou dès <input class="inp mpjn" inputmode="numeric" value="${esc(m.prefJours ?? "")}" placeholder="—" aria-label="Nombre de jours"> jours de formation dans la proposition</span><span class="fhint">Jours vides : dès 2 formations ou modules dans la proposition.</span>`)}
     ${qFields(m, fid)}
     ${field("Éligibilité CPF", `<input class="inp mcpf" value="${esc(m.cpf || "")}" placeholder="ex. Oui (certification Tosa) ; Non ; Oui, dans un parcours de 4 jours minimum">`, true)}
+    ${finFields(m)}
   </div></details></div>`;
+function finFields(m){
+  const sel = Array.isArray(m.financements) ? m.financements : (cpfOk(m.cpf) ? ["cpf"] : []);
+  return `<div class="finbox"><b>Conditions de financement <small class="fhint">— affichées en évidence sur la fiche du module</small></b>
+    <div class="finchk">${FIN_TYPES.map(([k, l]) => `<label><input type="checkbox" class="mfinc" value="${k}"${sel.includes(k) ? " checked" : ""}> ${esc(l)}</label>`).join("")}</div>
+    ${field("Conditions et précisions", `<textarea class="inp mfint" placeholder="ex. CPF uniquement dans un parcours de 3 jours minimum avec la certification RS7643. Prise en charge OPCO selon la branche : nous contacter.">${esc(m.financementTexte || "")}</textarea>`, true)}</div>`;
+}
 
 /* champs « questionnaire de positionnement » d'un module (le lien et le fichier sont rangés à part, voir qKey) */
 function qFields(m, fid){
