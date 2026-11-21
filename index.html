@@ -1916,6 +1916,7 @@ function formFormation(el, d){
   $("pickMod").onclick = () => repriseOuvrir(isNew ? "" : adm.sel, domCur);
   $("modLines").addEventListener("click", e => {
     if(e.target.closest("[data-rm]")) e.target.closest(".modline").remove();
+    const fc = e.target.closest(".finclr"); if(fc){ finEffacer(fc); return; }
     if(e.target.closest(".mqrm")){ const c = e.target.closest(".qcur"); c.dataset.retire = "1"; c.hidden = true; }
   });
   $("modLines").addEventListener("change", e => { if(e.target.matches(".mq")) e.target.closest(".qbox").querySelector(".qgrid").hidden = !e.target.checked; });
@@ -2190,7 +2191,8 @@ function finFields(m){
   const sel = Array.isArray(m.financements) ? m.financements : (cpfOk(m.cpf) ? ["cpf"] : []);
   return `<div class="finbox"><b>Certification <small class="fhint">— affichées en évidence sur la fiche du module</small></b>
     <div class="finchk">${FIN_TYPES.map(([k, l]) => `<label><input type="checkbox" class="mfinc" value="${k}"${sel.includes(k) ? " checked" : ""}> ${esc(l)}</label>`).join("")}</div>
-    ${field("Conditions et précisions", `<textarea class="inp mfint" placeholder="ex. CPF uniquement dans un parcours de 3 jours minimum avec la certification RS7643. Prise en charge OPCO selon la branche : nous contacter.">${esc(m.financementTexte || "")}</textarea>`, true)}</div>`;
+    ${field("Conditions et précisions", `<textarea class="inp mfint" placeholder="ex. CPF uniquement dans un parcours de 3 jours minimum avec la certification RS7643. Prise en charge OPCO selon la branche : nous contacter.">${esc(m.financementTexte || "")}</textarea>`, true)}
+    <div><button type="button" class="btn small danger finclr">Effacer les conditions dans tous les parcours</button> <small class="fhint">Cases et texte, dans chaque parcours qui contient ce module (même titre).</small></div></div>`;
 }
 
 /* champs « questionnaire de positionnement » d'un module (le lien et le fichier sont rangés à part, voir qKey) */
@@ -2375,6 +2377,25 @@ function askConfirm(text, run, label, okText){
   $("fconfirm").innerHTML = `<div class="confirm"><span>${esc(text)}</span><button type="button" class="btn ${label ? "primary" : "danger"}" id="cYes">${esc(label || "Confirmer la suppression")}</button><button type="button" class="btn" id="cNo">Annuler</button></div>`;
   $("cNo").onclick = () => $("fconfirm").innerHTML = "";
   $("cYes").onclick = () => write(run, okText || null, () => {}).then(() => { if(!okText) renderAdmin(true); });
+}
+/* efface les conditions de Certification d'un module dans tous les parcours qui le contiennent (2 clics : armer puis confirmer) */
+async function finEffacer(btn){
+  const ml = btn.closest(".modline"), tit = norm(ml.querySelector(".mtit").value || "");
+  if(!tit) return toast("Indiquez d'abord le titre du module.");
+  if(!btn.dataset.arme){ btn.dataset.arme = "1"; const t0 = btn.textContent; btn.textContent = "Confirmer : effacer partout ?"; btn._t = setTimeout(() => { delete btn.dataset.arme; btn.textContent = t0; }, 5000); return; }
+  clearTimeout(btn._t); delete btn.dataset.arme; btn.textContent = "Effacer les conditions dans tous les parcours";
+  let n = 0;
+  await write(async () => {
+    for(const o of (RAW.formations || []).filter(x => Array.isArray(x.modules))){
+      if(!o.modules.some(m => norm(m.titre || "") === tit && (m.financementTexte || (m.financements || []).length))) continue;
+      const mm = o.modules.map(m => { if(norm(m.titre || "") !== tit) return m; const c = Object.assign({}, m); delete c.financements; delete c.financementTexte; return c; });
+      await db.doc("formations/" + o.id).update({ modules: mm }); n++;
+    }
+  }, "", () => {
+    ml.querySelectorAll(".mfinc").forEach(c => c.checked = false); ml.querySelector(".mfint").value = "";
+    document.querySelectorAll("#admForm button").forEach(b => b.disabled = false);
+    toast(n ? `Conditions effacées dans ${n} parcours` : "Aucune condition enregistrée pour ce module");
+  });
 }
 async function write(fn, okText, after){
   const btns = document.querySelectorAll("#admForm button"); btns.forEach(b => b.disabled = true);
