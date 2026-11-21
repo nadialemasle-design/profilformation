@@ -1084,7 +1084,7 @@ function lireSession(t){
   return { texte: String(t).trim(), debut: iso(jours[0]), fin: iso(jours[jours.length - 1]) };
 }
 const ctxF = f => { const codes = Object.keys(f.modules || {}); return { fid: f.id, parcours: codes.length > 1, avecM1: codes.length > 1 && codes.some(c => /^M1\b/i.test(c)) }; };
-const INFO_KEYS = ["sessions", "tarif", "tarifParcours", "questionnaire", "questionnaireType", "positionnement", "cpf"];
+const INFO_KEYS = ["sessions", "tarif", "tarifParcours", "questionnaire", "questionnaireType", "positionnement", "cpf", "financements", "financementTexte"];
 
 /* ---------- Données ---------- */
 let db = null, user = null, canAdmin = false; /* canRead : voir les liens des questionnaires */
@@ -1903,7 +1903,7 @@ function formFormation(el, d){
       ${field("Référence interne (facultatif)", inp("fRef", r.reference || "", "ex. PAO-1.2 Photo Init"))}
       ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
     </div>
-    <div class="fsec sec-mod"><h3>Modules</h3><p class="fhint">Formation seule : un seul module, avec le code « Formation ». Parcours : un module par code (M1, M2, M2.3…). Ouvrez « Dates, tarifs, positionnement, CPF » sous chaque module pour les compléter. Ces informations sont reportées automatiquement dans les autres parcours qui contiennent le même module (même titre).</p>
+    <div class="fsec sec-mod"><h3>Modules</h3><p class="fhint">Formation seule : un seul module, avec le code « Formation ». Parcours : un module par code (M1, M2, M2.3…). Ouvrez « Dates, tarifs, positionnement, CPF, certification » sous chaque module pour les compléter. Ces informations sont reportées automatiquement dans les autres parcours qui contiennent le même module (même titre).</p>
       <div id="modLines">${mods.map(x => modLine(x, isNew ? "" : adm.sel)).join("")}</div>
       <div class="rp-btns"><button type="button" class="btn add small" id="addMod">+ Module vide</button><button type="button" class="btn add small rp-open" id="pickMod" aria-expanded="false">⧉ Reprendre un module existant</button></div>
       <div id="pickBox" hidden></div></div>
@@ -1982,13 +1982,14 @@ function formFormation(el, d){
       if(add.length) await db.doc("domaines/" + cible).update({ ordreModules: om.concat(add) });
       /* changement de domaine : un parcours de profil doit rester dans le domaine du profil */
       if(change) for(const p of used){ const rp = rawP(p.id); await db.doc("profils/" + p.id).update({ parcours: (rp.parcours || []).filter(x => x.formation !== id) }); }
-      /* report des dates, tarifs, positionnement et CPF dans les autres parcours contenant le même module */
+      /* report des dates, tarifs, positionnement, CPF et certification dans les autres parcours contenant le même module */
       for(const o of (RAW.formations || []).filter(x => x.id !== id && Array.isArray(x.modules))){
         let touche = false;
         const mm = o.modules.map(om => {
           const src = modules.find(m => m.titre && norm(m.titre) === norm(om.titre || ""));
           if(!src) return om;
-          const n = Object.assign({}, om); INFO_KEYS.forEach(k => { if(src[k] !== undefined) n[k] = src[k]; else delete n[k]; });
+          const n = Object.assign({}, om), finVide = !(src.financementTexte || (src.financements || []).length); /* conditions vides : on ne les efface pas ailleurs */
+          INFO_KEYS.forEach(k => { if(finVide && (k === "financements" || k === "financementTexte")) return; if(src[k] !== undefined) n[k] = src[k]; else delete n[k]; });
           if(JSON.stringify(n) !== JSON.stringify(om)){ touche = true; return n; }
           return om;
         });
