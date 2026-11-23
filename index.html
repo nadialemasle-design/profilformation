@@ -1567,6 +1567,7 @@ $("detail").addEventListener("click", e => {
   document.querySelector('.vbtn[data-view="admin"]').click();
 });
 $("resetBtn").addEventListener("click", e => {
+  if(prop.items.length){ prop.items = []; prop.ouvert = false; prop.mail = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); } /* repart de zéro : la proposition (parcours sélectionnés) est vidée aussi */
   state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; state.pid = ""; ouvertes.clear();
   $("q").value = ""; domOuverts.clear(); renderConsult(); $("groups").scrollTop = 0;
 });
