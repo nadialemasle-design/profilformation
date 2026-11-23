@@ -1564,12 +1564,6 @@ $("detail").addEventListener("click", e => {
   document.querySelector('.vbtn[data-view="admin"]').click();
 });
 $("resetBtn").addEventListener("click", e => {
-  const b = e.currentTarget;
-  /* 2e clic dans les 4 s : vider aussi la proposition */
-  if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.innerHTML = ic("reset"); b.classList.remove("danger","icb-txt");
-    prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition vidée"); return; }
-  if(prop.items.length){ b.dataset.ok = "1"; b.textContent = "Vider aussi la proposition ?"; b.classList.add("danger","icb-txt");
-    setTimeout(() => { if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.innerHTML = ic("reset"); b.classList.remove("danger","icb-txt"); b.hidden = !(state.q.trim() || !state.tous || state.cat || state.pid || state.fid); } }, 4000); }
   state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; state.pid = ""; ouvertes.clear();
   $("q").value = ""; domOuverts.clear(); renderConsult(); $("groups").scrollTop = 0;
 });
@@ -2554,7 +2548,6 @@ document.addEventListener("click", async e => {
   if(e.target.id === "propOpen"){ prop.ouvert = !prop.ouvert; if(prop.ouvert) prop.mail = false; renderProp(); return; }
   if(e.target.id === "propMail"){ prop.mail = !prop.mail; if(prop.mail){ prop.ouvert = false; MAILV.texte = null; } renderProp(); return; }
   if(e.target.id === "propReset"){
-    if(e.target.dataset.ok !== "1"){ e.target.dataset.ok = "1"; e.target.textContent = "Confirmer : tout vider ?"; e.target.classList.add("icb-txt"); setTimeout(() => { if(e.target.isConnected){ e.target.dataset.ok = ""; e.target.innerHTML = ic("reset"); e.target.classList.remove("icb-txt"); } }, 4000); return; }
     prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition réinitialisée"); return;
   }
   if(e.target.id === "propClear"){ prop.items = []; prop.ouvert = false; propSave(); renderProp(); syncPropCtl(); return; }
