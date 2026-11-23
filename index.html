@@ -674,6 +674,11 @@ body.ia-on .ia-wrap>.inp{padding-right:46px}
 .qwrap #q{width:100%;box-sizing:border-box;padding:11px 12px 11px 38px;border:1.5px solid #9CCBEA;border-radius:12px;font-size:14.5px;background:#fff}
 .filtres{display:flex;gap:8px;align-items:center;margin-top:8px}
 .filtres .domsel{flex:1;min-width:0;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;background:var(--gris);color:#12343F;font-weight:600}
+button .ic{pointer-events:none}
+.icb.c-bleu{color:#1F5F8B;background:#E3EFF9;border-color:#2A6F97}.icb.c-bleu.on{background:#2A6F97;color:#fff;border-color:#2A6F97}
+.icb.c-vert{color:#13866F;background:var(--teal-soft);border-color:var(--teal)}.icb.c-vert.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.icb.c-noir{color:#12313F;background:#fff;border-color:#12313F}.icb.c-noir:hover{background:#12313F;color:#fff}
+.btn .ic.ic-g{width:15px;height:15px;margin:0 6px 0 0;vertical-align:-2px}
 .icb[hidden]{display:none!important}.icb{display:inline-flex!important;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 6px!important;line-height:1}.icb.icb-txt{padding:0 10px!important;font-size:12.5px}.icb .ic{width:17px;height:17px;margin:0;pointer-events:none}
 .reset{border:none;background:none;color:#2A6F97;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:4px 2px;white-space:nowrap}.reset[hidden]{display:none}
 .reset.danger{background:#12343F !important;color:#fff !important;border-radius:999px;padding:5px 10px}
@@ -987,6 +992,10 @@ window.SUPABASE_CONFIG = { url: "https://epwghwvqdeirtnigyajj.supabase.co", key:
    Collections : domaines, formations (= parcours), profils.
    ===================================================================== */
 const ICONS = {
+  sortie: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  doc: '<path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+  loupe: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+  copie: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
   mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
   reset: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
   trash: '<path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13M9 7V4h6v3"/>',
@@ -2541,7 +2550,7 @@ function renderProp(){
     <td><button type="button" class="btn small danger" data-rmp="${i}" aria-label="Retirer">×</button></td></tr>`;
   const tot = (lab, v, cls) => `<tr class="${cls || ""}"><td colspan="5">${lab}</td><td class="num">${v}</td><td></td></tr>`;
   bar.innerHTML = `<div class="pb-row"><b>Proposition</b><span>${n} formation${n>1?"s":""}${r.jours ? ` · ${r.jours} jour${r.jours>1?"s":""}` : ""}</span>${r.totalCpf ? `<span>Dossier CPF ${eur(r.totalCpf)}</span>` : ""}<span class="pb-charge">${r.cpf.length ? "À charge" : "Total"} ${eur(r.charge)}</span>
-      <button type="button" class="btn small" id="propOpen">${prop.ouvert ? "Masquer le détail" : "Voir le détail"}</button><button type="button" class="btn small danger icb" id="propReset" title="Réinitialiser la proposition" aria-label="Réinitialiser la proposition">${ic("reset")}</button><button type="button" class="btn small icb${prop.mail ? " on" : ""}" id="propMail" title="${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}" aria-label="${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}">${ic("mail")}</button><button type="button" class="btn primary small" id="propWord">Générer le document Word</button></div>
+      <button type="button" class="btn small icb c-bleu${prop.ouvert ? " on" : ""}" id="propOpen" title="${prop.ouvert ? "Masquer le détail" : "Voir le détail"}" aria-label="${prop.ouvert ? "Masquer le détail" : "Voir le détail"}">${ic("loupe")}</button><button type="button" class="btn small icb c-noir" id="propReset" title="Réinitialiser la proposition" aria-label="Réinitialiser la proposition">${ic("trash")}</button><button type="button" class="btn small icb c-vert${prop.mail ? " on" : ""}" id="propMail" title="${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}" aria-label="${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}">${ic("mail")}</button><button type="button" class="btn primary small" id="propWord"><svg class="ic ic-g" viewBox="0 0 24 24" aria-hidden="true">${ICONS.doc}</svg>Générer le document Word</button></div>
     ${prop.mail ? mailHtml() : ""}
     ${prop.ouvert ? `<div id="propPanel"><table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date retenue</th><th>Financement</th><th class="num">Remise</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
       ${r.lignes.map((l, i) => ligne(l, prop.items.indexOf(l.it))).join("")}
@@ -2551,7 +2560,7 @@ function renderProp(){
       ${tot(r.cpf.length ? "<b>Total à votre charge</b>" : "<b>Total</b>", `<b>${eur(r.charge)}</b>`, "tt")}
       ${r.jours ? tot(r.cpf.length ? "Nombre de jours · coût par jour à votre charge" : "Nombre de jours · coût par jour", `${r.jours} j · ${eur(r.parJour)}`) : ""}
       </tbody></table>
-      <div class="pb-acts"><button type="button" class="btn small" id="propCopy">Copier le tableau</button><span class="msg" id="propMsg" role="status"></span></div></div>` : ""}`;
+      <div class="pb-acts"><button type="button" class="btn small" id="propCopy"><svg class="ic ic-g" viewBox="0 0 24 24" aria-hidden="true">${ICONS.copie}</svg>Copier le tableau</button><span class="msg" id="propMsg" role="status"></span></div></div>` : ""}`;
   document.body.style.paddingBottom = (bar.offsetHeight + 16) + "px"; document.documentElement.style.setProperty("--barh", bar.offsetHeight + "px"); /* le contenu n'est jamais caché sous la barre */
 }
 document.addEventListener("click", async e => {
@@ -3246,7 +3255,7 @@ function mailHtml(){
     <label>Ma signature (gardée sur cet ordinateur)<textarea id="mlSig" rows="4" placeholder="Prénom Nom&#10;Conseiller(ère) formation&#10;Téléphone · agence">${esc(MAILP.signature || "")}</textarea></label>
     <p class="pl-note">Le message s'affiche tel qu'il sera envoyé : cliquez dedans pour le modifier directement, tableau compris.</p></div>
     <div class="ml-txt"><label>Objet<input id="mlObjet" value="${esc(t.objet)}"></label><div class="ml-lab">Message${fmtBar()}</div><textarea id="mlCorps" hidden>${esc(MAILV.texte != null ? MAILV.texte : t.corps)}</textarea><div id="mlEdit" class="ml-edit" contenteditable="true" spellcheck="true" aria-label="Message (modifiable)">${MAILV.html != null ? MAILV.html : mailCorpsHtml(MAILV.texte != null ? MAILV.texte : t.corps)}</div>
-    <div class="pb-acts"><button type="button" class="btn small primary" id="mlCopy">Copier le message (avec le tableau)</button><button type="button" class="btn small" id="mlCopyObj">Copier l'objet</button><button type="button" class="btn small" id="mlOpen" title="Sans mise en forme : le tableau y est en texte simple">Ouvrir dans ma messagerie</button><button type="button" class="btn small" id="mlRegen" title="Refaire le texte à partir des options (vos modifications seront perdues)">Régénérer le texte</button><span class="msg" id="mlMsg" role="status"></span></div></div></div></div>`;
+    <div class="pb-acts"><button type="button" class="btn small primary" id="mlCopy"><svg class="ic ic-g" viewBox="0 0 24 24" aria-hidden="true">${ICONS.copie}</svg>Copier le message (avec le tableau)</button><button type="button" class="btn small" id="mlCopyObj"><svg class="ic ic-g" viewBox="0 0 24 24" aria-hidden="true">${ICONS.copie}</svg>Copier l'objet</button><button type="button" class="btn small" id="mlOpen" title="Sans mise en forme : le tableau y est en texte simple"><svg class="ic ic-g" viewBox="0 0 24 24" aria-hidden="true">${ICONS.sortie}</svg>Ouvrir dans ma messagerie</button><button type="button" class="btn small" id="mlRegen" title="Refaire le texte à partir des options (vos modifications seront perdues)"><svg class="ic ic-g" viewBox="0 0 24 24" aria-hidden="true">${ICONS.reset}</svg>Régénérer le texte</button><span class="msg" id="mlMsg" role="status"></span></div></div></div></div>`;
 }
 document.addEventListener("change", e => { if(e.target.id !== "mlModele") return;
   MAILV.modele = e.target.value; MAILV.texte = null; MAILV.html = null; MAILV.cases = {}; renderProp(); const s = $("mlModele"); if(s) s.focus(); });
