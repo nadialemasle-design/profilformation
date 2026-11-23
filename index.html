@@ -672,6 +672,7 @@ body.ia-on .ia-wrap>.inp{padding-right:46px}
 .qwrap #q{width:100%;box-sizing:border-box;padding:11px 12px 11px 38px;border:1.5px solid #9CCBEA;border-radius:12px;font-size:14.5px;background:#fff}
 .filtres{display:flex;gap:8px;align-items:center;margin-top:8px}
 .filtres .domsel{flex:1;min-width:0;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;background:var(--gris);color:#12343F;font-weight:600}
+.icb{display:inline-flex!important;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 6px!important;line-height:1}.icb.icb-txt{padding:0 10px!important;font-size:12.5px}.icb .ic{width:17px;height:17px;margin:0;pointer-events:none}
 .reset{border:none;background:none;color:#2A6F97;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:4px 2px;white-space:nowrap}.reset[hidden]{display:none}
 .reset.danger{background:#12343F !important;color:#fff !important;border-radius:999px;padding:5px 10px}
 .side .scope{margin-top:8px;display:flex;gap:6px}.side .scope .scbtn{font-size:12px;padding:4px 10px;border-radius:999px}
@@ -931,7 +932,7 @@ details.fo-det[open]>summary{background:#12343F !important;color:#fff !important
       <div class="side">
         <div class="sidetop">
           <div class="qwrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="search" id="q" type="search" placeholder="Métier, besoin, mot-clé…" aria-label="Rechercher un métier, un besoin ou un mot-clé"></div>
-          <div class="filtres"><select class="search domsel" id="domSel" aria-label="Domaine de formation"></select><button type="button" class="reset" id="resetBtn" title="Tout effacer : recherche, domaine, listes repliées" hidden>Effacer</button></div>
+          <div class="filtres"><select class="search domsel" id="domSel" aria-label="Domaine de formation"></select><button type="button" class="reset icb" id="resetBtn" title="Tout effacer : recherche, domaine, listes repliées" aria-label="Tout effacer" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></div>
           <select id="catSel" hidden aria-hidden="true" tabindex="-1"><option value=""></option></select>
           <div class="scope" id="scope" role="group" aria-label="Où chercher">
             <button type="button" class="scbtn" data-scope="tous" aria-pressed="true">Tous les domaines</button>
@@ -961,7 +962,7 @@ details.fo-det[open]>summary{background:#12343F !important;color:#fff !important
     <div class="adm-grid">
       <div class="adm-side"><div class="adm-search" id="admSearch" hidden>
         <input type="search" class="inp" id="admQ" placeholder="Rechercher (mot-clé)…" aria-label="Rechercher dans la liste">
-        <button type="button" class="btn small" id="admQx">Réinitialiser</button></div>
+        <button type="button" class="btn small icb" id="admQx" title="Réinitialiser la recherche" aria-label="Réinitialiser la recherche"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></div>
       <div class="adm-list" id="admList"></div></div>
       <div id="admForm"></div>
     </div>
@@ -984,6 +985,10 @@ window.SUPABASE_CONFIG = { url: "https://epwghwvqdeirtnigyajj.supabase.co", key:
    Collections : domaines, formations (= parcours), profils.
    ===================================================================== */
 const ICONS = {
+  reset: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  up: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  down: '<path d="M12 5v14M6 13l6 6 6-6"/>',
   edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
   why: '<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/>',
   besoin: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
@@ -1561,10 +1566,10 @@ $("detail").addEventListener("click", e => {
 $("resetBtn").addEventListener("click", e => {
   const b = e.currentTarget;
   /* 2e clic dans les 4 s : vider aussi la proposition */
-  if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.textContent = "Effacer"; b.classList.remove("danger");
+  if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.innerHTML = ic("reset"); b.classList.remove("danger","icb-txt");
     prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition vidée"); return; }
-  if(prop.items.length){ b.dataset.ok = "1"; b.textContent = "Vider aussi la proposition ?"; b.classList.add("danger");
-    setTimeout(() => { if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.textContent = "Effacer"; b.classList.remove("danger"); b.hidden = !(state.q.trim() || !state.tous || state.cat || state.pid || state.fid); } }, 4000); }
+  if(prop.items.length){ b.dataset.ok = "1"; b.textContent = "Vider aussi la proposition ?"; b.classList.add("danger","icb-txt");
+    setTimeout(() => { if(b.dataset.ok === "1"){ b.dataset.ok = ""; b.innerHTML = ic("reset"); b.classList.remove("danger","icb-txt"); b.hidden = !(state.q.trim() || !state.tous || state.cat || state.pid || state.fid); } }, 4000); }
   state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; state.pid = ""; ouvertes.clear();
   $("q").value = ""; domOuverts.clear(); renderConsult(); $("groups").scrollTop = 0;
 });
@@ -1771,7 +1776,7 @@ function formQuestionnaire(el){
       ${field("Nom du questionnaire", inp("qNom", m.positionnement || "", "ex. Questionnaire de positionnement AutoCAD"))}
       ${field("Type de document", `<input class="inp" id="qType" list="qTypes" value="${esc(m.questionnaireType || "")}" placeholder="ex. Formulaire PDF">`)}
       <div class="field full"><span>Document déposé <small class="fhint">— PDF, Excel ou Word ; visible seulement par les personnes connectées</small></span>
-        <div class="qdrop" id="qDrop">${cur.fichier ? `<span class="qcur"><b>${esc(cur.fichier.nom || "document")}</b> <button type="button" class="btn small" data-qf="${esc(k)}">Télécharger</button> <button type="button" class="btn small danger" id="qRm">Retirer</button></span>` : `<span class="fhint">Aucun document pour l'instant.</span>`}
+        <div class="qdrop" id="qDrop">${cur.fichier ? `<span class="qcur"><b>${esc(cur.fichier.nom || "document")}</b> <button type="button" class="btn small" data-qf="${esc(k)}">Télécharger</button> <button type="button" class="btn small danger icb" id="qRm" title="Retirer" aria-label="Retirer">${ic("trash")}</button></span>` : `<span class="fhint">Aucun document pour l'instant.</span>`}
           <label class="btn small" for="qFile">${cur.fichier ? "Remplacer le document" : "Choisir un document…"}</label><input type="file" id="qFile" accept=".pdf,.xlsx,.xls,.xlsm,.docx,.doc" hidden><span id="qFileNom" class="fhint"></span>
           <span class="fhint">ou glissez-déposez le fichier ici.</span></div></div>
       ${field("Ou lien (URL) — SharePoint, Teams, Forms…", inp("qLien", cur.lien || "", "https://…"), true)}
@@ -2020,7 +2025,7 @@ function rattachHtml(fid, domF){
     <div class="rt-list">${l.length ? l.sort((a, b) => a.rp.domaine === b.rp.domaine ? (a.rp.nom || "").localeCompare(b.rp.nom || "") : nomDom(a.rp.domaine).localeCompare(nomDom(b.rp.domaine))).map(x => `<div class="rt-row" data-pid="${esc(x.rp.id)}">
       <button type="button" class="rt-open" data-open="1" title="Ouvrir la fiche du sous-profil"><b>${esc(x.rp.nom)}</b><small>${esc(nomDom(x.rp.domaine))} · ${esc(famillesDe(x.rp)[0] || "")}</small></button>
       <span class="rt-type">${x.type === "parcours" ? `Parcours n°${x.rang}` : "Complément"}</span>
-      <button type="button" class="btn small danger" data-out="1">Retirer</button></div>`).join("") : `<p class="fhint">Aucun sous-profil pour l'instant.</p>`}</div>
+      <button type="button" class="btn small danger icb" data-out="1" title="Retirer" aria-label="Retirer">${ic("trash")}</button></div>`).join("") : `<p class="fhint">Aucun sous-profil pour l'instant.</p>`}</div>
     <div class="rt-add"><b>Rattacher</b>
       <select class="inp" id="rtFam" aria-label="Famille de métiers"><option value="">Famille de métiers…</option>${fams.map(f => `<option>${esc(f)}</option>`).join("")}</select>
       <select class="inp" id="rtProf" aria-label="Sous-profil" disabled><option value="">Choisissez d'abord une famille</option></select>
@@ -2169,7 +2174,7 @@ function repriseOuvrir(fid, domCur){
       if(qd && qd.lien) l.querySelector(".mposl").value = qd.lien;
       if(qd && qd.fichier){
         l.dataset.qf = JSON.stringify(qd.fichier);
-        l.querySelector(".qfile").insertAdjacentHTML("afterbegin", `<span class="qcur">${esc(qd.fichier.nom || "document")} (repris) <button type="button" class="btn small danger mqrm">Retirer</button></span>`);
+        l.querySelector(".qfile").insertAdjacentHTML("afterbegin", `<span class="qcur">${esc(qd.fichier.nom || "document")} (repris) <button type="button" class="btn small danger icb mqrm" title="Retirer" aria-label="Retirer">${ic("trash")}</button></span>`);
       }
     });
     repriseOuvrir(fid, domCur);
@@ -2178,7 +2183,7 @@ function repriseOuvrir(fid, domCur){
   };
   liste(); $("rpQ").focus();
 }
-const modLine = (m, fid) => `<div class="modline"><input class="inp mc" value="${esc(m.code)}" placeholder="Code" aria-label="Code du module"><input class="inp mtit" value="${esc(m.titre)}" placeholder="Titre du module" aria-label="Titre du module"><button type="button" class="btn small danger" data-rm="1">Retirer</button><input class="inp mlien" value="${esc(m.lien || "")}" placeholder="Lien vers la fiche (https://…)" aria-label="Lien vers la fiche du module">
+const modLine = (m, fid) => `<div class="modline"><input class="inp mc" value="${esc(m.code)}" placeholder="Code" aria-label="Code du module"><input class="inp mtit" value="${esc(m.titre)}" placeholder="Titre du module" aria-label="Titre du module"><button type="button" class="btn small danger icb" data-rm="1" title="Retirer" aria-label="Retirer">${ic("trash")}</button><input class="inp mlien" value="${esc(m.lien || "")}" placeholder="Lien vers la fiche (https://…)" aria-label="Lien vers la fiche du module">
   <details class="mextra"><summary>Dates, tarifs, positionnement, CPF, certification${(m.sessions||[]).length ? ` · ${aVenir(m).length} date${aVenir(m).length>1?"s":""} à venir` : ""}</summary><div class="fgrid">
     ${field("Dates (une session par ligne, avec l'année)", `<textarea class="inp mses" placeholder="ex. 18-19 et 25-26 janvier 2027&#10;15 avril 2027">${esc((m.sessions || []).map(x => x.texte).join("\n"))}</textarea>`, true)}
     ${field("Tarif (€)", `<input class="inp mtar" inputmode="decimal" value="${esc(m.tarif ?? "")}" placeholder="ex. 780">`)}
@@ -2203,7 +2208,7 @@ function qFields(m, fid){
       ${field("Nom du questionnaire", `<input class="inp mpos" value="${esc(m.positionnement || "")}" placeholder="ex. Questionnaire de positionnement Excel">`)}
       ${field("Type de document", `<input class="inp mqt" list="qTypes" value="${esc(m.questionnaireType || "")}" placeholder="ex. Formulaire Excel, Formulaire PDF">`)}
       ${field("Lien (URL) — visible seulement par les personnes connectées", `<input class="inp mposl" value="${esc((d && d.lien) || "")}" placeholder="https://… (SharePoint, Teams, Forms)">`, true)}
-      ${field("Ou document déposé dans la base", `<span class="qfile">${d && d.fichier ? `<span class="qcur">${esc(d.fichier.nom || "document")} <button type="button" class="btn small danger mqrm">Retirer</button></span>` : ""}<input type="file" class="inp mqf" accept=".pdf,.xlsx,.xls,.xlsm,.docx,.doc"></span>`, true)}
+      ${field("Ou document déposé dans la base", `<span class="qfile">${d && d.fichier ? `<span class="qcur">${esc(d.fichier.nom || "document")} <button type="button" class="btn small danger icb mqrm" title="Retirer" aria-label="Retirer">${ic("trash")}</button></span>` : ""}<input type="file" class="inp mqf" accept=".pdf,.xlsx,.xls,.xlsm,.docx,.doc"></span>`, true)}
       <p class="fhint fwide">Dans un parcours qui contient un M1, la fiche indique « Positionnement si le M1 n'est pas suivi ».</p>
     </div></div>`;
 }
@@ -2215,7 +2220,7 @@ function formCategorie(el, d){
   el.innerHTML = `<div class="form"><h2>${isNew ? "Nouvelle catégorie" : "Catégorie : " + esc(nomAct)}</h2>
     <div class="fgrid">${field("Nom de la catégorie *", inp("fCatNom", nomAct, "ex. Commerce et artisanat"), true)}
       ${field("Mots-clés pour la recherche <small class=\"fhint\">— valent pour tous les sous-profils de la catégorie</small>", ta("fCatMots", ((rd.motsClesCategories || {})[nomAct]) || "", "ex. TPE, PME, gérant, patron, chef d'entreprise"), true)}</div>
-    ${isNew ? "" : `<div class="actions" style="border:0;padding:0"><button type="button" class="btn small" data-move="-1">Monter dans la liste</button><button type="button" class="btn small" data-move="1">Descendre dans la liste</button><span class="fhint">Position ${toutes.indexOf(nomAct) + 1} sur ${toutes.length}</span></div>
+    ${isNew ? "" : `<div class="actions" style="border:0;padding:0"><button type="button" class="btn small icb" data-move="-1" title="Monter dans la liste" aria-label="Monter dans la liste">${ic("up")}</button><button type="button" class="btn small icb" data-move="1" title="Descendre dans la liste" aria-label="Descendre dans la liste">${ic("down")}</button><span class="fhint">Position ${toutes.indexOf(nomAct) + 1} sur ${toutes.length}</span></div>
     <div class="fsec"><h3>Sous-profils de cette catégorie (${dedans.length})</h3>
       <p class="fhint">Pour chaque sous-profil : « Ajouter aussi à… » le met dans une autre catégorie en plus de celle-ci ; « Déplacer vers… » le change de catégorie ; « Retirer d'ici » l'enlève de cette catégorie (possible seulement s'il est aussi ailleurs).</p>
       ${dedans.map(p => `<div class="catrow" data-pid="${esc(p.id)}"><b>${esc(p.nom)}</b><small>${p.categories.filter(c => c !== nomAct).map(esc).join(", ") || "seulement ici"}</small>
@@ -2355,7 +2360,7 @@ function pcRow(d, x, i){
   const f = d.formations.find(f => f.id === x.formation);
   return `<div class="pcrow"><div class="pchead"><span class="rank">#${i+1}</span>
       <select class="pcf" aria-label="Parcours">${d.formations.map(o => `<option value="${esc(o.id)}"${o.id===x.formation?" selected":""}>${esc(o.nom)}</option>`).join("")}</select>
-      <button type="button" class="btn small" data-up="1">Monter</button><button type="button" class="btn small" data-down="1">Descendre</button><button type="button" class="btn small danger" data-rm="1">Retirer</button><button type="button" class="ia-btn" data-ia="pc" title="Rédiger le pourquoi, l'argumentaire détaillé et l'argument de chaque module pour ce sous-profil">✨ Rédiger avec l'IA</button></div>
+      <button type="button" class="btn small icb" data-up="1" title="Monter" aria-label="Monter">${ic("up")}</button><button type="button" class="btn small icb" data-down="1" title="Descendre" aria-label="Descendre">${ic("down")}</button><button type="button" class="btn small danger icb" data-rm="1" title="Retirer" aria-label="Retirer">${ic("trash")}</button><button type="button" class="ia-btn" data-ia="pc" title="Rédiger le pourquoi, l'argumentaire détaillé et l'argument de chaque module pour ce sous-profil">✨ Rédiger avec l'IA</button></div>
     <div class="modrow"><span class="rh rh-pq">Pourquoi</span><div class="ia-wrap inl"><input class="inp pcw" value="${esc(x.pourquoi || "")}" placeholder="ex. Si sa clientèle est locale. (une ligne, affichée d'emblée)"><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="pourquoi" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>
     <div class="modrow"><span class="rh rh-arg">Argumentaire détaillé</span><div class="ia-wrap"><textarea class="inp pca" placeholder="Replié sur la fiche : ce que chaque module apporte, le résultat concret. Laisser vide si inutile.">${esc(x.argumentaire || "")}</textarea><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="argumentaire" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>
     ${f ? `<div class="arg-sous">Arguments parcours <span>— propres à ce parcours ; vide = l'argument module commun s'affiche</span></div>` + Object.keys(f.modules).map(m => `<div class="modrow"><span class="code">${esc(m)}</span><div class="ia-wrap"><textarea class="inp pcm" data-m="${esc(m)}" placeholder="Vide : l'argument module commun ${esc(m)} s'affiche">${esc((x.reponses||{})[m] || "")}</textarea><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="pcm" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div></div>`).join("") : ""}
@@ -2363,7 +2368,7 @@ function pcRow(d, x, i){
 }
 function cpRow(d, c){
   const autres = DOMAINES.filter(x => x.id !== d.id);
-  return `<div class="cprow"><select aria-label="Formation complémentaire"><option value="">Choisir une formation…</option>${autres.map(x => `<optgroup label="${esc(x.nom)}">${x.formations.map(f => `<option value="${esc(f.id)}"${f.id===c.formation?" selected":""}>${esc(f.nom)}</option>`).join("")}</optgroup>`).join("")}</select><div class="ia-wrap inl"><input class="inp" value="${esc(c.pourquoi || "")}" placeholder="Pourquoi la proposer" aria-label="Pourquoi la proposer"><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="cp" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div><button type="button" class="btn small danger" data-rm="1">Retirer</button></div>`;
+  return `<div class="cprow"><select aria-label="Formation complémentaire"><option value="">Choisir une formation…</option>${autres.map(x => `<optgroup label="${esc(x.nom)}">${x.formations.map(f => `<option value="${esc(f.id)}"${f.id===c.formation?" selected":""}>${esc(f.nom)}</option>`).join("")}</optgroup>`).join("")}</select><div class="ia-wrap inl"><input class="inp" value="${esc(c.pourquoi || "")}" placeholder="Pourquoi la proposer" aria-label="Pourquoi la proposer"><button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="cp" title="Rédiger ou améliorer ce texte avec l'IA">✨</button></div><button type="button" class="btn small danger icb" data-rm="1" title="Retirer" aria-label="Retirer">${ic("trash")}</button></div>`;
 }
 function readRow(row){
   const reponses = {};
@@ -2532,7 +2537,7 @@ function renderProp(){
     <td><button type="button" class="btn small danger" data-rmp="${i}" aria-label="Retirer">×</button></td></tr>`;
   const tot = (lab, v, cls) => `<tr class="${cls || ""}"><td colspan="5">${lab}</td><td class="num">${v}</td><td></td></tr>`;
   bar.innerHTML = `<div class="pb-row"><b>Proposition</b><span>${n} formation${n>1?"s":""}${r.jours ? ` · ${r.jours} jour${r.jours>1?"s":""}` : ""}</span>${r.totalCpf ? `<span>Dossier CPF ${eur(r.totalCpf)}</span>` : ""}<span class="pb-charge">${r.cpf.length ? "À charge" : "Total"} ${eur(r.charge)}</span>
-      <button type="button" class="btn small" id="propOpen">${prop.ouvert ? "Masquer le détail" : "Voir le détail"}</button><button type="button" class="btn small danger" id="propReset">Réinitialiser</button><button type="button" class="btn small" id="propMail">${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}</button><button type="button" class="btn primary small" id="propWord">Générer le document Word</button></div>
+      <button type="button" class="btn small" id="propOpen">${prop.ouvert ? "Masquer le détail" : "Voir le détail"}</button><button type="button" class="btn small danger icb" id="propReset" title="Réinitialiser la proposition" aria-label="Réinitialiser la proposition">${ic("reset")}</button><button type="button" class="btn small" id="propMail">${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}</button><button type="button" class="btn primary small" id="propWord">Générer le document Word</button></div>
     ${prop.mail ? mailHtml() : ""}
     ${prop.ouvert ? `<div id="propPanel"><table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date retenue</th><th>Financement</th><th class="num">Remise</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
       ${r.lignes.map((l, i) => ligne(l, prop.items.indexOf(l.it))).join("")}
@@ -2549,7 +2554,7 @@ document.addEventListener("click", async e => {
   if(e.target.id === "propOpen"){ prop.ouvert = !prop.ouvert; if(prop.ouvert) prop.mail = false; renderProp(); return; }
   if(e.target.id === "propMail"){ prop.mail = !prop.mail; if(prop.mail){ prop.ouvert = false; MAILV.texte = null; } renderProp(); return; }
   if(e.target.id === "propReset"){
-    if(e.target.dataset.ok !== "1"){ e.target.dataset.ok = "1"; e.target.textContent = "Confirmer : tout vider ?"; setTimeout(() => { if(e.target.isConnected){ e.target.dataset.ok = ""; e.target.textContent = "Réinitialiser"; } }, 4000); return; }
+    if(e.target.dataset.ok !== "1"){ e.target.dataset.ok = "1"; e.target.textContent = "Confirmer : tout vider ?"; e.target.classList.add("icb-txt"); setTimeout(() => { if(e.target.isConnected){ e.target.dataset.ok = ""; e.target.innerHTML = ic("reset"); e.target.classList.remove("icb-txt"); } }, 4000); return; }
     prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition réinitialisée"); return;
   }
   if(e.target.id === "propClear"){ prop.items = []; prop.ouvert = false; propSave(); renderProp(); syncPropCtl(); return; }
@@ -2811,7 +2816,7 @@ function renderPilot(){
     ${sel("dom", "Domaine", DOMAINES.map(d => [d.id, d.nom]), "Tous")}${sel("form", "Formateur", valeurs("formateur").map(v => [v, v]), "Tous")}${sel("lieu", "Lieu", valeurs("lieu").map(v => [v, v]), "Tous")}${sel("type", "Type de parcours", valeurs("type").map(v => [v, v]), "Tous")}
     <label class="pf"><span>Recherche</span><input type="search" data-pfil="q" value="${esc(F.q || "")}" placeholder="Titre, formateur, commentaire…"></label>
     ${puce("cert", "🎓 Certifiantes", "Sessions avec certification")}${puce("traiter", "● À traiter", "Une alerte salle, licences ou certification est en cours")}${puce("convoc", "Convoc à envoyer", "Des inscrits, mais convocation pas cochée")}${puce("vide", "Sans inscrit", "Aucun inscrit saisi")}${puce("annul", "✕ Annulées", "Sessions annulées")}
-    ${actifs ? `<button type="button" class="pf-eff" data-pfreset="1">Effacer les filtres</button>` : ""}<span class="pf-cnt">${liste.length} session${liste.length > 1 ? "s" : ""} sur ${S.length}</span></div>`;
+    ${actifs ? `<button type="button" class="pf-eff icb" data-pfreset="1" title="Effacer les filtres" aria-label="Effacer les filtres">${ic("reset")}</button>` : ""}<span class="pf-cnt">${liste.length} session${liste.length > 1 ? "s" : ""} sur ${S.length}</span></div>`;
   /* ---------- liste : lignes ---------- */
   const nb = (s, k, cls) => { const note = pilVal(s.id, "note_" + k) || "";
     return `<td class="n ${cls}${note ? " a-note" : ""}"${note ? ` title="${esc(note)}"` : ""}><input type="number" min="0" class="pl-n" data-plf="${esc(s.id)}" data-pk="${k}" aria-label="${k}" value="${pilVal(s.id, k) || ""}"><button type="button" class="pl-nb" data-pnote="${esc(s.id)}|${k}" title="${note ? "Note : " + esc(note) : "Ajouter une note"}">✎</button></td>`; };
@@ -3098,7 +3103,7 @@ function formModeles(el, brouillon){
   const FICH = { "": "—", bulletin: "Bulletin prérempli (PDF)", devis: "Devis (document Word)", doc: "Document déposé (PDF, Word…)" };
   const docCtl = (x, i) => { if(x.fichier !== "doc") return ""; const id = x.docId || ""; const f = id && docInfo(id);
     return `<div class="mod-doc">${f ? `<span class="mod-docn" title="${esc(f.nom)}">📄 ${esc(f.nom)}</span><button type="button" class="mod-docb" data-docdl="${esc(id)}">Voir</button>` : `<span class="mod-docv">Aucun document</span>`}
-      <label class="mod-docb mod-docup">${f ? "Remplacer" : "Déposer un fichier"}<input type="file" hidden data-docup="${i}"></label>${f ? `<button type="button" class="mod-docb" data-docrm="${i}">Retirer</button>` : ""}</div>`; };
+      <label class="mod-docb mod-docup">${f ? "Remplacer" : "Déposer un fichier"}<input type="file" hidden data-docup="${i}"></label>${f ? `<button type="button" class="mod-docb icb" data-docrm="${i}" title="Retirer" aria-label="Retirer">${ic("trash")}</button>` : ""}</div>`; };
   el.innerHTML = barre + `<div class="mod-grid"><div>
     <div class="form mod-card"><h2>Texte du message${cur ? ` · <span class="mod-hn">${esc(cur.nom || "")}</span>` : ""}</h2>
       ${fmtBar()}<p class="mod-reps">Repères remplacés automatiquement : ${["prénom", "besoin", "formations", "tableau", "lien CPF", "pièces jointes"].map(k => `<button type="button" class="mod-tag" data-modins="{${k}}" title="Insérer à l'endroit du curseur">{${k}}</button>`).join("")}</p>
