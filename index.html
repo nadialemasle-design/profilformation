@@ -676,7 +676,7 @@ body.ia-on .ia-wrap>.inp{padding-right:46px}
 .ml-prev{margin-top:10px;background:#fff;border:1px solid #DCE6EC;border-radius:12px;padding:14px;max-height:420px;overflow:auto}
 .ml-dl{display:flex;margin:-2px 0 6px 24px;border:1px solid var(--teal);background:var(--teal-clair);color:#12343F;font:inherit;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;cursor:pointer;width:max-content}.ml-dl[hidden]{display:none}.ml-dl:hover{background:var(--teal)}
 /* ===== menu latéral simplifié ===== */
-.side{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;padding-top:0}
+.side{position:sticky;top:12px;max-height:calc(100vh - 24px - var(--barh,0px));overflow:auto;padding-top:0}
 .sidetop{position:sticky;top:0;z-index:3;background:#fff;padding:14px 2px 10px;border-bottom:1px solid var(--line);margin-bottom:8px}
 .qwrap{position:relative}.qwrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;fill:none;stroke:#12343F;stroke-width:2;stroke-linecap:round;pointer-events:none}
 .qwrap #q{width:100%;box-sizing:border-box;padding:11px 12px 11px 38px;border:1.5px solid #9CCBEA;border-radius:12px;font-size:14.5px;background:#fff}
@@ -2525,6 +2525,7 @@ function propToggle(fid, code, on, session){
   const k = itemKey(fid, code);
   prop.items = prop.items.filter(i => i.key !== k);
   if(on) prop.items.push({ key: k, fid, code, session: session || ((aVenir(x.m)[0] || {}).texte || ""), type: /^oui/i.test(String(x.m.cpf || "")) ? "cpf" : "hors" });
+  prop.ouvert = false; prop.mail = false; /* on coche dans la page : la barre redevient compacte pour laisser défiler */
   propSave(); renderProp(); syncPropCtl();
 }
 function syncPropCtl(){
@@ -2546,7 +2547,8 @@ document.addEventListener("change", e => {
 /* barre du bas + panneau récapitulatif */
 function renderProp(){
   let bar = $("propBar");
-  if(!bar){ bar = document.createElement("div"); bar.id = "propBar"; document.body.appendChild(bar); }
+  if(!bar){ bar = document.createElement("div"); bar.id = "propBar"; document.body.appendChild(bar);
+    if(window.ResizeObserver) new ResizeObserver(() => { if(bar.hidden) return; document.body.style.paddingBottom = (bar.offsetHeight + 16) + "px"; document.documentElement.style.setProperty("--barh", bar.offsetHeight + "px"); }).observe(bar); }
   if(!prop.items.length || state.view !== "consult"){ bar.hidden = true; document.body.style.paddingBottom = ""; document.documentElement.style.setProperty("--barh", "0px"); return; }
   bar.hidden = false;
   const r = propCalcul(), n = r.lignes.length;
