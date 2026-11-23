@@ -2512,6 +2512,7 @@ function propToggle(fid, code, on, session){
 }
 function syncPropCtl(){
   document.querySelectorAll("input[data-pf]").forEach(c => { const x = rawFm(c.dataset.pf, c.dataset.pc); c.checked = !!(x && x.m && prop.items.some(i => i.key === itemKey(c.dataset.pf, c.dataset.pc))); });
+  syncChoix(); /* bouton « Parcours complet ajouté » aligné sur les cases */
 }
 document.addEventListener("change", e => {
   const pp = e.target.closest("#propPanel input[data-pprix]");
