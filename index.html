@@ -674,7 +674,7 @@ body.ia-on .ia-wrap>.inp{padding-right:46px}
 .qwrap #q{width:100%;box-sizing:border-box;padding:11px 12px 11px 38px;border:1.5px solid #9CCBEA;border-radius:12px;font-size:14.5px;background:#fff}
 .filtres{display:flex;gap:8px;align-items:center;margin-top:8px}
 .filtres .domsel{flex:1;min-width:0;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;background:var(--gris);color:#12343F;font-weight:600}
-.icb{display:inline-flex!important;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 6px!important;line-height:1}.icb.icb-txt{padding:0 10px!important;font-size:12.5px}.icb .ic{width:17px;height:17px;margin:0;pointer-events:none}
+.icb[hidden]{display:none!important}.icb{display:inline-flex!important;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 6px!important;line-height:1}.icb.icb-txt{padding:0 10px!important;font-size:12.5px}.icb .ic{width:17px;height:17px;margin:0;pointer-events:none}
 .reset{border:none;background:none;color:#2A6F97;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:4px 2px;white-space:nowrap}.reset[hidden]{display:none}
 .reset.danger{background:#12343F !important;color:#fff !important;border-radius:999px;padding:5px 10px}
 .side .scope{margin-top:8px;display:flex;gap:6px}.side .scope .scbtn{font-size:12px;padding:4px 10px;border-radius:999px}
@@ -1566,11 +1566,16 @@ $("detail").addEventListener("click", e => {
   adm.dom = b.dataset.dom; adm.tab = "profils"; adm.sel = b.dataset.editp;
   document.querySelector('.vbtn[data-view="admin"]').click();
 });
-$("resetBtn").addEventListener("click", e => {
-  if(prop.items.length){ prop.items = []; prop.ouvert = false; prop.mail = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); } /* repart de zéro : la proposition (parcours sélectionnés) est vidée aussi */
+function toutReinitialiser(){ /* ↺ : repart de zéro, proposition (parcours sélectionnés) comprise */
   state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; state.pid = ""; ouvertes.clear();
-  $("q").value = ""; domOuverts.clear(); renderConsult(); $("groups").scrollTop = 0;
-});
+  prop.items = []; prop.ouvert = false; prop.mail = false; prop.exonere = false;
+  try{ sessionStorage.removeItem("proposition-v1"); propSave(); }catch(err){}
+  $("q").value = ""; domOuverts.clear();
+  try{ renderConsult(); }catch(err){ console.error("↺ renderConsult", err); }
+  try{ renderProp(); syncPropCtl(); }catch(err){ console.error("↺ proposition", err); }
+  $("groups").scrollTop = 0; toast("Tout est réinitialisé");
+}
+document.addEventListener("click", e => { if(e.target.closest && e.target.closest("#resetBtn")) toutReinitialiser(); });
 $("scope").addEventListener("click", e => { const b = e.target.closest("[data-scope]"); if(!b) return; state.scope = b.dataset.scope; renderList(); renderDetail(); });
 
 /* ---------- Vues ---------- */
