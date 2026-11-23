@@ -363,6 +363,7 @@ details.group .profiles{padding:6px 0 4px 6px}
 .cpfb.ok{background:#1f8a4c;color:#fff}.cpfb.ok small{font-weight:600;opacity:.9}.cpfb.soon{background:#fff3cd;color:#7a5a00;border:1px solid #f0d27a}
 .pt-fin.non{display:inline-block;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:2px 8px;font-size:12px;cursor:not-allowed}
 .ml-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;margin-top:10px}@media (max-width:800px){.ml-grid{grid-template-columns:1fr}}
+.ml-lab{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
 .ml-opts label,.ml-txt label{display:block;font-size:12px;color:var(--muted);margin-bottom:8px}.ml-opts input:not([type=checkbox]),.ml-opts textarea,.ml-txt input,.ml-txt textarea{display:block;width:100%;margin-top:3px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:13px;color:var(--ink)}
 .ml-txt textarea{font-size:13px;line-height:1.45}.ml-opts fieldset{border:1px solid var(--line);border-radius:8px;padding:4px 8px 6px;margin:0 0 8px}.ml-opts legend{font-size:12px;font-weight:700;color:var(--blue-ink)}.ml-opts label.ck{display:flex;gap:6px;align-items:center;color:var(--ink);font-size:13px;margin:3px 0}
 .pt-prix{width:80px;padding:3px 5px;border:1px solid var(--line);border-radius:5px;text-align:right;font:inherit}.pt-raz{border:none;background:none;cursor:pointer;color:var(--blue);font-size:15px;padding:0 4px}.pt-rem{color:#c00000;font-weight:700;white-space:nowrap}.pt-sc{margin-left:8px;font-size:11.5px}.pl-t-tab td.n{white-space:nowrap}@media (max-width:1000px){.pl-grid{grid-template-columns:1fr}}
@@ -663,6 +664,7 @@ body.ia-on .ia-wrap>.inp{padding-right:46px}
 .ia-btn.ia-mini{position:absolute;right:7px;top:7px;margin:0;padding:3px 8px;font-size:13px;line-height:1.1}
 .ia-wrap .ia-undo{display:block;margin-left:auto}
 .field.ia-line{display:flex !important;flex-direction:row !important;justify-content:flex-end;align-items:center;gap:8px}.field.ia-line>*{width:auto !important;flex:none}
+.ml-edit{background:#fff;border:1px solid #DCE6EC;border-radius:12px;padding:14px 16px;min-height:380px;max-height:620px;overflow:auto;outline:none;cursor:text}.ml-edit:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-soft)}.icb.on{background:var(--teal);color:#fff;border-color:var(--teal)}
 .ml-prev{margin-top:10px;background:#fff;border:1px solid #DCE6EC;border-radius:12px;padding:14px;max-height:420px;overflow:auto}
 .ml-dl{display:flex;margin:-2px 0 6px 24px;border:1px solid var(--teal);background:var(--teal-clair);color:#12343F;font:inherit;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;cursor:pointer;width:max-content}.ml-dl[hidden]{display:none}.ml-dl:hover{background:var(--teal)}
 /* ===== menu latéral simplifié ===== */
@@ -985,6 +987,7 @@ window.SUPABASE_CONFIG = { url: "https://epwghwvqdeirtnigyajj.supabase.co", key:
    Collections : domaines, formations (= parcours), profils.
    ===================================================================== */
 const ICONS = {
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
   reset: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
   trash: '<path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13M9 7V4h6v3"/>',
   up: '<path d="M12 19V5M6 11l6-6 6 6"/>',
@@ -2531,7 +2534,7 @@ function renderProp(){
     <td><button type="button" class="btn small danger" data-rmp="${i}" aria-label="Retirer">×</button></td></tr>`;
   const tot = (lab, v, cls) => `<tr class="${cls || ""}"><td colspan="5">${lab}</td><td class="num">${v}</td><td></td></tr>`;
   bar.innerHTML = `<div class="pb-row"><b>Proposition</b><span>${n} formation${n>1?"s":""}${r.jours ? ` · ${r.jours} jour${r.jours>1?"s":""}` : ""}</span>${r.totalCpf ? `<span>Dossier CPF ${eur(r.totalCpf)}</span>` : ""}<span class="pb-charge">${r.cpf.length ? "À charge" : "Total"} ${eur(r.charge)}</span>
-      <button type="button" class="btn small" id="propOpen">${prop.ouvert ? "Masquer le détail" : "Voir le détail"}</button><button type="button" class="btn small danger icb" id="propReset" title="Réinitialiser la proposition" aria-label="Réinitialiser la proposition">${ic("reset")}</button><button type="button" class="btn small" id="propMail">${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}</button><button type="button" class="btn primary small" id="propWord">Générer le document Word</button></div>
+      <button type="button" class="btn small" id="propOpen">${prop.ouvert ? "Masquer le détail" : "Voir le détail"}</button><button type="button" class="btn small danger icb" id="propReset" title="Réinitialiser la proposition" aria-label="Réinitialiser la proposition">${ic("reset")}</button><button type="button" class="btn small icb${prop.mail ? " on" : ""}" id="propMail" title="${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}" aria-label="${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}">${ic("mail")}</button><button type="button" class="btn primary small" id="propWord">Générer le document Word</button></div>
     ${prop.mail ? mailHtml() : ""}
     ${prop.ouvert ? `<div id="propPanel"><table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date retenue</th><th>Financement</th><th class="num">Remise</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
       ${r.lignes.map((l, i) => ligne(l, prop.items.indexOf(l.it))).join("")}
@@ -2546,7 +2549,7 @@ function renderProp(){
 }
 document.addEventListener("click", async e => {
   if(e.target.id === "propOpen"){ prop.ouvert = !prop.ouvert; if(prop.ouvert) prop.mail = false; renderProp(); return; }
-  if(e.target.id === "propMail"){ prop.mail = !prop.mail; if(prop.mail){ prop.ouvert = false; MAILV.texte = null; } renderProp(); return; }
+  if(e.target.id === "propMail"){ prop.mail = !prop.mail; if(prop.mail){ prop.ouvert = false; MAILV.texte = null; MAILV.html = null; } renderProp(); return; }
   if(e.target.id === "propReset"){
     prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition réinitialisée"); return;
   }
@@ -2928,7 +2931,7 @@ document.addEventListener("click", async e => {
 /* ---------- E-mail prêt à l'emploi (à partir de la proposition) ---------- */
 const MAILP = (() => { try{ return JSON.parse(localStorage.getItem("mail-prefs-v1") || "{}"); }catch(e){ return {}; } })();
 const mailSave = () => { try{ localStorage.setItem("mail-prefs-v1", JSON.stringify({ signature: MAILP.signature || "" })); }catch(e){} };
-const MAILV = { prenom: "", lien: "", cases: {}, texte: null, modele: "" };
+const MAILV = { prenom: "", lien: "", cases: {}, texte: null, html: null, modele: "" };
 const MAIL_TAB = "[TABLEAU RÉCAPITULATIF]"; /* repère remplacé par le tableau mis en forme à la copie (déplaçable ou supprimable) */
 /* tableau récapitulatif (même contenu que le document Word) : HTML avec styles en ligne pour Outlook, et version texte */
 function devisTable(){
@@ -2971,11 +2974,15 @@ const fmtTxt = t => String(t || "").replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\
 /* barre d'outils : agit sur le dernier champ de texte cliqué */
 const fmtBar = () => `<div class="fmt-bar" role="toolbar" aria-label="Mise en forme"><button type="button" data-fmt="b" title="Gras"><b>G</b></button><button type="button" data-fmt="i" title="Italique"><i>I</i></button><button type="button" data-fmt="u" title="Souligné"><u>S</u></button><button type="button" data-fmt="li" title="Liste à puces">• Liste</button><button type="button" data-fmt="a" title="Lien">🔗 Lien</button><span class="fmt-aide">sélectionnez le texte, puis cliquez</span></div>`;
 let FMT_TA = null;
-document.addEventListener("focusin", e => { const t = e.target; if(t && t.matches && t.matches("textarea.mod-txt, #mlCorps")) FMT_TA = t; });
+document.addEventListener("focusin", e => { const t = e.target; if(t && t.matches && t.matches("textarea.mod-txt, #mlCorps, #mlEdit")) FMT_TA = t; });
 document.addEventListener("mousedown", e => { if(e.target.closest && e.target.closest(".fmt-bar button")) e.preventDefault(); }); /* garde la sélection */
 document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-fmt]"); if(!b) return;
   const ta = FMT_TA; if(!ta || !document.body.contains(ta)){ toast("Cliquez d'abord dans le texte à mettre en forme"); return; }
+  if(ta.isContentEditable){ const k = b.dataset.fmt; ta.focus();
+    if(k === "a"){ const u = (window.prompt("Adresse du lien (https://…)", "https://") || "").trim(); if(!/^https?:\/\/\S+$/.test(u)) return; document.execCommand("createLink", false, u); }
+    else document.execCommand({ b: "bold", i: "italic", u: "underline", li: "insertUnorderedList" }[k]);
+    ta.dispatchEvent(new Event("input", { bubbles: true })); return; }
   const a = ta.selectionStart, z = ta.selectionEnd, sel = ta.value.slice(a, z), k = b.dataset.fmt; let ins = sel, dec = 0;
   if(k === "b") ins = `**${sel || "texte"}**`; else if(k === "i") ins = `*${sel || "texte"}*`; else if(k === "u") ins = `__${sel || "texte"}__`;
   else if(k === "li") ins = (sel || "élément").split("\n").map(l => /^\s*[-•]\s/.test(l) ? l : "- " + l).join("\n");
@@ -3218,6 +3225,7 @@ function mailTexte(){
   const objet = "Votre proposition de formation – " + (noms.length <= 2 ? noms.join(" et ") : noms.slice(0, 2).join(", ") + "…");
   return { objet, corps: mailCompose(mailCfg(MAILV.modele), r, MAILV, p) };
 }
+function mlMaj(t){ $("mlCorps").value = t.corps; $("mlObjet").value = t.objet; const z = $("mlEdit"); if(z && MAILV.html == null) z.innerHTML = mailCorpsHtml(t.corps); }
 function mailHtml(){
   const r = propCalcul(), t = mailTexte();
   return `<div id="mailPanel"><div class="ml-grid"><div class="ml-opts">
@@ -3229,34 +3237,34 @@ function mailHtml(){
         if(gs.length < 2) return `<button type="button" class="ml-dl" data-mldl="bulletin" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Bulletin avec l'intitulé, les dates et le tarif ; le reste est à remplir par le client">⬇ Bulletin prérempli (PDF)</button>`;
         return `<span class="ml-bis" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"}><small>Un bulletin par ${gs.some(g => (g.f.modules || []).length > 1) ? "module" : "formation"} :</small>${gs.map((g, k) => `<button type="button" class="ml-dl" data-mldl="bulletin" data-big="${k}" title="Bulletin prérempli : ${esc(biTitre(g))}">⬇ ${esc(biTitre(g))}</button>`).join("")}</span>`; })() : c.fichier === "devis" ? `<button type="button" class="ml-dl" data-mldl="devis" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"}>⬇ Devis (document Word)</button>` : c.fichier === "doc" && c.docId && docInfo(c.docId) ? `<button type="button" class="ml-dl" data-qf="${esc(c.docId)}" data-mlfor="${esc(c.id)}"${on ? "" : " hidden"} title="Télécharger le document, puis joignez-le à votre e-mail">⬇ ${esc(docInfo(c.docId).nom || c.libelle)}</button>` : ""}`; }).join("")}</fieldset>` : ""; })()}
     <label>Ma signature (gardée sur cet ordinateur)<textarea id="mlSig" rows="4" placeholder="Prénom Nom&#10;Conseiller(ère) formation&#10;Téléphone · agence">${esc(MAILP.signature || "")}</textarea></label>
-    <p class="pl-note">Le texte est modifiable à droite. La ligne [TABLEAU RÉCAPITULATIF] devient le tableau mis en forme quand vous copiez : vous pouvez la déplacer ou la supprimer.</p></div>
-    <div class="ml-txt"><label>Objet<input id="mlObjet" value="${esc(t.objet)}"></label><label>Message${fmtBar()}<textarea id="mlCorps" rows="18">${esc(MAILV.texte != null ? MAILV.texte : t.corps)}</textarea></label>
-    <div class="pb-acts"><button type="button" class="btn small primary" id="mlCopy">Copier le message (avec le tableau)</button><button type="button" class="btn small" id="mlCopyObj">Copier l'objet</button><button type="button" class="btn small" id="mlApercu">Voir l'aperçu</button><button type="button" class="btn small" id="mlOpen" title="Sans mise en forme : le tableau y est en texte simple">Ouvrir dans ma messagerie</button><button type="button" class="btn small" id="mlRegen" title="Refaire le texte à partir des options (vos modifications seront perdues)">Régénérer le texte</button><span class="msg" id="mlMsg" role="status"></span></div><div id="mlPrev" class="ml-prev" hidden></div></div></div></div>`;
+    <p class="pl-note">Le message s'affiche tel qu'il sera envoyé : cliquez dedans pour le modifier directement, tableau compris.</p></div>
+    <div class="ml-txt"><label>Objet<input id="mlObjet" value="${esc(t.objet)}"></label><div class="ml-lab">Message${fmtBar()}</div><textarea id="mlCorps" hidden>${esc(MAILV.texte != null ? MAILV.texte : t.corps)}</textarea><div id="mlEdit" class="ml-edit" contenteditable="true" spellcheck="true" aria-label="Message (modifiable)">${MAILV.html != null ? MAILV.html : mailCorpsHtml(MAILV.texte != null ? MAILV.texte : t.corps)}</div>
+    <div class="pb-acts"><button type="button" class="btn small primary" id="mlCopy">Copier le message (avec le tableau)</button><button type="button" class="btn small" id="mlCopyObj">Copier l'objet</button><button type="button" class="btn small" id="mlOpen" title="Sans mise en forme : le tableau y est en texte simple">Ouvrir dans ma messagerie</button><button type="button" class="btn small" id="mlRegen" title="Refaire le texte à partir des options (vos modifications seront perdues)">Régénérer le texte</button><span class="msg" id="mlMsg" role="status"></span></div></div></div></div>`;
 }
 document.addEventListener("change", e => { if(e.target.id !== "mlModele") return;
-  MAILV.modele = e.target.value; MAILV.texte = null; MAILV.cases = {}; renderProp(); const s = $("mlModele"); if(s) s.focus(); });
+  MAILV.modele = e.target.value; MAILV.texte = null; MAILV.html = null; MAILV.cases = {}; renderProp(); const s = $("mlModele"); if(s) s.focus(); });
 document.addEventListener("input", e => {
   const id = e.target.id;
+  if(id === "mlEdit"){ MAILV.html = e.target.innerHTML; if(MAILV.texte == null) MAILV.texte = $("mlCorps").value; return; } /* retouché : les options ne réécrivent plus le message */
   const kc = e.target.dataset && e.target.dataset.mlcase;
   if(kc){ MAILV.cases = MAILV.cases || {}; MAILV.cases[kc] = e.target.checked; document.querySelectorAll(`[data-mlfor="${CSS.escape(kc)}"]`).forEach(b => { b.hidden = !e.target.checked; });
-    if(MAILV.texte == null){ const t = mailTexte(); $("mlCorps").value = t.corps; $("mlObjet").value = t.objet; } return; }
+    if(MAILV.texte == null) mlMaj(mailTexte()); return; }
   if(!["mlPrenom", "mlLien", "mlSig", "mlCorps"].includes(id)) return;
   if(id === "mlCorps"){ MAILV.texte = e.target.value; return; }
   if(id === "mlPrenom") MAILV.prenom = e.target.value.trim(); else if(id === "mlLien") MAILV.lien = e.target.value.trim();
   else if(id === "mlSig"){ MAILP.signature = e.target.value; mailSave(); }
-  if(MAILV.texte == null){ const t = mailTexte(); $("mlCorps").value = t.corps; $("mlObjet").value = t.objet; } /* tant que le texte n'a pas été retouché, il suit les options */
+  if(MAILV.texte == null) mlMaj(mailTexte()); /* tant que le texte n'a pas été retouché, il suit les options */
 });
 document.addEventListener("click", async e => {
   const id = e.target.id;
   const dl = e.target.closest && e.target.closest("[data-mldl]");
   if(dl){ if(dl.dataset.mldl === "bulletin") biTelecharger(dl.dataset.big); else propWord(); return; }
-  if(!/^ml(Copy|CopyObj|Open|Regen|Apercu)$/.test(id)) return;
-  if(id === "mlApercu"){ const z = $("mlPrev"); z.hidden = !z.hidden; if(!z.hidden) z.innerHTML = mailCorpsHtml($("mlCorps").value); e.target.textContent = z.hidden ? "Voir l'aperçu" : "Masquer l'aperçu"; return; }
+  if(!/^ml(Copy|CopyObj|Open|Regen)$/.test(id)) return;
   const objet = $("mlObjet").value, corps = $("mlCorps").value;
-  if(id === "mlRegen"){ MAILV.texte = null; const t = mailTexte(); $("mlCorps").value = t.corps; $("mlObjet").value = t.objet; $("mlMsg").textContent = "Texte refait."; return; }
+  if(id === "mlRegen"){ MAILV.texte = null; MAILV.html = null; mlMaj(mailTexte()); $("mlMsg").textContent = "Texte refait."; return; }
   if(id === "mlCopyObj"){ try{ await navigator.clipboard.writeText(objet); $("mlMsg").textContent = "Objet copié."; }catch(err){ $("mlObjet").select(); $("mlMsg").textContent = "Faites Ctrl + C."; } return; }
   if(id === "mlCopy"){ /* copie mise en forme : le repère [TABLEAU RÉCAPITULATIF] devient le tableau */
-    const html = mailCorpsHtml(corps), txt = fmtTxt(corps.split(MAIL_TAB).join(devisTable().txt));
+    const ed = $("mlEdit"), html = MAILV.html != null && ed ? `<div>${ed.innerHTML}</div>` : mailCorpsHtml(corps), txt = MAILV.html != null && ed ? ed.innerText : fmtTxt(corps.split(MAIL_TAB).join(devisTable().txt));
     try{ await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([txt], { type: "text/plain" }) })]); $("mlMsg").textContent = "Message copié avec le tableau : collez-le (Ctrl + V) dans le corps de l'e-mail Outlook."; }
     catch(err){ const z = document.createElement("div"); z.contentEditable = "true"; z.style.cssText = "position:fixed;left:-9999px;top:0"; z.innerHTML = html; document.body.appendChild(z);
       const rg = document.createRange(); rg.selectNodeContents(z); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg);
@@ -3268,7 +3276,7 @@ document.addEventListener("click", async e => {
     if(r.hors.length) res.push(r.cpf.length ? `Formations hors CPF : ${eur(r.totalHors)}.` : `Total : ${eur(r.totalHors)}${r.jours ? ` (${r.jours} jour${r.jours > 1 ? "s" : ""})` : ""}.`);
     if(r.cpf.length && r.hors.length) res.push(`Total à votre charge : ${eur(r.charge)}.`);
     let copie = false; try{ const t = devisTable().html; await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([t], { type: "text/html" }), "text/plain": new Blob([devisTable().txt], { type: "text/plain" }) })]); copie = true; }catch(err){}
-    const href = "mailto:?subject=" + encodeURIComponent(objet) + "&body=" + encodeURIComponent(fmtTxt(corps.split(MAIL_TAB).join(res.join("\n"))));
+    const href = "mailto:?subject=" + encodeURIComponent(objet) + "&body=" + encodeURIComponent(MAILV.html != null && $("mlEdit") ? $("mlEdit").innerText : fmtTxt(corps.split(MAIL_TAB).join(res.join("\n"))));
     $("mlMsg").textContent = copie ? "Le tableau mis en forme est aussi copié : dans le brouillon Outlook, cliquez où l'insérer puis Ctrl + V." : "";
     if(href.length > 1900) $("mlMsg").textContent = "Message long : s'il est coupé, utilisez « Copier le message »."; window.location.href = href; }
 });
