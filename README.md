@@ -153,6 +153,11 @@ Alertes : salle à J-25 avant le début, licences à J-15, certification à J-10
 4. Dans l'appli, Pilotage › Réglages : renseigner l'e-mail qui reçoit les alertes (le même que le compte Resend tant qu'aucun domaine n'est vérifié chez Resend).
 5. Test : GitHub › Actions › « Alertes Pilotage (e-mail) » › Run workflow.
 
+**Sauvegarde quotidienne des inscriptions par e-mail** (`alertes/sauvegarde-inscriptions.mjs`, lancé tous les jours vers 18 h 30 par `.github/workflows/sauvegarde-inscriptions.yml`) :
+mêmes secrets et même destinataire que les alertes. L'e-mail contient le tableau des sessions à venir avec leurs inscrits, et deux pièces jointes :
+`inscriptions-AAAA-MM-JJ.csv` (tout Pilotage, sessions passées comprises, à ouvrir avec Excel) et `pilotage-AAAA-MM-JJ.json` (copie brute de la table, pour restaurer).
+Pour tester : GitHub › Actions › « Sauvegarde des inscriptions (e-mail) » › Run workflow.
+
 ## Assistance IA dans Gestion (version en ligne)
 
 Les boutons ✨ de Gestion passent par la fonction Supabase `ia` (`supabase/functions/ia/index.ts`). La clé Anthropic est un secret Supabase (`ANTHROPIC_API_KEY`) : elle n'est jamais dans le site ni sur GitHub. Seules les personnes de la table `editeurs` peuvent l'utiliser. Sans fonction ni clé, les boutons ✨ restent simplement cachés.

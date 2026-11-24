@@ -1,0 +1,17 @@
+name: Sauvegarde des inscriptions (e-mail)
+on:
+  schedule:
+    - cron: "30 17 * * *"   # tous les jours, 18 h 30 (hiver) / 19 h 30 (été), heure de Paris
+  workflow_dispatch:
+jobs:
+  sauvegarde:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node alertes/sauvegarde-inscriptions.mjs
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
