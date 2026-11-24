@@ -47,7 +47,7 @@ const completerSessions = formations => (formations || []).forEach(f => (f.modul
 export function sessionsPilotage(RAW){
   completerSessions(RAW.formations); /* même calcul que l'onglet Pilotage de l'appli */
   const map = new Map(), doms = Object.fromEntries((RAW.domaines || []).map(d => [d.id, d]));
-  (RAW.formations || []).forEach(f => {
+  (RAW.formations || []).filter(f => !f.horsPilotage).forEach(f => { /* formations locales : pas de suivi */
     const par = (f.modules || []).length > 1;
     (f.modules || []).forEach(m => (m.sessions || []).forEach(s => {
       const jours = joursSession(s.texte); if(!jours.length) return;

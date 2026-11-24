@@ -1106,7 +1106,11 @@ function lireSession(t){
   });
   if(!jours.length || !an || jours.some(([m, j]) => j < 1 || j > 31)) return null;
   const iso = ([m, j]) => an + "-" + String(m).padStart(2,"0") + "-" + String(j).padStart(2,"0");
-  return { texte: String(t).trim(), debut: iso(jours[0]), fin: iso(jours[jours.length - 1]) };
+  /* lieu facultatif en tête de ligne : « Brest : 25-26 janvier 2027 » → texte « Brest · 25-26 janvier 2027 », lieu « Brest » */
+  const lm = String(t).trim().match(/^([^\d:·]{2,60}?)\s*[:·]\s*(.+)$/), lieu = lm && !Object.keys(MOISN).some(k => norm(lm[1]).split(/[^a-z]+/).includes(k)) ? lm[1].trim() : "";
+  const r = { texte: lieu ? lieu + " · " + lm[2].trim() : String(t).trim(), debut: iso(jours[0]), fin: iso(jours[jours.length - 1]) };
+  if(lieu) r.lieu = lieu;
+  return r;
 }
 const ctxF = f => { const codes = Object.keys(f.modules || {}); return { fid: f.id, parcours: codes.length > 1, avecM1: codes.length > 1 && codes.some(c => /^M1\b/i.test(c)) }; };
 const INFO_KEYS = ["sessions", "tarif", "tarifParcours", "questionnaire", "questionnaireType", "positionnement", "cpf", "financements", "financementTexte"];
@@ -1926,6 +1930,7 @@ function formFormation(el, d){
       ${field("Coût de la certification, pour le total CPF d'un parcours (€)", inp("fCertPrix", r.tarifCertification ?? "", "ex. 330"))}
       ${field("CPF à partir de (jours) — facultatif", inp("fCpfMin", r.cpfMinJours ?? "", "ex. 4") + `<span class="fhint">Le CPF n'apparaît dans la proposition et le devis que si le dossier CPF qui contient cette formation compte au moins ce nombre de jours. Vide = pas de minimum.</span>`)}
       ${field("Référence interne (facultatif)", inp("fRef", r.reference || "", "ex. PAO-1.2 Photo Init"))}
+      ${field("Pilotage", `<label class="chk"><input type="checkbox" id="fHorsPil"${r.horsPilotage ? " checked" : ""}> Formation locale : ne pas suivre dans Pilotage</label><span class="fhint">Les sessions restent visibles dans Consulter.</span>`)}
       ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
     </div>
     <div class="fsec sec-mod"><h3>Modules</h3><p class="fhint">Formation seule : un seul module, avec le code « Formation ». Parcours : un module par code (M1, M2, M2.3…). Ouvrez « Dates, tarifs, positionnement, CPF, certification » sous chaque module pour les compléter. Ces informations sont reportées automatiquement dans les autres parcours qui contiennent le même module (même titre).</p>
@@ -1996,6 +2001,7 @@ function formFormation(el, d){
     const data = { domaine: cible, nom, intitule: $("fInt").value.trim(), duree: $("fDuree").value.trim(), certification: $("fCertF").value.trim(), modules,
       ordre: Number($("fOrdre").value) || (isNew || change ? dc.formations.length + 1 : (r.ordre ?? 99)) };
     const ref = $("fRef").value.trim(); if(ref) data.reference = ref;
+    data.horsPilotage = !!($("fHorsPil") && $("fHorsPil").checked);
     const cmin = parseInt($("fCpfMin").value, 10); if(cmin > 0) data.cpfMinJours = cmin;
     const cp = Number($("fCertPrix").value.replace(/[^\d.,]/g, "").replace(",", ".")); if(cp > 0) data.tarifCertification = cp;
     let reportes = 0, ok = false;
@@ -2205,7 +2211,7 @@ function repriseOuvrir(fid, domCur){
 }
 const modLine = (m, fid) => `<div class="modline"><input class="inp mc" value="${esc(m.code)}" placeholder="Code" aria-label="Code du module"><input class="inp mtit" value="${esc(m.titre)}" placeholder="Titre du module" aria-label="Titre du module"><button type="button" class="btn small danger icb" data-rm="1" title="Retirer" aria-label="Retirer">${ic("trash")}</button><input class="inp mlien" value="${esc(m.lien || "")}" placeholder="Lien vers la fiche (https://…)" aria-label="Lien vers la fiche du module">
   <details class="mextra"><summary>Dates, tarifs, positionnement, CPF, certification${(m.sessions||[]).length ? ` · ${aVenir(m).length} date${aVenir(m).length>1?"s":""} à venir` : ""}</summary><div class="fgrid">
-    ${field("Dates (une session par ligne, avec l'année)", `<textarea class="inp mses" placeholder="ex. 18-19 et 25-26 janvier 2027&#10;15 avril 2027">${esc((m.sessions || []).map(x => x.texte).join("\n"))}</textarea>`, true)}
+    ${field("Dates (une session par ligne, avec l'année ; lieu facultatif devant : « Brest : … »)", `<textarea class="inp mses" placeholder="ex. 18-19 et 25-26 janvier 2027&#10;15 avril 2027&#10;Formation locale : Brest : 25-26 janvier 2027">${esc((m.sessions || []).map(x => x.texte).join("\n"))}</textarea>`, true)}
     ${field("Tarif (€)", `<input class="inp mtar" inputmode="decimal" value="${esc(m.tarif ?? "")}" placeholder="ex. 780">`)}
     ${field("Tarif préférentiel (€)", `<input class="inp mtp" inputmode="decimal" value="${esc(m.tarifParcours ?? "")}" placeholder="ex. 700"><span class="mpj">en parcours, ou dès <input class="inp mpjn" inputmode="numeric" value="${esc(m.prefJours ?? "")}" placeholder="—" aria-label="Nombre de jours"> jours de formation dans la proposition</span><span class="fhint">Jours vides : dès 2 formations ou modules dans la proposition.</span>`)}
     ${qFields(m, fid)}
@@ -2754,7 +2760,7 @@ const nomCourt = t => { const [a, ...b] = String(t).split(":"); const x = a.spli
 /* une ligne par session de formation (pas par parcours) : une session commune à plusieurs parcours n'apparaît qu'une fois */
 function sessionsPilotage(){
   const map = new Map(), doms = Object.fromEntries((RAW.domaines || []).map(d => [d.id, d]));
-  (RAW.formations || []).forEach(f => {
+  (RAW.formations || []).filter(f => !f.horsPilotage).forEach(f => {
     const par = (f.modules || []).length > 1, d = doms[f.domaine] || {};
     (f.modules || []).forEach(m => (m.sessions || []).forEach(s => {
       const jours = joursSession(s.texte); if(!jours.length) return;
@@ -2870,7 +2876,7 @@ function renderPilot(){
   const A = alertesPilotage(S, auj);
   /* contrôle : toutes les dates saisies dans Gestion sont-elles dans le calendrier ? */
   let nbDates = 0; const illisibles = [];
-  (RAW.formations || []).forEach(f => (f.modules || []).forEach(m => (m.sessions || []).forEach(x => { nbDates++;
+  (RAW.formations || []).filter(f => !f.horsPilotage).forEach(f => (f.modules || []).forEach(m => (m.sessions || []).forEach(x => { nbDates++;
     if(!joursSession(x.texte || "").length) illisibles.push({ f, m, t: x.texte || "(sans texte)" }); })));
   const ctrl = illisibles.length
     ? `<details class="pl-ctrl ko" open><summary>⚠ ${illisibles.length} date${illisibles.length > 1 ? "s" : ""} sur ${nbDates} non lisible${illisibles.length > 1 ? "s" : ""} : absente${illisibles.length > 1 ? "s" : ""} du calendrier</summary><ul>${illisibles.map(x => `<li><b>${esc(x.f.nom)}</b> · ${esc(x.m.code || "")} : « ${esc(x.t)} » <button type="button" class="pl-edit" data-pedit="${esc(x.f.id)}">✎ corriger dans la Gestion</button></li>`).join("")}</ul><small>Format conseillé : « 16-17 mars 2027 », « 5 et 12 février 2027 », « 18 au 20 octobre 2027 ».</small></details>`
