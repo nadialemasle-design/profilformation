@@ -1,7 +1,7 @@
 -- =====================================================================
 -- Mise à jour n°18 du 24/11/2026 : formations locales Bureautique (catalogue numérique tertiaire 2027)
 --   1. Nouvelles formations : Excel initiation / consolidation / perfectionnement / expert, Word initiation /
---      perfectionnement, PowerPoint initiation (à la demande), WordPress perfectionnement (à la demande) :
+--      perfectionnement, PowerPoint initiation (à la demande) :
 --      certifiantes Tosa (89 €), éligibles au CPF sans nombre de jours minimum.
 --      S'initier à l'outil informatique : certification à préciser.
 --   2. Dates par lieu (« Brest · 25-26 janvier 2027 ») et lieux de la formation (Brest, Quimper, Morlaix).
@@ -34,11 +34,10 @@ on conflict (id) do nothing;
 insert into public.formations (id, data, updated_at) values ('bur-powerpoint-initiation', $j${"domaine": "bur", "nom": "PowerPoint initiation", "intitule": "PowerPoint initiation : développer des présentations visuelles et dynamiques avec PowerPoint (Tosa)", "certification": "Tosa", "tarifCertification": 89, "horsPilotage": true, "ordre": 10, "modules": [{"code": "Formation", "titre": "PowerPoint initiation : développer des présentations visuelles et dynamiques avec PowerPoint (Tosa)", "cpf": "Oui (certification Tosa)", "financements": ["cpf"], "sessions": [], "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/powerpoint-initiation-developper-des-presentations-visuelles-et-dynamiques-avec-powerpoint-tosa", "financementTexte": "Formation certifiante (Tosa) : éligible au CPF, sans nombre de jours minimum."}], "lieux": ["Brest", "Quimper", "Morlaix"]}$j$::jsonb, now())
 on conflict (id) do nothing;
 
-insert into public.formations (id, data, updated_at) values ('web-wordpress-perfectionnement', $j${"domaine": "web", "nom": "WordPress perfectionnement", "intitule": "WordPress perfectionnement (Tosa)", "certification": "Tosa", "tarifCertification": 89, "horsPilotage": true, "ordre": 3, "modules": [{"code": "Formation", "titre": "WordPress perfectionnement (Tosa)", "cpf": "Oui (certification Tosa)", "financements": ["cpf"], "sessions": [], "lien": "https://www.cci-formation-bretagne.fr/nos-centres-de-formation/parcours-webmaster", "financementTexte": "Formation certifiante (Tosa) : éligible au CPF, sans nombre de jours minimum."}], "lieux": ["Brest", "Quimper", "Morlaix"]}$j$::jsonb, now())
-on conflict (id) do nothing;
 
--- si une première version de ce script a déjà été lancée : lieux et certification de « S'initier » mis à jour
-update public.formations set data = data || jsonb_build_object('lieux', $j$["Brest", "Quimper", "Morlaix"]$j$::jsonb), updated_at = now() where id = 'web-wordpress-perfectionnement' and not (data ? 'lieux');
+-- si une première version de ce script a déjà été lancée : WordPress perfectionnement retiré (ajouté par erreur),
+-- lieux et certification de « S'initier » mis à jour
+delete from public.formations where id = 'web-wordpress-perfectionnement';
 update public.formations set data = data || jsonb_build_object('lieux', $j$["Brest", "Quimper", "Morlaix"]$j$::jsonb), updated_at = now() where id = 'bur-powerpoint-initiation' and not (data ? 'lieux');
 update public.formations set data = data || jsonb_build_object('lieux', $j$["Brest"]$j$::jsonb), updated_at = now() where id = 'bur-initier-informatique' and not (data ? 'lieux');
 update public.formations set data = data || jsonb_build_object('lieux', $j$["Brest", "Quimper", "Morlaix"]$j$::jsonb), updated_at = now() where id = 'bur-excel-initiation' and not (data ? 'lieux');
@@ -52,4 +51,4 @@ update public.formations set data = (data - 'tarifCertification') || jsonb_build
 update public.domaines set data = jsonb_set(data, '{nom}', '"Bureautique"'::jsonb), updated_at = now() where id = 'bur' and data->>'nom' = 'Bureautique (Excel)';
 
 -- Vérification : les formations ajoutées, leurs lieux et leur nombre de dates
-select id, data->>'nom' as formation, data->>'certification' as certification, data->'lieux' as lieux, jsonb_array_length(data->'modules'->0->'sessions') as dates from public.formations where id in ('bur-initier-informatique', 'bur-excel-initiation', 'bur-excel-consolidation', 'bur-excel-perfectionnement', 'bur-excel-expert', 'bur-word-initiation', 'bur-word-perfectionnement', 'bur-powerpoint-initiation', 'web-wordpress-perfectionnement') order by id;
+select id, data->>'nom' as formation, data->>'certification' as certification, data->'lieux' as lieux, jsonb_array_length(data->'modules'->0->'sessions') as dates from public.formations where id in ('bur-initier-informatique', 'bur-excel-initiation', 'bur-excel-consolidation', 'bur-excel-perfectionnement', 'bur-excel-expert', 'bur-word-initiation', 'bur-word-perfectionnement', 'bur-powerpoint-initiation') order by id;
