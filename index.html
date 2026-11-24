@@ -300,6 +300,7 @@ details.group .profiles{padding:6px 0 4px 6px}
 .fo-mbody{padding:7px 12px;gap:2px}
 .fo-arg{font-size:13.5px;line-height:1.4}
 .fo-foot{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin-top:4px;padding-top:4px;border-top:1px dashed var(--line);font-size:12px;color:var(--muted)}
+.fo-lieu{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:#1F5F8B;background:#E3EFF9;border-radius:999px;padding:2px 10px;margin-left:8px}.fo-lieu .ic{width:14px;height:14px}
 .fo-next{display:flex;gap:4px;align-items:flex-start}.fo-next .ic{width:15px;height:15px;margin:1px 2px 0 0}
 .fo-next b{color:var(--fg);font-weight:600}
 .fo-next.none{font-style:italic}
@@ -1000,6 +1001,7 @@ window.SUPABASE_CONFIG = { url: "https://epwghwvqdeirtnigyajj.supabase.co", key:
    Collections : domaines, formations (= parcours), profils.
    ===================================================================== */
 const ICONS = {
+  pin: '<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
   sortie: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
   doc: '<path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
   loupe: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
@@ -1054,6 +1056,7 @@ function finHtml(m){
 function infoHtml(m, opts){
   if(!m) return "";
   const o = opts || {}, out = [], s = aVenir(m), has = Array.isArray(m.sessions) && m.sessions.length;
+  if(!has) out.push(`<span class="ml">${ic("cal")}<span><b>Dates :</b> à la demande</span></span>`);
   if(has) out.push(`<span class="ml">${ic("cal")}<span>${s.length ? `<b>Prochaines dates :</b> <span class="dates">${s.slice(0, o.max || 99).map(x => esc(x.texte)).join(" · ")}${o.max && s.length > o.max ? " …" : ""}</span>` : `<span class="none">Aucune date à venir</span>`}</span></span>`);
   if(m.tarif && !o.sansTarif) out.push(`<span class="ml">${ic("euro")}<span><b>${eur(m.tarif)}</b>${o.parcours && m.tarifParcours ? ` · ${eur(m.tarifParcours)} dans ce parcours` : ""}</span></span>`);
   if(o.cert) out.push(`<span class="ml">${ic("certif")}<span><b>Certification ${esc(o.cert.nom)} :</b> ${eur(o.cert.prix)}${o.cert.total ? ` · <b>Total CPF ${eur(o.cert.total)}</b>` : ""}</span></span>`);
@@ -1442,11 +1445,17 @@ function certInfo(f, m){
   const ok = /^oui/i.test(String((m && m.cpf) || "")) && Number(m && m.tarif) > 0;
   return { nom: String(f.certification || "").replace(/\s*\(.*\)\s*$/, ""), prix, total: ok ? Number(m.tarif) + prix : null };
 }
+/* lieux d'une formation : « 29 » = départemental (Brest, Quimper ou Morlaix selon les inscrits) ; sans réglage = 29 */
+const LIEUX = [["29", "29 – Finistère (selon les inscrits)"], ["Brest", "Brest"], ["Quimper", "Quimper"], ["Morlaix", "Morlaix"]];
+const lieuxDe = f => Array.isArray(f && f.lieux) && f.lieux.length ? f.lieux : ["29"];
+function lieuxTexte(f){ const l = lieuxDe(f), v = l.filter(x => x !== "29");
+  return [l.includes("29") ? "Brest, Quimper ou Morlaix selon les inscrits" : "", v.length ? (l.includes("29") ? "" : v.join(" · ")) : ""].filter(Boolean).join(" · "); }
 /* pied de module : la prochaine session, le reste (toutes les dates, tarif, CPF, positionnement) dans « Détails » */
 function pied(m, o){
   if(!m) return "";
-  const s = aVenir(m), has = Array.isArray(m.sessions) && m.sessions.length, det = infoHtml(m, o);
-  const next = has ? (s.length ? `<span class="fo-next">${ic("cal")}<span><b>Prochaine session :</b> ${esc(s[0].texte)}${s.length > 1 ? ` <small>· ${s.length - 1} autre${s.length > 2 ? "s" : ""}</small>` : ""}</span></span>` : `<span class="fo-next none">${ic("cal")}Aucune date à venir</span>`) : "<span></span>";
+  const s = aVenir(m), has = Array.isArray(m.sessions) && m.sessions.length, det = infoHtml(m, o), fo = o && o.fid ? rawF(o.fid) : null;
+  const lieu = fo ? `<span class="fo-lieu">${ic("pin")}${esc(lieuxTexte(fo))}</span>` : "";
+  const next = (has ? (s.length ? `<span class="fo-next">${ic("cal")}<span><b>Prochaine session :</b> ${esc(s[0].texte)}${s.length > 1 ? ` <small>· ${s.length - 1} autre${s.length > 2 ? "s" : ""}</small>` : ""}</span></span>` : `<span class="fo-next none">${ic("cal")}Aucune date à venir</span>`) : `<span class="fo-next">${ic("cal")}<span><b>Sessions :</b> à la demande</span></span>`) + lieu;
   return `${finHtml(m)}<div class="fo-foot">${next}${det ? `<details class="fo-det"><summary>Détails</summary>${det}</details>` : ""}</div>`;
 }
 /* besoin détaillé : situation, difficulté, attente — replié par défaut */
@@ -1930,6 +1939,7 @@ function formFormation(el, d){
       ${field("Coût de la certification, pour le total CPF d'un parcours (€)", inp("fCertPrix", r.tarifCertification ?? "", "ex. 330"))}
       ${field("CPF à partir de (jours) — facultatif", inp("fCpfMin", r.cpfMinJours ?? "", "ex. 4") + `<span class="fhint">Le CPF n'apparaît dans la proposition et le devis que si le dossier CPF qui contient cette formation compte au moins ce nombre de jours. Vide = pas de minimum.</span>`)}
       ${field("Référence interne (facultatif)", inp("fRef", r.reference || "", "ex. PAO-1.2 Photo Init"))}
+      ${field("Lieux", `<div class="finchk">${LIEUX.map(([k, l]) => `<label><input type="checkbox" class="flieu" value="${k}"${lieuxDe(r).includes(k) ? " checked" : ""}> ${esc(l)}</label>`).join("")}</div><span class="fhint">29 = Brest, Quimper ou Morlaix selon les inscrits. Pour une formation locale, cochez la ville et indiquez-la devant chaque date (« Brest : … »).</span>`, true)}
       ${field("Pilotage", `<label class="chk"><input type="checkbox" id="fHorsPil"${r.horsPilotage ? " checked" : ""}> Formation locale : ne pas suivre dans Pilotage</label><span class="fhint">Les sessions restent visibles dans Consulter.</span>`)}
       ${field("Ordre d'affichage", inp("fOrdre", r.ordre ?? ""))}
     </div>
@@ -2002,6 +2012,7 @@ function formFormation(el, d){
       ordre: Number($("fOrdre").value) || (isNew || change ? dc.formations.length + 1 : (r.ordre ?? 99)) };
     const ref = $("fRef").value.trim(); if(ref) data.reference = ref;
     data.horsPilotage = !!($("fHorsPil") && $("fHorsPil").checked);
+    data.lieux = [...document.querySelectorAll(".flieu:checked")].map(c => c.value); if(!data.lieux.length) data.lieux = ["29"];
     const cmin = parseInt($("fCpfMin").value, 10); if(cmin > 0) data.cpfMinJours = cmin;
     const cp = Number($("fCertPrix").value.replace(/[^\d.,]/g, "").replace(",", ".")); if(cp > 0) data.tarifCertification = cp;
     let reportes = 0, ok = false;
@@ -2559,7 +2570,7 @@ function renderProp(){
   bar.hidden = false;
   const r = propCalcul(), n = r.lignes.length;
   const ligne = (l, i) => `<tr><td>${esc(l.d.nom || "")}</td><td>${esc(l.m.titre)}</td>
-    <td>${l.it.session ? esc(l.it.session) : `<span class="none">Pas de date</span>`}</td>
+    <td>${l.it.session ? esc(l.it.session) : `<span class="none">À la demande</span>`}</td>
     <td>${l.bloqueMin ? `<span class="pt-fin non" title="CPF possible à partir de ${l.bloqueMin.min} jours : ce dossier en compte ${l.bloqueMin.jours}">Hors CPF<small class="pt-min">CPF dès ${l.bloqueMin.min} j</small></span>` : l.eligible ? `<button type="button" class="pt-fin" data-fin="${i}" title="Cliquer pour passer en ${l.it.type === "cpf" ? "hors CPF" : "CPF"}">${l.it.type === "cpf" ? "CPF" : "Hors CPF"}</button>` : `<span class="pt-fin non" title="Module non éligible au CPF${l.m.cpf ? " : " + esc(l.m.cpf) : ""}">Hors CPF</span>`}</td>
     <td class="num pt-rem" title="${l.base ? "Tarif plein : " + eur(l.base) : ""}">${l.remise ? "−" + l.remise + " %" : ""}</td>
     <td class="num"><input type="number" min="0" step="10" class="pt-prix" data-pprix="${i}" value="${l.prix}" aria-label="Tarif de ${esc(l.m.titre)}"> €${l.perso ? `<button type="button" class="pt-raz" data-pprixr="${i}" title="Revenir au tarif calculé (${eur(l.auto)})">↺</button>` : ""}</td>
