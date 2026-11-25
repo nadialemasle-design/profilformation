@@ -36,6 +36,7 @@ Domaines : Intelligence artificielle, Réseaux sociaux, PAO, PAO & IA, Vidéo, C
 | `supabase-mise-a-jour-2027-n17.sql` | Mise à jour n°17 : encadré « Certification » des modules IA (case CPF + conditions de CPF et épreuves de certification) pour les modules qui n'en ont pas encore. Ne modifie pas ceux déjà saisis. |
 | `supabase-mise-a-jour-2027-n18.sql` | Mise à jour n°18 : formations locales Bureautique (S'initier à l'informatique, Excel initiation à expert, Word, PowerPoint), certifiantes Tosa sans minimum de jours, dates par lieu, non suivies dans Pilotage. Domaine renommé « Bureautique ». |
 | `supabase-mise-a-jour-2027-n19.sql` | Mise à jour n°19 (après la n°18) : sous-profils Bureautique enrichis avec les formations Excel / Word / PowerPoint, 3 nouveaux sous-profils (débutant·e, secrétaire / accueil, Excel autodidacte), questionnaire de positionnement Excel obligatoire. |
+| `supabase-mise-a-jour-2027-n20.sql` | Mise à jour n°20 : compteur de connexions (table `visites`, une ligne par jour, onglet et type d'utilisateur, sans donnée personnelle), affiché dans Gestion › Statistiques. |
 
 ## Mettre l'application en ligne (GitHub Pages)
 

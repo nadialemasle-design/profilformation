@@ -688,6 +688,9 @@ button .ic{pointer-events:none}
 .icb.c-vert{color:#13866F;background:var(--teal-soft);border-color:var(--teal)}.icb.c-vert.on{background:var(--teal);color:#fff;border-color:var(--teal)}
 .icb.c-noir{color:#12313F;background:#fff;border-color:#12313F}.icb.c-noir:hover{background:#12313F;color:#fff}
 .btn .ic.ic-g{width:15px;height:15px;margin:0 6px 0 0;vertical-align:-2px}
+.st-tuiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0 18px}.st-t{background:var(--teal-soft);border:1px solid var(--teal);border-radius:12px;padding:12px;text-align:center}.st-t b{display:block;font-size:26px;color:#12313F}.st-t span{font-size:12px;color:var(--muted)}
+.st-barres{display:flex;align-items:flex-end;gap:3px;height:140px;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px}.st-b{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;position:relative}.st-b i{display:block;background:var(--teal);border-radius:3px 3px 0 0;min-height:2px}.st-b small{position:absolute;bottom:-16px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted)}
+.st-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}.st-tab{width:100%;border-collapse:collapse}.st-tab td{padding:5px 8px;border-bottom:1px solid var(--line);font-size:13px}.st-tab td:last-child{text-align:right}
 .icb[hidden]{display:none!important}.icb{display:inline-flex!important;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 6px!important;line-height:1}.icb.icb-txt{padding:0 10px!important;font-size:12.5px}.icb .ic{width:17px;height:17px;margin:0;pointer-events:none}
 .reset{border:none;background:none;color:#2A6F97;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:4px 2px;white-space:nowrap}.reset[hidden]{display:none}
 .reset.danger{background:#12343F !important;color:#fff !important;border-radius:999px;padding:5px 10px}
@@ -972,6 +975,7 @@ details.fo-det[open]>summary{background:#12343F !important;color:#fff !important
         <button type="button" class="stab" data-tab="questionnaires" aria-pressed="false">Questionnaires</button>
         <button type="button" class="stab" data-tab="comptes" aria-pressed="false">Conseillères</button>
         <button type="button" class="stab" data-tab="modeles" aria-pressed="false">Modèles d'e-mail</button>
+        <button type="button" class="stab" data-tab="stats" aria-pressed="false">Statistiques</button>
       </div>
       <button type="button" class="btn add" id="admNewDom">+ Nouveau domaine</button>
     </div>
@@ -1611,7 +1615,7 @@ $("scope").addEventListener("click", e => { const b = e.target.closest("[data-sc
 /* ---------- Vues ---------- */
 $("views").addEventListener("click", e => {
   const b = e.target.closest("[data-view]"); if(!b) return;
-  state.view = b.dataset.view;
+  state.view = b.dataset.view; if(state.view !== "consult") compterVisite(state.view);
   document.querySelectorAll(".vbtn").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
   $("consult").hidden = state.view !== "consult"; $("admin").hidden = state.view !== "admin"; $("pilot").hidden = state.view !== "pilot";
   if(state.view === "admin"){ if(!adm.dom) adm.dom = state.dom; renderAdmin(true); } else if(state.view === "pilot") renderPilot(); else renderConsult();
@@ -1658,9 +1662,9 @@ function renderAdmin(resetForm){
   if(!DOMAINES.some(d => d.id === adm.dom)) adm.dom = DOMAINES[0] ? DOMAINES[0].id : "";
   $("admDom").innerHTML = DOMAINES.map(d => `<option value="${esc(d.id)}"${d.id===adm.dom?" selected":""}>${esc(d.nom)}</option>`).join("");
   document.querySelectorAll(".stab").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.tab === adm.tab)));
-  $("admDom").closest("label").style.visibility = adm.tab === "questionnaires" || adm.tab === "comptes" || adm.tab === "modeles" ? "hidden" : "";
-  $("admin").classList.toggle("adm-large", adm.tab === "modeles");
-  $("admNewDom").hidden = adm.tab === "modeles";
+  $("admDom").closest("label").style.visibility = adm.tab === "questionnaires" || adm.tab === "comptes" || adm.tab === "modeles" || adm.tab === "stats" ? "hidden" : "";
+  $("admin").classList.toggle("adm-large", adm.tab === "modeles" || adm.tab === "stats");
+  $("admNewDom").hidden = adm.tab === "modeles" || adm.tab === "stats";
   renderAdmList();
   if(resetForm) renderAdmForm();
 }
@@ -1684,7 +1688,7 @@ function renderAdmList(){
   if(!d){ el.innerHTML = `<p class="none">Aucun domaine. Créez-en un avec « + Nouveau domaine ».</p>`; return; }
   if(adm.tab === "questionnaires") return listQuestionnaires(el);
   if(adm.tab === "comptes") return listComptes(el);
-  if(adm.tab === "modeles"){ el.innerHTML = ""; return; }
+  if(adm.tab === "modeles" || adm.tab === "stats"){ el.innerHTML = ""; return; }
   if(adm.tab === "domaine"){ el.innerHTML = `<button type="button" class="adm-item" aria-pressed="true"><b>${esc(d.nom)}</b><small>${d.formations.length} parcours · ${d.profils.length} profils</small></button>`; return; }
   if(adm.tab === "categories"){
     el.innerHTML = `<button type="button" class="btn add" data-new="1">+ Nouvelle catégorie</button>` + domCats(d).map(c => {
@@ -1726,7 +1730,7 @@ $("admTabs").addEventListener("click", e => {
   if(adm.sel && adm.sel !== "new") selParOnglet[adm.tab] = { dom: adm.dom, sel: adm.sel };
   const ctx = qContexte();
   adm.tab = b.dataset.tab;
-  const m = selParOnglet[adm.tab], global = adm.tab === "questionnaires" || adm.tab === "comptes" || adm.tab === "modeles";
+  const m = selParOnglet[adm.tab], global = adm.tab === "questionnaires" || adm.tab === "comptes" || adm.tab === "modeles" || adm.tab === "stats";
   adm.sel = adm.tab === "domaine" ? adm.dom : (m && (global || m.dom === adm.dom) ? m.sel : null);
   /* depuis une formation ou un sous-profil ouvert : l'onglet Questionnaires ouvre directement le bon questionnaire */
   if(adm.tab === "questionnaires" && ctx.length){
@@ -1756,6 +1760,7 @@ function renderAdmForm(){
   if(adm.tab === "questionnaires") return formQuestionnaire(el);
   if(adm.tab === "comptes") return formCompte(el);
   if(adm.tab === "modeles") return formModeles(el);
+  if(adm.tab === "stats") return formStats(el);
   if(adm.tab === "domaine" || adm.sel === "new" && adm.tab === "domaine"){ return formDomaine(el); }
   if(!d){ el.innerHTML = ""; return; }
   if(!adm.sel){ el.innerHTML = `<div class="state">Choisissez un élément dans la liste, ou créez-en un nouveau.</div>`; return; }
@@ -3361,6 +3366,35 @@ async function bootSupabase(cfg){
   await refreshAuth();
   SB.auth.onAuthStateChange(() => { setTimeout(refreshAuth, 0); });
 }
+/* compteur de connexions (version GitHub) : une ouverture par onglet et par session du navigateur, sans donnée personnelle */
+let VISITEUR = "visiteur";
+function compterVisite(onglet){
+  if(!SB) return; const k = "vu-" + onglet;
+  try{ if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k, "1"); }catch(e){}
+  setTimeout(() => SB.rpc("compter_visite", { p_onglet: onglet, p_profil: VISITEUR }).then(() => {}, () => {}), 1500);
+}
+async function formStats(el){
+  if(!SB){ el.innerHTML = `<div class="form"><h2>Statistiques</h2><p>Le compteur de connexions fonctionne sur la version en ligne (GitHub).</p></div>`; return; }
+  el.innerHTML = `<div class="form"><h2>Statistiques</h2><p class="none">Chargement…</p></div>`;
+  const auj = isoD(new Date()), depuis = ajouter(auj, -89);
+  const { data, error } = await SB.from("visites").select("jour,onglet,profil,nb").gte("jour", depuis).limit(5000);
+  if(adm.tab !== "stats") return;
+  if(error){ el.innerHTML = `<div class="form"><h2>Statistiques</h2><p>Compteur pas encore installé : lancez la mise à jour SQL n°20 dans Supabase.</p></div>`; return; }
+  const L = data || [], som = f => L.filter(f).reduce((t, x) => t + (x.nb || 0), 0);
+  const entre = n => x => x.jour > ajouter(auj, -n) && x.jour <= auj, consult = x => x.onglet === "consult";
+  const ONG = { consult: "Consulter", admin: "Gestion", pilot: "Pilotage" }, PROF = { visiteur: "Sans connexion", conseillere: "Conseillères connectées", editeur: "Éditeurs" };
+  const tuile = (n, l) => `<div class="st-t"><b>${n}</b><span>${l}</span></div>`;
+  const jours = []; for(let i = 29; i >= 0; i--) jours.push(ajouter(auj, -i));
+  const parJour = jours.map(j => som(x => x.jour === j && consult(x))), max = Math.max(1, ...parJour);
+  const barres = jours.map((j, i) => `<div class="st-b" title="${j.split("-").reverse().join("/")} : ${parJour[i]} ouverture${parJour[i] > 1 ? "s" : ""}"><i style="height:${Math.round(parJour[i] / max * 100)}%"></i><small>${i % 5 === 4 || i === 29 ? +j.slice(8) : ""}</small></div>`).join("");
+  const rep2 = (obj, key, f) => Object.entries(obj).map(([k, l]) => `<tr><td>${l}</td><td><b>${som(x => x[key] === k && f(x))}</b></td></tr>`).join("");
+  el.innerHTML = `<div class="form"><h2>Statistiques de connexion</h2>
+    <p class="fhint">Une ouverture = une personne qui ouvre l'application dans un navigateur (comptée une fois par session). Aucune donnée personnelle n'est enregistrée.</p>
+    <div class="st-tuiles">${tuile(som(x => x.jour === auj && consult(x)), "aujourd'hui")}${tuile(som(x => entre(7)(x) && consult(x)), "7 derniers jours")}${tuile(som(x => entre(30)(x) && consult(x)), "30 derniers jours")}${tuile(som(x => x.jour.slice(0, 7) === auj.slice(0, 7) && consult(x)), "ce mois-ci")}</div>
+    <h3>Ouvertures par jour (30 derniers jours)</h3><div class="st-barres">${barres}</div>
+    <div class="st-cols"><div><h3>Par type d'utilisateur (30 jours)</h3><table class="st-tab">${rep2(PROF, "profil", x => entre(30)(x) && consult(x))}</table></div>
+    <div><h3>Par onglet (30 jours)</h3><table class="st-tab">${rep2(ONG, "onglet", entre(30))}</table></div></div></div>`;
+}
 async function refreshAuth(){
   const { data } = await SB.auth.getSession();
   const session = data && data.session;
@@ -3370,6 +3404,7 @@ async function refreshAuth(){
     const c = ok ? null : await SB.from("conseilleres").select("email").limit(1); lit = ok || (!!c && !c.error && c.data && c.data.length > 0);
   }
   canAdmin = ok; canRead = lit; if(ok && adm.tab === "comptes") chargerComptes();
+  VISITEUR = ok ? "editeur" : lit ? "conseillere" : "visiteur"; compterVisite("consult");
   if(ok) setTimeout(iaSbTester, 0);
   if(ok){ const { data: pl, error: pe } = await SB.from("pilotage").select("id,data").limit(5000); RAW.pilotage = pe ? [] : (pl || []).map(x => Object.assign({ id: x.id }, x.data || {})); }
   else RAW.pilotage = [];
