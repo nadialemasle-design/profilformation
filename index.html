@@ -1165,14 +1165,16 @@ function buildModel(){
 const nomCert = c => String(c || "").replace(/\s*\(.*\)\s*$/, "");
 /* toutes les certifications d'une formation ou d'un parcours (celle du parcours + celles des modules certifiables seuls) */
 function certsDe(f){
-  const l = f.certification ? [nomCert(f.certification)] : [];
+  const sepC = certsModules(f);
+  const l = sepC ? [...new Set(sepC.map(x => nomCertAlt(x.m.titre, x.a)))] : f.certification ? [nomCert(f.certification)] : [];
   (Array.isArray(f.modules) ? f.modules : []).forEach(m => { if(cpfOk(m.cpf)) return; const a = cpfAlt(m.titre); if(a){ const n = nomCertAlt(m.titre, a); if(!l.includes(n)) l.push(n); } });
   return l;
 }
 function prixParcours(f){
   const mods = Array.isArray(f.modules) ? f.modules : [];
   if(mods.length < 2 || (parseInt(f.duree, 10) || 0) < 3 || !mods.every(m => Number(m.tarifParcours) > 0)) return null;
-  const parcours = mods.reduce((t, m) => t + Number(m.tarifParcours), 0), cert = Number(f.tarifCertification) || 0;
+  const sepC = certsModules(f), parcours = mods.reduce((t, m) => t + Number(m.tarifParcours), 0);
+  const cert = sepC ? sepC.reduce((t, x) => t + (Number(x.a.f.tarifCertification) || 0), 0) : Number(f.tarifCertification) || 0;
   /* parcours dont seuls certains modules passent en CPF (ex. PAO : le module certifiant) : les autres sont « Non » */
   const oui = m => /^oui/i.test(String(m.cpf || "")), non = m => /^non/i.test(String(m.cpf || ""));
   const partiel = mods.some(oui) && mods.some(non), base = partiel ? mods.filter(oui).reduce((t, m) => t + Number(m.tarifParcours), 0) : parcours;
@@ -1513,6 +1515,12 @@ function cpfAlt(titre){
   for(const f of (RAW.formations || [])){ const mods = f.modules || [];
     if(mods.length === 1 && norm(mods[0].titre || "") === k && cpfOk(mods[0].cpf) && f.certification && !/venir/i.test(f.certification)) return { f, m: mods[0] }; }
   return null;
+}
+/* parcours dont plusieurs modules CPF ont chacun leur propre certification (ex. Photoshop + Illustrator) :
+   une certification payante par module, et un dossier CPF par certification */
+function certsModules(f){
+  const mods = (f && Array.isArray(f.modules) ? f.modules : []).filter(m => cpfOk(m.cpf)).map(m => ({ m, a: cpfAlt(m.titre) }));
+  return mods.length >= 2 && mods.every(x => x.a) && new Set(mods.map(x => x.a.f.id)).size >= 2 ? mods : null;
 }
 const cpfTexte = (titre, c) => cpfOk(c) ? c : (cpfAlt(titre) ? cpfAlt(titre).m.cpf : c);
 function cpfBadge(c){
@@ -2507,6 +2515,9 @@ function propLigne(it){
   /* durée minimale CPF : champ de Gestion, ou mention « dans un parcours de N jours minimum » du module */
   const minTxt = (/(\d+)\s*(?:j|jours?)\b[^,;)]*min/i.exec(String(m.cpf || "")) || [])[1];
   const minJ = Math.max(Number(f.cpfMinJours) || 0, alt ? Number(alt.f.cpfMinJours) || 0 : 0, Number(minTxt) || 0);
+  const sep = parcours && cpfOk(m.cpf) && certsModules(f) ? cpfAlt(m.titre) : null;
+  if(sep && it.type === "cpf") return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, minJ, eligible: true,
+    certKey: "f:" + sep.f.id, certNom: "Certification " + nomCertAlt(m.titre, sep), certPrix: Number(sep.f.tarifCertification) || 0 };
   if(alt && it.type === "cpf") return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, minJ, eligible: true,
     certKey: "f:" + alt.f.id, certNom: "Certification " + nomCertAlt(m.titre, alt), certPrix: Number(alt.f.tarifCertification) || 0 };
   return { it, f, m, d, parcours, sess, prix, auto, perso, base, remise, jours, minJ, eligible: cpfOk(m.cpf) || !!alt,
