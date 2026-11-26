@@ -225,6 +225,8 @@ details.group .profiles{padding:6px 0 4px 6px}
 .fo-why .fo-ic{flex:none;color:var(--orange);padding-right:10px;border-right:1.5px solid var(--blue);display:flex;align-items:center}
 .fo-why .fo-ic .ic{margin:0}
 .fo-why .fo-lab{color:var(--blue-ink)}
+.cpf-f{flex:none;border:1.5px solid #12313F;background:#fff;color:#12313F;font:700 12.5px inherit;font-family:inherit;border-radius:999px;padding:0 12px;height:36px;cursor:pointer}.cpf-f[aria-pressed="true"]{background:#12313F;color:#fff}
+.cpf-cond{display:block;font-size:11px;color:#13866F;font-weight:600}.ff-item[aria-pressed="true"] .cpf-cond{color:#d9f5ee}
 .ff-res{margin-bottom:6px}.ff-item .ic{width:16px;height:16px;color:var(--blue);vertical-align:-3px}
 .prof[aria-pressed="true"] .pdom{color:rgba(255,255,255,.85)}.ff-item[aria-pressed="true"] .ic{color:#fff}
 .ff{display:flex;flex-direction:column;gap:12px}.ff-top{display:flex}
@@ -951,7 +953,7 @@ details.fo-det[open]>summary{background:#12343F !important;color:#fff !important
       <div class="side">
         <div class="sidetop">
           <div class="qwrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="search" id="q" type="search" placeholder="Métier, besoin, mot-clé…" aria-label="Rechercher un métier, un besoin ou un mot-clé"></div>
-          <div class="filtres"><select class="search domsel" id="domSel" aria-label="Domaine de formation"></select><button type="button" class="reset icb" id="resetBtn" title="Tout effacer : recherche, domaine, listes repliées" aria-label="Tout effacer" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></div>
+          <div class="filtres"><select class="search domsel" id="domSel" aria-label="Domaine de formation"></select><button type="button" class="cpf-f" id="cpfBtn" aria-pressed="false" title="N'afficher que les formations éligibles au CPF">€ CPF</button><button type="button" class="reset icb" id="resetBtn" title="Tout effacer : recherche, domaine, listes repliées" aria-label="Tout effacer" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></div>
           <select id="catSel" hidden aria-hidden="true" tabindex="-1"><option value=""></option></select>
           <div class="scope" id="scope" role="group" aria-label="Où chercher">
             <button type="button" class="scbtn" data-scope="tous" aria-pressed="true">Tous les domaines</button>
@@ -1258,6 +1260,7 @@ function voirActif(){ requestAnimationFrame(() => { const side = document.queryS
 function renderList(){
   const d = dom(); if(!d){ $("groups").innerHTML = ""; return; }
   renderCatSel(); voirActif();
+  if(state.cpf){ $("groups").innerHTML = cpfListeHtml(norm(state.q.trim())); return; }
   if(state.tous) return renderListTous();
   queueMicrotask(() => { const h = metierHint(); if(h && !$("groups").querySelector(".metier-hint")) $("groups").insertAdjacentHTML("afterbegin", h); });
   const q = norm(state.q.trim()), cats = [];
@@ -1298,6 +1301,23 @@ const pkIc = p => aParcoursP(p) ? `<span class="pk" title="Ce sous-profil propos
 /* bandeau « métier reconnu » en tête des résultats */
 function metierHint(){ if(!modeMetier()) return ""; const l = metiersDe(state.q || ""), fams = [...new Set(l.flatMap(x => x[1]))];
   return `<div class="metier-hint" role="status">${ic("profil")}<span>Métier « <b>${esc(state.q.trim())}</b> » : sous-profils de la famille ${fams.map(f => `<b>${esc(f)}</b>`).join(" et ")}</span></div>`; }
+/* formations éligibles au CPF (au moins un module CPF, ou certifiable seul), avec la condition à afficher */
+function cpfInfo(f){
+  const mods = Array.isArray(f.modules) ? f.modules : [], oui = mods.filter(m => cpfOk(m.cpf) || cpfAlt(m.titre));
+  if(!oui.length) return null;
+  const min = Math.max(Number(f.cpfMinJours) || 0, ...oui.map(m => Number((/(\d+)\s*(?:j|jours?)\b[^,;)]*min/i.exec(String(m.cpf || "")) || [])[1]) || 0));
+  let certs = certsDe(f).filter(c => c && !/venir/i.test(c));
+  if(!certs.length){ const d = (RAW.domaines || []).find(x => x.id === f.domaine), c = String((d && d.certification) || "").split(":")[0].trim(); if(c) certs = [c]; }
+  const cond = [certs.length ? certs.join(" + ") : "", min ? `dès ${min} jours en parcours` : "sans minimum de jours", oui.length < mods.length ? `${oui.length} module${oui.length > 1 ? "s" : ""} sur ${mods.length}` : ""].filter(Boolean).join(" · ");
+  return { cond };
+}
+function cpfListeHtml(q){
+  const l = (RAW.formations || []).filter(f => (state.tous || f.domaine === state.dom) && cpfInfo(f) && (!q || matchQ(norm([f.nom, f.intitule, f.certification, ...(f.modules || []).map(m => m.titre)].join(" ")), q)));
+  const doms = (RAW.domaines || []).slice().sort((a, b) => (a.ordre ?? 99) - (b.ordre ?? 99));
+  const blocs = doms.map(d => { const fs = l.filter(f => f.domaine === d.id).sort((a, b) => (a.ordre ?? 99) - (b.ordre ?? 99)); if(!fs.length) return "";
+    return `<div class="domtit">${esc(d.nom)} (${fs.length})</div>` + fs.map(f => `<button type="button" class="prof ff-item" data-fid="${esc(f.id)}" aria-pressed="${state.fid===f.id}"><span>${(f.modules || []).length > 1 ? `<span class="pk" title="Parcours">${ic("modules")}</span>` : ""}${esc(f.nom)}<small class="cpf-cond">€ ${esc(cpfInfo(f).cond)}</small></span></button>`).join(""); }).join("");
+  return `<div class="ff-res"><div class="metier-hint" role="status"><span><b>${l.length}</b> formation${l.length > 1 ? "s" : ""} et parcours éligible${l.length > 1 ? "s" : ""} au CPF${q ? ` pour « ${esc(state.q.trim())} »` : ""}${state.tous ? "" : " dans ce domaine"}</span></div>${blocs || `<p class="none">Aucune formation éligible au CPF${q ? " pour cette recherche" : ""}.</p>`}</div>`;
+}
 function formationsHtml(q){
   const l = formationsTrouvees(q); if(!l.length) return "";
   return `<div class="ff-res"><div class="domtit">Formations (${l.length})</div>${l.map(f => {
@@ -1345,7 +1365,8 @@ function accueilHtml(){
   </section>`;
 }
 document.addEventListener("click", e => { if(e.target.closest("[data-accq]")){ const q = $("q"); if(q){ q.focus(); q.scrollIntoView({ block: "center", behavior: "smooth" }); } } });
-function majEffacer(){ const rb = $("resetBtn"); if(rb && rb.dataset.ok !== "1") rb.hidden = !(state.q.trim() || !state.tous || state.cat || state.pid || state.fid); }
+function majEffacer(){ const rb = $("resetBtn"); if(rb && rb.dataset.ok !== "1") rb.hidden = !(state.q.trim() || !state.tous || state.cat || state.pid || state.fid || state.cpf); const cb = $("cpfBtn"); if(cb) cb.setAttribute("aria-pressed", String(!!state.cpf)); }
+document.addEventListener("click", e => { if(!e.target.closest || !e.target.closest("#cpfBtn")) return; state.cpf = !state.cpf; renderConsult(); });
 function renderDetail(){
   const el = $("detail"); majEffacer();
   if(state.fid && ready() && (RAW.formations || []).some(f => f.id === state.fid)) return renderFormationDetail(el);
@@ -1609,7 +1630,7 @@ $("detail").addEventListener("click", e => {
   document.querySelector('.vbtn[data-view="admin"]').click();
 });
 function toutReinitialiser(){ /* ↺ : repart de zéro, proposition (parcours sélectionnés) comprise */
-  state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; state.pid = ""; ouvertes.clear();
+  state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; state.pid = ""; state.cpf = false; ouvertes.clear();
   prop.items = []; prop.ouvert = false; prop.mail = false; prop.exonere = false;
   try{ sessionStorage.removeItem("proposition-v1"); propSave(); }catch(err){}
   $("q").value = ""; domOuverts.clear();
