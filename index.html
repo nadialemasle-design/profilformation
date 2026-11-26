@@ -1962,7 +1962,7 @@ function formFormation(el, d){
       <div id="pickBox" hidden></div></div>
     ${!isNew ? `<div class="fsec sec-q"><h3>Questionnaire de positionnement</h3><button type="button" class="btn small" id="goQ">Déposer ou modifier le questionnaire de positionnement →</button></div>` : ""}
     ${!isNew ? rattachHtml(adm.sel, domCur) : ""}
-    ${formActions(!isNew)}</div>`;
+    ${formActions(!isNew).replace('<span class="msg"', (isNew ? "" : `<button type="button" class="btn" data-act="dup" title="Créer une copie (modules, dates, tarifs, arguments et questionnaires), à renommer ensuite"><svg class="ic ic-g" viewBox="0 0 24 24" aria-hidden="true">${ICONS.copie}</svg>Dupliquer</button>`) + '<span class="msg"')}</div>`;
   if(!isNew) rattachBind(adm.sel, domCur, r.nom);
   if($("goQ")) $("goQ").onclick = () => document.querySelector('.stab[data-tab="questionnaires"]').click();
   $("addMod").onclick = () => $("modLines").insertAdjacentHTML("beforeend", modLine({ code: "", titre: "" }));
@@ -1976,6 +1976,15 @@ function formFormation(el, d){
   el.querySelector(".actions").addEventListener("click", async e => {
     const a = e.target.closest("[data-act]")?.dataset.act; if(!a) return;
     if(a === "cancel"){ adm.sel = null; renderAdmin(true); return; }
+    if(a === "dup"){ /* copie de la version enregistrée ; les sous-profils ne sont pas rattachés à la copie */
+      if(el.dataset.dirty) return setMsg("Enregistrez d'abord vos modifications, puis dupliquez.");
+      const src = rawF(adm.sel); if(!src) return;
+      const dom = src.domaine || d.id, nom = src.nom + " (copie)"; let id = dom + "-" + slug(nom), i = 2; while(rawF(id)) id = dom + "-" + slug(nom) + "-" + i++;
+      const data = JSON.parse(JSON.stringify(src)); delete data.id; data.nom = nom; data.ordre = (DOMAINES.find(x => x.id === dom) || d).formations.length + 1;
+      await write(async () => { await db.doc("formations/" + id).set(data); for(const m of (src.modules || [])) await qCopier(src.id, m.code, id, m.code); },
+        "", () => { adm.sel = id; renderAdmin(true); toast("Copie créée : renommez-la puis enregistrez"); setTimeout(() => { const n = $("fNom"); if(n){ n.focus(); n.select(); } }, 50); });
+      return;
+    }
     if(a === "del") return askConfirm(`Supprimer « ${r.nom} » ?${used.length ? ` Elle sera retirée de ${used.length} profil${used.length>1?"s":""}.` : ""}`, async () => {
       for(const p of used){ const rp = rawP(p.id); await db.doc("profils/" + p.id).update({ parcours: (rp.parcours || []).filter(x => x.formation !== adm.sel) }); }
       for(const rp of (RAW.profils || []).filter(x => (x.complements || []).some(c => c.formation === adm.sel))){ await db.doc("profils/" + rp.id).update({ complements: rp.complements.filter(c => c.formation !== adm.sel) }); }
