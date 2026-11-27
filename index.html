@@ -693,6 +693,10 @@ button .ic{pointer-events:none}
 .st-tuiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0 18px}.st-t{background:var(--teal-soft);border:1px solid var(--teal);border-radius:12px;padding:12px;text-align:center}.st-t b{display:block;font-size:26px;color:#12313F}.st-t span{font-size:12px;color:var(--muted)}
 .st-barres{display:flex;align-items:flex-end;gap:3px;height:140px;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px}.st-b{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;position:relative}.st-b i{display:block;background:var(--teal);border-radius:3px 3px 0 0;min-height:2px}.st-b small{position:absolute;bottom:-16px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted)}
 .st-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}.st-tab{width:100%;border-collapse:collapse}.st-tab td{padding:5px 8px;border-bottom:1px solid var(--line);font-size:13px}.st-tab td:last-child{text-align:right}
+.rt-row.on{background:#EEF5FB;border-color:#9CC3E0}
+.rt-ed{border:1.5px solid #9CC3E0;border-top:0;border-radius:0 0 12px 12px;background:#F7FAFD;padding:10px 12px;margin:-6px 0 8px;display:flex;flex-direction:column;gap:8px}
+.rt-ed .modrow{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:start}.rt-ed textarea{min-height:56px}
+.rt-ed-act{display:flex;gap:8px;align-items:center}
 .icb[hidden]{display:none!important}.icb{display:inline-flex!important;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 6px!important;line-height:1}.icb.icb-txt{padding:0 10px!important;font-size:12.5px}.icb .ic{width:17px;height:17px;margin:0;pointer-events:none}
 .reset{border:none;background:none;color:#2A6F97;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:4px 2px;white-space:nowrap}.reset[hidden]{display:none}
 .reset.danger{background:#12343F !important;color:#fff !important;border-radius:999px;padding:5px 10px}
@@ -2105,6 +2109,7 @@ function rattachHtml(fid, domF){
     <div class="rt-list">${l.length ? l.sort((a, b) => a.rp.domaine === b.rp.domaine ? (a.rp.nom || "").localeCompare(b.rp.nom || "") : nomDom(a.rp.domaine).localeCompare(nomDom(b.rp.domaine))).map(x => `<div class="rt-row" data-pid="${esc(x.rp.id)}">
       <button type="button" class="rt-open" data-open="1" title="Ouvrir la fiche du sous-profil"><b>${esc(x.rp.nom)}</b><small>${esc(nomDom(x.rp.domaine))} · ${esc(famillesDe(x.rp)[0] || "")}</small></button>
       <span class="rt-type">${x.type === "parcours" ? `Parcours n°${x.rang}` : "Complément"}</span>
+      <button type="button" class="btn small icb c-bleu" data-edit="1" title="Modifier l'argumentaire pour ce sous-profil" aria-label="Modifier l'argumentaire">${ic("edit")}</button>
       <button type="button" class="btn small danger icb" data-out="1" title="Retirer" aria-label="Retirer">${ic("trash")}</button></div>`).join("") : `<p class="fhint">Aucun sous-profil pour l'instant.</p>`}</div>
     <div class="rt-add"><b>Rattacher</b>
       <select class="inp" id="rtFam" aria-label="Famille de métiers"><option value="">Famille de métiers…</option>${fams.map(f => `<option>${esc(f)}</option>`).join("")}</select>
@@ -2120,6 +2125,19 @@ function rattachRefresh(){
   if(box.dataset.sig === sig) return;
   box.outerHTML = rattachHtml(adm.sel, f.domaine); rattachBind(adm.sel, f.domaine, f.nom);
 }
+/* édition, depuis la fiche formation, de l'argumentaire d'un sous-profil déjà rattaché */
+function rtEditeurHtml(rp, fid){
+  const f = rawF(fid), x = (rp.parcours || []).find(p => p.formation === fid), c = (rp.complements || []).find(p => p.formation === fid);
+  const ia = champ => `<button type="button" class="ia-btn ia-mini" data-ia="champ" data-kind="rted" data-champ="${champ}" title="Rédiger ou améliorer ce texte avec l'IA">✨</button>`;
+  if(!x) return `<div class="rt-ed" data-pid="${esc(rp.id)}"><div class="modrow"><span class="rh rh-pq">Pourquoi</span><div class="ia-wrap inl"><input class="inp rte-pq" value="${esc((c || {}).pourquoi || "")}">${ia("cp")}</div></div>
+    <div class="rt-ed-act"><button type="button" class="btn small primary" data-rtsave="1">Enregistrer</button><button type="button" class="btn small" data-rtclose="1">Fermer</button></div></div>`;
+  const mods = (f && Array.isArray(f.modules) ? f.modules : []);
+  return `<div class="rt-ed" data-pid="${esc(rp.id)}">
+    <div class="modrow"><span class="rh rh-pq">Pourquoi</span><div class="ia-wrap inl"><input class="inp rte-pq" value="${esc(x.pourquoi || "")}" placeholder="Une ligne, affichée d'emblée">${ia("pourquoi")}</div></div>
+    <div class="modrow"><span class="rh rh-arg">Argumentaire détaillé</span><div class="ia-wrap"><textarea class="inp rte-arg" placeholder="Replié sur la fiche : ce que la formation apporte, le résultat concret">${esc(x.argumentaire || "")}</textarea>${ia("argumentaire")}</div></div>
+    ${mods.map(m => `<div class="modrow"><span class="code">${mods.length > 1 ? esc(m.code) : "En pratique"}</span><div class="ia-wrap"><textarea class="inp rte-m" data-m="${esc(m.code)}" placeholder="${mods.length > 1 ? `Vide : l'argument module commun ${esc(m.code)} s'affiche` : "Ce qu'il saura faire, en une phrase"}">${esc((x.reponses || {})[m.code] || "")}</textarea>${ia("pcm")}</div></div>`).join("")}
+    <div class="rt-ed-act"><button type="button" class="btn small primary" data-rtsave="1">Enregistrer</button><button type="button" class="btn small" data-rtclose="1">Fermer</button><span class="fhint">Modifie uniquement ce sous-profil.</span></div></div>`;
+}
 function rattachBind(fid, domF, nomF){
   const box = $("rattach"); if(!box) return;
   box.dataset.sig = JSON.stringify(rattachListe(fid).map(x => x.rp.id + x.type + (x.rang || "")));
@@ -2134,6 +2152,21 @@ function rattachBind(fid, domF, nomF){
   box.addEventListener("click", async e => {
     const row = e.target.closest(".rt-row"), rp = row && rawP(row.dataset.pid);
     if(rp && e.target.closest("[data-open]")){ adm.dom = rp.domaine; adm.tab = "profils"; adm.sel = rp.id; renderAdmin(true); return; }
+    if(rp && e.target.closest("[data-edit]")){ const ed = row.nextElementSibling; if(ed && ed.classList.contains("rt-ed")){ ed.remove(); row.classList.remove("on"); return; }
+      row.insertAdjacentHTML("afterend", rtEditeurHtml(rp, fid)); row.classList.add("on"); const i = row.nextElementSibling.querySelector(".inp"); if(i) i.focus(); return; }
+    const ed = e.target.closest(".rt-ed");
+    if(ed && e.target.closest("[data-rtclose]")){ const r0 = ed.previousElementSibling; if(r0) r0.classList.remove("on"); ed.remove(); return; }
+    if(ed && e.target.closest("[data-rtsave]")){
+      const rp2 = rawP(ed.dataset.pid); if(!rp2) return;
+      const pq = ed.querySelector(".rte-pq").value.trim(); if(!pq) return setMsg("Le « Pourquoi » ne peut pas être vide.");
+      let maj;
+      if((rp2.parcours || []).some(p => p.formation === fid)){
+        maj = { parcours: rp2.parcours.map(p => { if(p.formation !== fid) return p; const n = Object.assign({}, p, { pourquoi: pq }), arg = ed.querySelector(".rte-arg").value.trim();
+          if(arg) n.argumentaire = arg; else delete n.argumentaire;
+          const rep = {}; ed.querySelectorAll(".rte-m").forEach(t => { const v = t.value.trim(); if(v) rep[t.dataset.m] = v; }); n.reponses = rep; return n; }) };
+      } else maj = { complements: (rp2.complements || []).map(p => p.formation === fid ? Object.assign({}, p, { pourquoi: pq }) : p) };
+      return write(() => db.doc("profils/" + rp2.id).update(maj), "", () => { toast(`Argumentaire de « ${rp2.nom} » enregistré`); const r0 = ed.previousElementSibling; if(r0) r0.classList.remove("on"); ed.remove(); });
+    }
     if(rp && e.target.closest("[data-out]")){
       if((rp.parcours || []).length === 1 && rp.parcours[0].formation === fid) return setMsg(`« ${rp.nom} » n'a que ce parcours : ajoutez-lui d'abord un autre parcours.`);
       return write(() => db.doc("profils/" + rp.id).update({ parcours: (rp.parcours || []).filter(x => x.formation !== fid), complements: (rp.complements || []).filter(x => x.formation !== fid) }), "Retiré du sous-profil", () => {});
@@ -3591,7 +3624,17 @@ Format : {"pourquoi": "...", "argumentaire": "...", "modules": {"M1": "..."}}`, 
         difficulte: "« Difficulté » : UNE phrase sur ce qui la freine",
         attente: "« Attente » : UNE phrase sur ce qu'elle veut savoir faire à la fin",
         motscles: "« Mots-clés pour la recherche » : 10 à 15 mots-clés séparés par des virgules (synonymes du métier, métiers voisins, besoins exprimés avec les mots des clients) ; s'il y en a déjà, garde-les tous et complète" };
-      if(kind === "rattach"){
+      if(kind === "rted"){
+        const ed = b.closest(".rt-ed"), rp = rawP(ed.dataset.pid), f = rawF(adm.sel), champ = b.dataset.champ;
+        const sp = { domaine: nomDom(rp.domaine), nom: rp.nom, categories: famillesDe(rp), besoin: rp.besoin || "", situation: (rp.besoinDetail || {}).situation || "", difficulte: (rp.besoinDetail || {}).difficulte || "", attente: (rp.besoinDetail || {}).attente || "" };
+        const C = { pourquoi: "Champ « Pourquoi » : UNE ligne (110 caractères max) qui dit quand proposer cette formation à ce sous-profil.",
+          argumentaire: "Champ « Argumentaire détaillé » : 1 à 3 phrases sur ce que la personne saura faire et le résultat concret dans son métier.",
+          pcm: `Champ « argument » du module ${el.dataset.m || ""} pour ce sous-profil : UNE phrase (160 caractères max) qui relie ce module à son besoin.`,
+          cp: "Champ « Pourquoi » d'une formation complémentaire (d'un autre domaine) suggérée à ce sous-profil : UNE ligne (100 caractères max)." };
+        consigne = `${base}\n${C[champ] || C.pourquoi}\nFormat : {"texte": "..."}`;
+        donnees = { sousProfil: sp, texteActuel: actuel, formation: iaFormInfo(f), module: el.dataset.m ? ((f.modules || []).find(m => m.code === el.dataset.m) || {}).titre || "" : undefined,
+          autresChamps: { pourquoi: (ed.querySelector(".rte-pq") || {}).value || "", argumentaire: (ed.querySelector(".rte-arg") || {}).value || "" }, exemplesDeTon: iaExemples(3) };
+      } else if(kind === "rattach"){
         const f = rawF(adm.sel); if(!f) throw { message: "Enregistrez d'abord la formation." };
         const vp = $("rtProf").value, fam = $("rtFam").value;
         if(vp === "*" && fam){ /* toute une famille : un « pourquoi » commun à ses sous-profils */
