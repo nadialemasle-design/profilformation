@@ -704,6 +704,7 @@ button .ic{pointer-events:none}
 .rt-ed{border:1.5px solid #9CC3E0;border-top:0;border-radius:0 0 12px 12px;background:#F7FAFD;padding:10px 12px;margin:-6px 0 8px;display:flex;flex-direction:column;gap:8px}
 .rt-ed .modrow{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:start}.rt-ed textarea{min-height:56px}
 .rt-ed-act{display:flex;gap:8px;align-items:center}
+.pt-pref{display:flex;align-items:center;gap:8px;margin:0 0 8px;padding:6px 10px;border-radius:10px;background:#FFF8E1;border:1px solid #F2C94C;font-size:13px;color:#5C4A00;cursor:pointer;width:max-content}
 .icb[hidden]{display:none!important}.icb{display:inline-flex!important;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 6px!important;line-height:1}.icb.icb-txt{padding:0 10px!important;font-size:12.5px}.icb .ic{width:17px;height:17px;margin:0;pointer-events:none}
 .reset{border:none;background:none;color:#2A6F97;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:4px 2px;white-space:nowrap}.reset[hidden]{display:none}
 .reset.danger{background:#12343F !important;color:#fff !important;border-radius:999px;padding:5px 10px}
@@ -1642,7 +1643,7 @@ $("detail").addEventListener("click", e => {
 });
 function toutReinitialiser(){ /* ↺ : repart de zéro, proposition (parcours sélectionnés) comprise */
   state.tous = true; state.cat = ""; state.q = ""; state.scope = "tous"; state.fid = ""; state.pid = ""; state.cpf = false; ouvertes.clear();
-  prop.items = []; prop.ouvert = false; prop.mail = false; prop.exonere = false;
+  prop.items = []; prop.ouvert = false; prop.mail = false; prop.exonere = false; prop.pref = true;
   try{ sessionStorage.removeItem("proposition-v1"); propSave(); }catch(err){}
   $("q").value = ""; domOuverts.clear();
   try{ renderConsult(); }catch(err){ console.error("↺ renderConsult", err); }
@@ -2541,8 +2542,8 @@ let PLAFOND_CPF = 1500, PARTICIPATION_CPF = 150; /* modifiables dans Gestion ›
 const prop = { items: [], exonere: false, ouvert: false, mail: false };
 /* la proposition dure le temps de l'onglet (sessionStorage) : on repart d'une page vide à chaque ouverture */
 try{ localStorage.removeItem("proposition-v1"); }catch(e){}
-try{ const x = JSON.parse(sessionStorage.getItem("proposition-v1") || "null"); if(x && Array.isArray(x.items)){ prop.items = x.items; prop.exonere = !!x.exonere; } }catch(e){}
-const propSave = () => { try{ sessionStorage.setItem("proposition-v1", JSON.stringify({ items: prop.items, exonere: prop.exonere })); }catch(e){} };
+try{ const x = JSON.parse(sessionStorage.getItem("proposition-v1") || "null"); if(x && Array.isArray(x.items)){ prop.items = x.items; prop.exonere = !!x.exonere; prop.pref = x.pref !== false; } }catch(e){}
+const propSave = () => { try{ sessionStorage.setItem("proposition-v1", JSON.stringify({ items: prop.items, exonere: prop.exonere, pref: prop.pref !== false })); }catch(e){} };
 const rawFm = (fid, code) => { const f = (RAW.formations || []).find(x => x.id === fid); return f ? { f, m: (f.modules || []).find(y => y.code === code) } : null; };
 const propKey = m => norm(m.titre || "");
 const itemKey = (fid, code) => fid + "|" + code; /* une case = un module dans une formation ou un parcours précis */
@@ -2576,7 +2577,7 @@ function propLigne(it){
   /* « en parcours, ou dès N jours » (Gestion) : parcours complet retenu, ou au moins N jours de formation dans la proposition ;
      sans N : dès 2 formations ou modules (règle d'origine) */
   const nPJ = Number(m.prefJours) || 0;
-  const pref = Number(m.tarifParcours) > 0 && (nPJ ? (propParcoursComplet(f) || propJoursTotal() >= nPJ) : prop.items.length >= 2);
+  const pref = prop.pref !== false && Number(m.tarifParcours) > 0 && (nPJ ? (propParcoursComplet(f) || propJoursTotal() >= nPJ) : prop.items.length >= 2);
   const auto = pref ? Number(m.tarifParcours) : Number(m.tarif) || 0;
   /* tarif modifié à la main dans le détail de la proposition ; remise calculée par rapport au tarif plein de la formation */
   const perso = typeof it.prix === "number" && isFinite(it.prix), prix = perso ? it.prix : auto, base = Number(m.tarif) || 0;
@@ -2646,6 +2647,7 @@ document.addEventListener("change", e => {
   if(t){ prop.items[+t.dataset.type].type = t.value; propSave(); renderProp(); return; }
   if(ss){ prop.items[+ss.dataset.sess].session = ss.value; propSave(); renderProp(); renderDetail(); return; }
   if(e.target.id === "propExo"){ prop.exonere = e.target.checked; propSave(); renderProp(); }
+  if(e.target.id === "propPref"){ prop.pref = e.target.checked; propSave(); renderProp(); }
 });
 /* barre du bas + panneau récapitulatif */
 function renderProp(){
@@ -2665,7 +2667,7 @@ function renderProp(){
   bar.innerHTML = `<div class="pb-row"><b>Proposition</b><span>${n} formation${n>1?"s":""}${r.jours ? ` · ${r.jours} jour${r.jours>1?"s":""}` : ""}</span>${r.totalCpf ? `<span>Dossier CPF ${eur(r.totalCpf)}</span>` : ""}<span class="pb-charge">${r.cpf.length ? "À charge" : "Total"} ${eur(r.charge)}</span>
       <button type="button" class="btn small icb c-bleu${prop.ouvert ? " on" : ""}" id="propOpen" title="${prop.ouvert ? "Masquer le détail" : "Voir le détail"}" aria-label="${prop.ouvert ? "Masquer le détail" : "Voir le détail"}">${ic("loupe")}</button><button type="button" class="btn small icb c-noir" id="propReset" title="Réinitialiser la proposition" aria-label="Réinitialiser la proposition">${ic("trash")}</button><button type="button" class="btn small icb c-vert${prop.mail ? " on" : ""}" id="propMail" title="${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}" aria-label="${prop.mail ? "Fermer l'e-mail" : "Préparer l'e-mail"}">${ic("mail")}</button><button type="button" class="btn primary small" id="propWord"><svg class="ic ic-g" viewBox="0 0 24 24" aria-hidden="true">${ICONS.doc}</svg>Générer le document Word</button></div>
     ${prop.mail ? mailHtml() : ""}
-    ${prop.ouvert ? `<div id="propPanel"><table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date retenue</th><th>Financement</th><th class="num">Remise</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
+    ${prop.ouvert ? `<div id="propPanel">${prop.items.some(it => { const x = propContexte(it); return x && x.m && Number(x.m.tarifParcours) > 0; }) ? `<label class="pt-pref"><input type="checkbox" id="propPref"${prop.pref !== false ? " checked" : ""}> Appliquer le <b>tarif préférentiel</b> (parcours ou plusieurs formations)</label>` : ""}<table class="pt"><thead><tr><th>Domaine</th><th>Formation</th><th>Date retenue</th><th>Financement</th><th class="num">Remise</th><th class="num">Tarif</th><th></th></tr></thead><tbody>
       ${r.lignes.map((l, i) => ligne(l, prop.items.indexOf(l.it))).join("")}
       ${r.certs.map(c => tot(`${esc(c.nom)} <button type="button" class="btn small pt-sc" data-sanscert="${esc(c.key)}" title="Passe les modules de ce parcours en hors CPF : la certification n'est plus facturée">Retirer (pas de financement CPF)</button>`, eur(c.prix))).join("")}
       ${r.totalCpf ? tot(`<b>Total ${r.dossiers.length > 1 ? `des ${r.dossiers.length} dossiers CPF` : "dossier CPF"}</b>`, `<b>${eur(r.totalCpf)}</b>`, "st") + tot(`Prise en charge CPF (plafond ${eur(PLAFOND_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""})`, eur(r.priseEnCharge)) + tot(`Reste à charge CPF <small>(participation forfaitaire de ${eur(PARTICIPATION_CPF)}${r.dossiers.length > 1 ? " par dossier" : ""} incluse)</small> <label class="exo"><input type="checkbox" id="propExo"${prop.exonere ? " checked" : ""}> exonéré(e) de la participation</label>`, eur(r.resteCpf)) : ""}
@@ -2680,7 +2682,7 @@ document.addEventListener("click", async e => {
   if(e.target.id === "propOpen"){ prop.ouvert = !prop.ouvert; if(prop.ouvert) prop.mail = false; renderProp(); return; }
   if(e.target.id === "propMail"){ prop.mail = !prop.mail; if(prop.mail){ prop.ouvert = false; MAILV.texte = null; MAILV.html = null; } renderProp(); return; }
   if(e.target.id === "propReset"){
-    prop.items = []; prop.ouvert = false; prop.exonere = false; propSave(); renderProp(); syncPropCtl(); toast("Proposition réinitialisée"); return;
+    prop.items = []; prop.ouvert = false; prop.exonere = false; prop.pref = true; propSave(); renderProp(); syncPropCtl(); toast("Proposition réinitialisée"); return;
   }
   if(e.target.id === "propClear"){ prop.items = []; prop.ouvert = false; propSave(); renderProp(); syncPropCtl(); return; }
   const rz = e.target.closest("[data-pprixr]"); if(rz){ const it = prop.items[+rz.dataset.pprixr]; if(it){ delete it.prix; propSave(); renderProp(); } return; }
