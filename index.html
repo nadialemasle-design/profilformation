@@ -384,10 +384,13 @@ details.group .profiles{padding:6px 0 4px 6px}
 .pc-ev{display:block;width:100%;text-align:left;font:inherit;font-size:11px;background:var(--blue-soft);border:none;border-left:3px solid var(--blue);border-radius:4px;padding:2px 4px;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:var(--blue-ink)}
 .pc-ev small{background:#fff;border-radius:8px;padding:0 4px;font-weight:700}.pc-ev.cert{background:#fde7e7;border-left-color:#c62828;color:#c62828;font-weight:700}
 .pl-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:8px}.pl-leg i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.pl-dt.pl-fer{background:#FDECEA!important;box-shadow:inset 3px 0 0 #C62828}
+.fer-b{display:inline-block;margin:2px 4px 0 0;padding:0 6px;border-radius:999px;background:#C62828;color:#fff;font-size:10.5px;font-weight:700;white-space:nowrap}.pl-dt .fer-b{display:block;width:max-content}
+.pc-d.fer{background:#FDECEA}.pc-d .fer-n{display:block;font-size:10px;font-weight:700;color:#C62828;margin:-2px 0 2px}.pl-leg .l5{background:#FDECEA;border-left:3px solid #C62828}
 .pl-dt.pl-vac{background:#FFF1D6!important;box-shadow:inset 3px 0 0 #F2A900}
 .vac-b{display:inline-block;margin:2px 0 0;padding:0 6px;border-radius:999px;background:#F2A900;color:#3d2a00;font-size:10.5px;font-weight:700;white-space:nowrap}
 .pl-dt .vac-b{display:block;width:max-content}
-.pc-d.vac{background:#FFF1D6}.pc-d.vac.out{background:#FFF8EA}.pl-leg .l4{background:#FFF1D6;border-left:3px solid #F2A900}
+.pc-d.vac{background:#FFF1D6}.pc-d.vac.fer{background:#FDECEA}.pc-d.vac.out{background:#FFF8EA}.pl-leg .l4{background:#FFF1D6;border-left:3px solid #F2A900}
 .pl-leg .l1{background:var(--blue-soft);border-left:3px solid var(--blue)}.pl-leg .l2{background:#fde7e7;border-left:3px solid #c62828}.pl-leg .l3{outline:2px solid #e8590c}
 .pl-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 .pl-t-tab{border-collapse:collapse;width:100%;font-size:12.5px}.pl-t-tab th{background:var(--blue);color:#fff;padding:6px 5px;text-align:left;font-size:11.5px;position:sticky;top:0}
@@ -2843,6 +2846,19 @@ const dateD = s => { const [y, m, j] = s.split("-").map(Number); return new Date
 const VACANCES_B = [["2026-07-04", "2026-08-31", "Été"], ["2026-10-17", "2026-11-01", "Toussaint"], ["2026-12-19", "2027-01-03", "Noël"], ["2027-02-20", "2027-03-07", "Hiver"],
   ["2027-04-17", "2027-05-02", "Printemps"], ["2027-05-06", "2027-05-09", "Pont de l'Ascension"], ["2027-07-03", "2027-09-01", "Été"], ["2027-10-23", "2027-11-07", "Toussaint"],
   ["2027-12-18", "2028-01-02", "Noël"], ["2028-02-05", "2028-02-20", "Hiver"], ["2028-04-08", "2028-04-23", "Printemps"], ["2028-05-25", "2028-05-28", "Pont de l'Ascension"], ["2028-07-04", "2028-08-31", "Été"]];
+/* jours fériés en France (calcul automatique, Pâques par l'algorithme de Meeus) */
+const FERIES = {};
+function feriesAn(y){
+  if(FERIES[y]) return FERIES[y];
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3),
+    h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451),
+    mo = Math.floor((h + l - 7 * m + 114) / 31), jo = ((h + l - 7 * m + 114) % 31) + 1, P = Date.UTC(y, mo - 1, jo);
+  const j = n => new Date(P + n * 864e5).toISOString().slice(0, 10), x = (mm, dd) => `${y}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
+  return FERIES[y] = { [x(1, 1)]: "Jour de l'an", [j(1)]: "Lundi de Pâques", [x(5, 1)]: "Fête du Travail", [x(5, 8)]: "Victoire 1945", [j(39)]: "Ascension",
+    [j(50)]: "Lundi de Pentecôte", [x(7, 14)]: "Fête nationale", [x(8, 15)]: "Assomption", [x(11, 1)]: "Toussaint", [x(11, 11)]: "Armistice", [x(12, 25)]: "Noël" };
+}
+const ferie = iso => feriesAn(+iso.slice(0, 4))[iso] || "";
+const feriesSession = t => joursSession(t).filter(ferie).map(d => [d, ferie(d)]);
 const vacJour = iso => VACANCES_B.find(([a, b]) => iso >= a && iso <= b);
 function vacSession(t){ const v = [...new Set(joursSession(t).map(vacJour).filter(Boolean))]; return v; }
 const frC = iso => iso.split("-").reverse().slice(0, 2).join("/");
@@ -2917,8 +2933,8 @@ function renderPilot(){
     const d = new Date(y, mo - 1, 1 - off + i), iso = isoD(d);
     const ev = S.filter(s => s.jours.includes(iso)).map(s => { const der = s.cert && s.fin === iso;
       return `<button type="button" class="pc-ev${der ? " cert" : ""}${pilVal(s.id, "annulee") ? " annul" : s.fin < auj ? " passe" : ""}" data-pgo="${esc(s.id)}" title="${esc(s.titre)} · ${esc(s.texte)}${der ? " · certification " + esc(s.cert) : ""}">${der ? "🎓 " : ""}${esc(s.nom)}${pilTot(s.id) ? ` <small>${pilTot(s.id)}</small>` : ""}</button>`; }).join("");
-    const vj = vacJour(iso);
-    cal += `<div class="pc-d${d.getMonth() !== mo - 1 ? " out" : ""}${d.getDay() % 6 ? "" : " we"}${iso === auj ? " today" : ""}${vj ? " vac" : ""}"${vj ? ` title="Vacances scolaires zone B : ${esc(vj[2])}"` : ""}><b>${d.getDate()}</b>${ev}</div>`;
+    const vj = vacJour(iso), fj = ferie(iso);
+    cal += `<div class="pc-d${d.getMonth() !== mo - 1 ? " out" : ""}${d.getDay() % 6 ? "" : " we"}${iso === auj ? " today" : ""}${vj ? " vac" : ""}${fj ? " fer" : ""}"${vj || fj ? ` title="${esc([fj ? "Jour férié : " + fj : "", vj ? "Vacances scolaires zone B : " + vj[2] : ""].filter(Boolean).join(" · "))}"` : ""}><b>${d.getDate()}</b>${fj ? `<small class="fer-n">⚑ ${esc(fj)}</small>` : ""}${ev}</div>`;
   }
   const chk = (id, k, lab) => `<input type="checkbox" data-plf="${esc(id)}" data-pk="${k}" aria-label="${lab}"${pilVal(id, k) ? " checked" : ""}>`;
   const txt = (id, k, lab, ph) => `<input type="text" class="pl-t" data-plf="${esc(id)}" data-pk="${k}" aria-label="${lab}"${ph ? ` placeholder="${esc(ph)}"` : ""} value="${esc(pilVal(id, k) || "")}">`;
@@ -2959,7 +2975,7 @@ function renderPilot(){
     return entete + `<tr id="pr-${esc(s.id)}" class="${s.cert ? "certrow" : ""}${annul ? " annulee" : passe ? " passee" : ""}"><td>${d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "2-digit" })}</td><td>${d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}</td>
       <td class="pl-dom">${esc(s.dom)}</td>
       <td class="pl-titre">${annul ? `<span class="pl-st an" title="${esc(pilVal(s.id, "motifAnnul") || "Session annulée")}">✕ Annulée</span>` : passe ? `<span class="pl-st pa">Passée</span>` : ""}${u ? `<a href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir le programme">${esc(s.titre)}</a>` : esc(s.titre)}${enAlerte.has(s.id) ? ` <span class="pl-dot" title="Alerte en cours"></span>` : ""}<button type="button" class="pl-edit" data-pedit="${esc(s.fids[0])}" title="Modifier dans la Gestion (dates, tarif…)">✎ Gestion</button>${s.cert ? `<span class="pl-cert">🎓 certif ${esc(s.cert)} · ${dateD(s.fin).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span>` : ""}</td>
-      <td class="pl-dt${vacSession(s.texte).length ? " pl-vac" : ""}"${vacSession(s.texte).length ? ` title="Vacances scolaires zone B : ${esc(vacSession(s.texte).map(v => `${v[2]} (${frC(v[0])} → ${frC(v[1])})`).join(", "))}"` : ""}>${esc(s.texte.replace(/\s*20\d\d$/, ""))}${vacSession(s.texte).length ? `<small class="vac-b">☀ ${esc(vacSession(s.texte).map(v => v[2]).join(", "))}</small>` : ""}</td><td>${txt(s.id, "formateur", "Formateur")}</td>
+      <td class="pl-dt${vacSession(s.texte).length ? " pl-vac" : ""}${feriesSession(s.texte).length ? " pl-fer" : ""}"${vacSession(s.texte).length || feriesSession(s.texte).length ? ` title="${esc([...feriesSession(s.texte).map(([d, n]) => `Jour férié : ${n} (${frC(d)})`), ...vacSession(s.texte).map(v => `Vacances scolaires zone B : ${v[2]} (${frC(v[0])} → ${frC(v[1])})`)].join(" · "))}"` : ""}>${esc(s.texte.replace(/\s*20\d\d$/, ""))}${feriesSession(s.texte).map(([d, n]) => `<small class="fer-b">⚑ ${esc(n)} ${frC(d)}</small>`).join("")}${vacSession(s.texte).length ? `<small class="vac-b">☀ ${esc(vacSession(s.texte).map(v => v[2]).join(", "))}</small>` : ""}</td><td>${txt(s.id, "formateur", "Formateur")}</td>
       <td class="n">${s.tarif ? eur(s.tarif) : ""}</td><td>${s.pos ? (() => { const q = s.qid && (RAW.questionnaires || []).find(x => x.id === s.qid), u = q && safeUrl(q.lien);
         return `<span class="pl-pc"><span class="pl-pos" title="Positionnement : ${esc(s.pos)}">Oui</span>${q ? `${u ? `<a class="pl-qi" href="${esc(u)}" target="_blank" rel="noopener" title="Ouvrir le questionnaire" aria-label="Ouvrir le questionnaire">↗</a>` : ""}${q.fichier ? `<button type="button" class="pl-qi" data-qf="${esc(q.id)}" title="Télécharger le questionnaire" aria-label="Télécharger le questionnaire">⬇</button>` : ""}` : `<span class="pl-qno" title="Questionnaire à déposer (Gestion › Questionnaires)">à déposer</span>`}</span>`; })() : ""}</td><td class="pl-cpf">${esc(cpfCourt(s.cpf))}</td><td class="n">${s.tp ? eur(s.tp) : ""}</td>
       <td class="pl-typ">${txt(s.id, "typeParcours", "Type de parcours", s.typeAuto)}</td>
@@ -2991,9 +3007,9 @@ function renderPilot(){
       <button type="button" class="btn small" data-pmois="0">Aujourd'hui</button></div>
       <div class="pl-vues"><button type="button" class="stab" data-pvue="cal" aria-pressed="${PIL.vue === "cal"}">Calendrier</button><button type="button" class="stab" data-pvue="liste" aria-pressed="${PIL.vue === "liste"}">Liste</button></div></div>
     <div class="pl-grid${PIL.vue === "liste" ? " large" : ""}"><div class="pl-main">
-      ${PIL.vue === "cal" ? `<div class="pc">${cal}</div><div class="pl-leg"><span><i class="l1"></i>Jour de formation</span><span><i class="l2"></i>Dernier jour d'une formation certifiante (certification)</span><span><i class="l3"></i>Aujourd'hui</span><span><i class="l4"></i>Vacances scolaires zone B</span><span>Cliquez sur une session pour la retrouver dans la liste.</span></div>`
+      ${PIL.vue === "cal" ? `<div class="pc">${cal}</div><div class="pl-leg"><span><i class="l1"></i>Jour de formation</span><span><i class="l2"></i>Dernier jour d'une formation certifiante (certification)</span><span><i class="l3"></i>Aujourd'hui</span><span><i class="l4"></i>Vacances scolaires zone B</span><span><i class="l5"></i>Jour férié</span><span>Cliquez sur une session pour la retrouver dans la liste.</span></div>`
       : `${filtres}<div class="pl-hbar"><button type="button" class="pl-hbtn" data-phs="-1" aria-label="Défiler vers la gauche">◀</button><div class="pl-hs" aria-hidden="true"><div></div></div><button type="button" class="pl-hbtn" data-phs="1" aria-label="Défiler vers la droite">▶</button><span class="pl-save" id="plSave" role="status"></span></div><div class="pl-wrap"><table class="pl-t-tab pl-xl"><thead>${sur}${tete}</thead>
-        <tbody>${rows || `<tr><td colspan="30" class="none">Aucune session ne correspond aux filtres.</td></tr>`}</tbody></table></div><p class="pl-note"><span class="vac-b">☀ Vacances</span> : la session tombe (en partie) pendant les vacances scolaires zone B (survolez pour les dates). Les saisies sont enregistrées automatiquement. ✎ sur un chiffre : ajouter une note (coin orange quand il y en a une, lisible au survol). « ✎ Gestion » : modifier les dates ou le tarif.</p>`}
+        <tbody>${rows || `<tr><td colspan="30" class="none">Aucune session ne correspond aux filtres.</td></tr>`}</tbody></table></div><p class="pl-note"><span class="fer-b">⚑ Férié</span> : une date de la session est un jour férié, à vérifier. <span class="vac-b">☀ Vacances</span> : la session tombe (en partie) pendant les vacances scolaires zone B (survolez pour les dates). Les saisies sont enregistrées automatiquement. ✎ sur un chiffre : ajouter une note (coin orange quand il y en a une, lisible au survol). « ✎ Gestion » : modifier les dates ou le tarif.</p>`}
     </div><aside class="pl-side">
       <div class="pl-card"><h3>À prévoir</h3><p class="pl-note">Aujourd'hui, ${dateD(auj).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}. Cochez « Salle OK », « Licences OK » ou « Certif OK » (colonne Suivi de la liste) pour arrêter une alerte.</p>
         ${A.length ? A.map(a => `<button type="button" class="pl-al ${a.k}" data-pgo="${esc(a.s.id)}"><b>${esc(a.txt)}</b>${esc(a.s.nom)} · ${esc(a.s.texte)} · ${ins(a.s)}</button>`).join("") : `<p class="none">Rien à prévoir pour le moment.</p>`}
